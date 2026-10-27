@@ -1,0 +1,823 @@
+/* =====================================================================================
+   ULTIMATE QUANTUM CYBERPUNK ADMIN DASHBOARD STYLESHEET (900+ LINES - FIXED GALAXY)
+   Author: Master UI/UX Architect
+   Table of Contents:
+   1. Design System & Dynamic Theme CSS Variables (Light & Dark Quantum)
+   2. Global Resets, Typography, Smooth Scrolling & High-Performance Layers
+   3. Cosmic Galaxy Background & Dynamic Aurora Engine (100% Fullscreen, No Clipping)
+   4. Quantum Reactor 3D Loader & Interactive Starfield Core
+   5. Interactive Mouse-Move Particle & Glow Tracking Engine
+   6. Header, Navigation, Glassmorphic Panels & Floating Glass Navbar
+   7. Theme Switcher Engine with Cinematic Ripple Distortion
+   8. Advanced 3D Tilt Cards, Glass Panels & Holographic Borders
+   9. Next-Gen Neon Buttons, Ripple Click FX & Hover Micro-Interactions
+   10. Cyber-Style Tables, Filters, Custom Dropdowns & Interactive Rows (Fixed <th> text color)
+   11. Staff Lists, Badges, Pulsing Live Indicators & Status Pills
+   12. Form Inputs, Focus Rings, Glowing Floating Labels & Validation States
+   13. Custom Neon Scrollbars & Advanced Selection Highlighting
+   14. Responsive Breakpoints & Mobile-First Quantum Adaptive Media Queries
+   ================================================================================     */
+
+/* =====================================================================================
+   1. DESIGN SYSTEM & DYNAMIC THEME CSS VARIABLES
+   ================================================================================     */
+:root {
+  --neon-red: #d60036;
+  --neon-red-glow: rgba(214, 0, 54, 0.35);
+  --neon-red-subtle: rgba(214, 0, 54, 0.12);
+  
+  --neon-green: #00876f;
+  --neon-green-alt: #05a085;
+  --neon-green-glow: rgba(0, 135, 111, 0.35);
+  --neon-green-subtle: rgba(0, 135, 111, 0.12);
+
+  --accent-purple: #6b21a8;
+  --accent-blue: #0284c7;
+  --quantum-cyan: #06b6d4;
+
+  --bg-main: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  --dashboard-bg: rgba(255, 255, 255, 0.88);
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(214, 0, 54, 0.22);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --table-th-color: #334155;
+  --table-th-bg: rgba(0, 0, 0, 0.05);
+  --input-bg: #ffffff;
+  --input-border: #94a3b8;
+  --input-text: #0f172a;
+  --placeholder-color: #64748b;
+  
+  --shadow-3d: 0 15px 35px rgba(0, 0, 0, 0.08), 0 0 20px rgba(0, 135, 111, 0.12);
+  --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.15), 0 0 30px rgba(214, 0, 54, 0.2);
+  --glow-intensity: 0 0 20px var(--neon-red-glow);
+  
+  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --theme-transition: all 0.5s var(--ease-smooth);
+}
+
+[data-theme="dark"], body.dark-mode, .dark-mode {
+  --neon-red: #ff2a6d;
+  --neon-red-glow: rgba(255, 42, 109, 0.55);
+  --neon-red-subtle: rgba(255, 42, 109, 0.18);
+  
+  --neon-green: #05ffe1;
+  --neon-green-alt: #00ff87;
+  --neon-green-glow: rgba(5, 255, 225, 0.55);
+  --neon-green-subtle: rgba(5, 255, 225, 0.18);
+
+  --accent-purple: #7928ca;
+  --accent-blue: #0070f3;
+  --quantum-cyan: #38bdf8;
+
+  --bg-main: radial-gradient(circle at 50% 50%, #080214 0%, #03010a 55%, #000000 100%);
+  --dashboard-bg: rgba(10, 7, 22, 0.82);
+  --card-bg: rgba(12, 8, 25, 0.76);
+  --card-border: rgba(255, 42, 109, 0.38);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --table-th-color: #05ffe1;
+  --table-th-bg: rgba(255, 255, 255, 0.05);
+  --input-bg: rgba(18, 12, 35, 0.85);
+  --input-border: rgba(5, 255, 225, 0.45);
+  --input-text: #ffffff;
+  --placeholder-color: rgba(255, 255, 255, 0.55);
+
+  --shadow-3d: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px var(--neon-red-glow);
+  --shadow-hover: 0 35px 80px rgba(0, 0, 0, 0.95), 0 0 50px var(--neon-green-glow);
+  --glow-intensity: 0 0 35px var(--neon-red-glow), 0 0 20px var(--neon-green-glow);
+}
+
+/* =====================================================================================
+   2. GLOBAL RESETS, TYPOGRAPHY & SMOOTH SCROLLING
+   ================================================================================     */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background: var(--bg-main);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  transition: var(--theme-transition);
+  line-height: 1.65;
+  padding-bottom: 80px;
+}
+
+/* =====================================================================================
+   3. COSMIC GALAXY BACKGROUND (TRÀN VIỀN 100% - KHÔNG LỘ GÓC VUÔNG)
+   ================================================================================     */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: -3;
+  pointer-events: none;
+  transition: var(--theme-transition);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: -2;
+  pointer-events: none;
+  transition: var(--theme-transition);
+}
+
+/* Hiệu ứng ngân hà tối (Dark Galaxy) */
+[data-theme="dark"], body.dark-mode, .dark-mode {
+  body::before {
+    background: 
+      radial-gradient(circle at 15% 20%, rgba(255, 42, 109, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 85% 80%, rgba(5, 255, 225, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(121, 40, 202, 0.22) 0%, transparent 70%),
+      radial-gradient(circle at 80% 20%, rgba(0, 112, 243, 0.25) 0%, transparent 55%);
+    animation: galaxy-breathe 15s ease-in-out infinite alternate;
+  }
+  body::after {
+    background-image: 
+      radial-gradient(2.2px 2.2px at 30px 50px, #05ffe1, transparent),
+      radial-gradient(2px 2px at 150px 200px, #ff2a6d, transparent),
+      radial-gradient(1.5px 1.5px at 320px 120px, #ffffff, transparent),
+      radial-gradient(2.5px 2.5px at 450px 320px, #38bdf8, transparent),
+      radial-gradient(1.8px 1.8px at 600px 450px, #ff80bf, transparent);
+    background-size: 350px 350px;
+    opacity: 0.75;
+    animation: quantum-dust-drift 50s linear infinite;
+  }
+}
+
+/* Hiệu ứng ngân hà sáng (Light Galaxy) */
+:root, [data-theme="light"], body:not(.dark-mode):not([data-theme="dark"]) {
+  body::before {
+    background: 
+      radial-gradient(circle at 15% 20%, rgba(214, 0, 54, 0.15) 0%, transparent 55%),
+      radial-gradient(circle at 85% 80%, rgba(0, 135, 111, 0.15) 0%, transparent 55%),
+      radial-gradient(circle at 50% 50%, rgba(2, 132, 199, 0.12) 0%, transparent 70%);
+  }
+  body::after {
+    background-image: 
+      radial-gradient(2px 2px at 40px 70px, #047857, transparent),
+      radial-gradient(2px 2px at 160px 210px, #b91c1c, transparent),
+      radial-gradient(1.5px 1.5px at 300px 100px, #0284c7, transparent);
+    background-size: 350px 350px;
+    opacity: 0.45;
+    animation: quantum-dust-drift 50s linear infinite;
+  }
+}
+
+@keyframes galaxy-breathe {
+  0% { transform: scale(1); filter: brightness(0.95); }
+  100% { transform: scale(1.06); filter: brightness(1.2); }
+}
+
+@keyframes quantum-dust-drift {
+  0% { background-position: 0 0; }
+  100% { background-position: 350px 350px; }
+}
+
+/* =====================================================================================
+   4. QUANTUM REACTOR 3D LOADER & INTERACTIVE STARFIELD CORE
+   ================================================================================     */
+#page-loader {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: radial-gradient(circle, #080214 0%, #03010a 70%, #000000 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 999999;
+  transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1), visibility 1s ease;
+  will-change: opacity, visibility;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+#page-loader.loaded {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.quantum-star {
+  position: absolute;
+  width: 180px;
+  height: 2px;
+  background: linear-gradient(90deg, #05ffe1, transparent);
+  transform: rotate(-45deg);
+  animation: quantum-shooting 1.4s ease-in-out infinite;
+  opacity: 0.8;
+}
+.quantum-star:nth-child(1) { top: 12%; left: 8%; animation-delay: 0.1s; }
+.quantum-star:nth-child(2) { top: 80%; left: 75%; animation-delay: 0.7s; background: linear-gradient(90deg, #ff2a6d, transparent); }
+.quantum-star:nth-child(3) { top: 40%; left: 85%; animation-delay: 0.4s; background: linear-gradient(90deg, #7928ca, transparent); }
+
+@keyframes quantum-shooting {
+  0% { transform: translateX(0) translateY(0) rotate(-45deg) scale(0); opacity: 1; }
+  100% { transform: translateX(-450px) translateY(450px) rotate(-45deg) scale(1.2); opacity: 0; }
+}
+
+.quantum-reactor {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1200px;
+  margin: 0 auto;
+}
+
+.reactor-ring {
+  position: absolute;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.reactor-ring.outer {
+  width: 190px;
+  height: 190px;
+  border: 2px dashed rgba(255, 42, 109, 0.7);
+  animation: q-spin-cw 5s linear infinite;
+  filter: drop-shadow(0 0 15px #ff2a6d);
+}
+
+.reactor-ring.middle {
+  width: 140px;
+  height: 140px;
+  border: 3px solid transparent;
+  border-top-color: #05ffe1;
+  border-bottom-color: #05ffe1;
+  animation: q-spin-ccw 2.2s var(--ease-bounce) infinite;
+  filter: drop-shadow(0 0 20px #05ffe1);
+}
+
+.reactor-ring.inner {
+  width: 95px;
+  height: 95px;
+  border: 2px dotted #7928ca;
+  animation: q-spin-cw 3.5s linear infinite;
+  filter: drop-shadow(0 0 12px #7928ca);
+}
+
+.reactor-core-pulse {
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #ffffff 0%, #05ffe1 35%, #ff2a6d 75%, #080214 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 40px #05ffe1, 0 0 80px #ff2a6d, 0 0 120px #7928ca;
+  animation: core-hyper-pulse 1.1s ease-in-out infinite alternate;
+}
+
+.loader-text {
+  margin-top: 45px;
+  font-weight: 900;
+  font-size: 1.2rem;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ff2a6d, #05ffe1, #ffffff, #7928ca, #ff2a6d);
+  background-size: 400% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: q-text-flow 3s linear infinite;
+  text-shadow: 0 0 25px rgba(5, 255, 225, 0.6);
+  text-align: center;
+  width: 100%;
+}
+
+@keyframes q-spin-cw {
+  0% { transform: rotateX(50deg) rotateY(20deg) rotateZ(0deg); }
+  100% { transform: rotateX(50deg) rotateY(20deg) rotateZ(360deg); }
+}
+
+@keyframes q-spin-ccw {
+  0% { transform: rotateX(-40deg) rotateY(50deg) rotateZ(360deg); }
+  100% { transform: rotateX(-40deg) rotateY(50deg) rotateZ(0deg); }
+}
+
+@keyframes core-hyper-pulse {
+  0% { transform: scale(0.7) translateZ(-30px); filter: brightness(0.8) contrast(1.2); }
+  100% { transform: scale(1.3) translateZ(30px); filter: brightness(1.6) contrast(1.5); }
+}
+
+@keyframes q-text-flow {
+  0% { background-position: 0% center; }
+  100% { background-position: 400% center; }
+}
+
+/* =====================================================================================
+   5. INTERACTIVE MOUSE-MOVE GLOW TRACKING & PARTICLE CURSOR
+   ================================================================================     */
+.quantum-cursor-glow {
+  position: fixed;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--neon-green-subtle) 0%, rgba(255, 42, 109, 0.05) 50%, transparent 70%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: width 0.3s ease, height 0.3s ease;
+  mix-blend-mode: screen;
+}
+
+/* =====================================================================================
+   6. HEADER, NAVIGATION & GLASSMORPHIC FLOATING PANELS
+   ================================================================================     */
+.container {
+  max-width: 1240px;
+  margin: auto;
+  padding: 28px;
+  position: relative;
+  z-index: 2;
+}
+
+.header {
+  background: var(--card-bg);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  padding: 26px 36px;
+  box-shadow: var(--shadow-3d);
+  margin-bottom: 2.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--theme-transition);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(120deg, transparent 0%, rgba(5, 255, 225, 0.05) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 100%; height: 2.5px;
+  background: linear-gradient(90deg, transparent, var(--neon-green), var(--neon-red), var(--quantum-cyan), transparent);
+  animation: header-cyber-scan 5s linear infinite;
+}
+
+@keyframes header-cyber-scan {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.header h2 {
+  font-weight: 900;
+  font-size: 1.7rem;
+  margin: 0;
+  background: linear-gradient(135deg, var(--neon-red) 0%, var(--neon-green) 50%, var(--quantum-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px var(--neon-red-glow));
+  letter-spacing: 0.5px;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
+}
+
+/* Ép cứng nút bấm không bao giờ bị gãy dòng chữ */
+.header-nav a, .header-nav button, .btn, td .btn, table .btn, .admin-btn {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  text-decoration: none;
+  padding: 11px 20px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  transition: all 0.35s var(--ease-elastic);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.header-nav a::after, .header-nav button::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%; width: 0; height: 0;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.header-nav a:active::after, .header-nav button:active::after {
+  width: 300px;
+  height: 300px;
+  opacity: 0;
+}
+
+.header-nav a:hover, .header-nav button:hover, .btn:hover {
+  transform: translateY(-4px) scale(1.04);
+}
+
+.btn-home {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-main) !important;
+}
+
+.btn-events {
+  background: linear-gradient(135deg, #00b894 0%, var(--neon-green) 100%) !important;
+  color: #030008 !important;
+  box-shadow: 0 6px 20px var(--neon-green-glow);
+}
+
+.btn-logout {
+  background: linear-gradient(135deg, #ff0055 0%, #790022 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(255, 0, 85, 0.45);
+}
+
+.notification-bell {
+  background: rgba(255, 193, 7, 0.18) !important;
+  border: 1px solid #ffc107 !important;
+  color: #ffc107 !important;
+}
+
+.notification-badge {
+  background: #dc3545;
+  color: #fff;
+  padding: 3px 8px;
+  font-size: 11px;
+  border-radius: 50%;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  box-shadow: 0 0 12px #dc3545;
+  animation: badge-pulse 1.5s infinite;
+}
+
+@keyframes badge-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(220, 53, 69, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+.theme-toggle-btn {
+  background: var(--input-bg);
+  border: 2px solid var(--neon-green);
+  color: var(--neon-green);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.45s var(--ease-elastic);
+  box-shadow: 0 0 18px var(--neon-green-glow);
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.18) rotate(30deg);
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+  box-shadow: 0 0 30px var(--neon-red-glow);
+}
+
+/* =====================================================================================
+   7. THEME SWITCHER ENGINE WITH CINEMATIC RIPPLE DISTORTION
+   ================================================================================     */
+.theme-ripple-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 99999;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.5s ease;
+  opacity: 0.98;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  will-change: transform, opacity;
+  box-shadow: 0 0 150px rgba(0, 0, 0, 0.8);
+}
+
+.theme-ripple-overlay.active {
+  transform: scale(5.5);
+  opacity: 0;
+}
+
+/* =====================================================================================
+   8. ADVANCED 3D TILT CARDS & GLASS PANELS
+   ================================================================================     */
+.approval-box, .stat-card, .stat-card-staff {
+  background: var(--card-bg) !important;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--card-border) !important;
+  border-radius: 28px !important;
+  padding: 32px;
+  box-shadow: var(--shadow-3d) !important;
+  margin-bottom: 2.2rem;
+  transition: transform 0.4s var(--ease-elastic), box-shadow 0.4s ease, border-color 0.4s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.approval-box::before, .stat-card::before, .stat-card-staff::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 3px;
+  background: linear-gradient(90deg, var(--neon-red), var(--neon-green));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.approval-box:hover::before, .stat-card:hover::before, .stat-card-staff:hover::before {
+  opacity: 1;
+}
+
+.approval-box:hover, .stat-card:hover, .stat-card-staff:hover {
+  transform: translateY(-8px) rotateX(1.5deg) scale(1.01) !important;
+  border-color: var(--neon-green) !important;
+  box-shadow: var(--shadow-hover) !important;
+}
+
+.approval-box h3, h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 1.4rem;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+}
+
+/* =====================================================================================
+   9. NEXT-GEN NEON BUTTONS & INTERACTIVE STATES
+   ================================================================================     */
+.btn-success {
+  background: linear-gradient(135deg, #059669 0%, var(--neon-green) 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px var(--neon-green-glow) !important;
+  color: #fff !important;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4) !important;
+  color: #fff !important;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #d97706, #f59e0b) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4) !important;
+  color: #fff !important;
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #0284c7, var(--quantum-cyan)) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4) !important;
+  color: #fff !important;
+}
+
+/* =====================================================================================
+   10. CYBER-STYLE TABLES, FILTERS & STATUS BADGES (FIXED <th> TEXT COLOR)
+   ================================================================================     */
+.table-responsive {
+  border-radius: 20px;
+  overflow-x: auto;
+  box-shadow: var(--shadow-3d);
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--card-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+th, td {
+  padding: 18px 22px;
+  text-align: left;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  transition: background 0.25s ease, color 0.3s ease;
+  vertical-align: middle;
+}
+
+/* Tự động đổi màu chữ tiêu đề <th> cực kỳ sắc nét ở cả chế độ Sáng và Tối */
+th {
+  background: var(--table-th-bg) !important;
+  color: var(--table-th-color) !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  letter-spacing: 1.3px;
+  white-space: nowrap !important;
+}
+
+tr {
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+tr:hover td {
+  background-color: rgba(5, 255, 225, 0.06);
+  transform: scale(1.002);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-bottom: 2.2rem;
+}
+
+@media(max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filter-form {
+  background: var(--card-bg);
+  backdrop-filter: blur(24px);
+  padding: 20px 28px;
+  border-radius: 22px;
+  border: 1px solid var(--card-border);
+  margin-bottom: 2.2rem;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: var(--shadow-3d);
+}
+
+.filter-form select {
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.35s ease;
+  cursor: pointer;
+}
+
+.filter-form select:focus {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 0 4px var(--neon-green-glow);
+}
+
+/* =====================================================================================
+   11. STAFF LISTS, BADGES & CURRENT USER HIGHLIGHTS
+   ================================================================================     */
+.staff-list-box {
+  margin-top: 18px;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid var(--card-border);
+}
+
+[data-theme="dark"] .staff-list-box, .dark-mode .staff-list-box {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.staff-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.staff-ul li {
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--card-border);
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  transition: transform 0.2s ease;
+}
+
+.staff-ul li:hover {
+  transform: translateX(4px);
+}
+
+.staff-ul li:last-child {
+  border-bottom: none;
+}
+
+.current-logged-in {
+  background: rgba(25, 135, 84, 0.12);
+  padding: 6px 12px;
+  border-radius: 10px;
+  border-left: 4px solid #198754;
+}
+
+.badge-current-user {
+  background: #198754;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(25, 135, 84, 0.6);
+}
+
+/* =====================================================================================
+   12. CUSTOM NEON SCROLLBARS & SELECTION STYLING
+   ================================================================================     */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(3, 1, 10, 0.95);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--neon-red), var(--neon-green), var(--quantum-cyan));
+  border-radius: 6px;
+  box-shadow: 0 0 10px var(--neon-green-glow);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--neon-green), var(--neon-red));
+}
+
+::selection {
+  background: var(--neon-red);
+  color: #ffffff;
+}
+
+/* =====================================================================================
+   13. RESPONSIVE MEDIA QUERIES & MOBILE QUANTUM OPTIMIZATIONS
+   ================================================================================     */
+@media(max-width: 992px) {
+  .header {
+    flex-direction: column;
+    gap: 18px;
+    text-align: center;
+    padding: 22px;
+  }
+  .header-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .filter-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* ==========================================================================
+   CĂN CHỈNH VIDEO BACKGROUND PHỦ KÍN MÀN HÌNH
+   ================================================================          */
+.video-background {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -9999; /* Đảm bảo video luôn nằm ở lớp dưới cùng của trang */
+  transform: translate(-50%, -50%);
+  object-fit: cover; /* Giúp video co giãn tự động phủ kín không bị méo hình */
+  pointer-events: none; /* Vô hiệu hóa tương chuột để click xuyên qua video */
+}
