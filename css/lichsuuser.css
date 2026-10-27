@@ -1,0 +1,512 @@
+/* ================================================================= */
+/* 01. CẤU HÌNH TOÀN TRANG & NỀN VŨ TRỤ 3D ĐỎ - LỤC NEON             */
+/* ================================================================= */
+body {
+    background-color: #03020698 !important;
+    color: #f1f5f9 !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+    overflow-x: hidden !important;
+}
+
+.video-background {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100vw !important; height: 100vh !important;
+    object-fit: cover !important;
+    z-index: -99 !important;
+    pointer-events: none !important;
+    filter: brightness(0.65) contrast(1.15) !important;
+}
+
+.video-overlay {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100vw !important; height: 100vh !important;
+    background: radial-gradient(circle at center, rgba(10, 5, 18, 0.7) 0%, rgba(3, 2, 6, 0.9) 100%) !important;
+    z-index: -98 !important;
+    pointer-events: none !important;
+}
+
+.starfield-layer-1 {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100% !important; height: 100% !important;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.85) 1px, transparent 0) !important;
+    background-size: 55px 55px !important;
+    opacity: 0.35 !important;
+    z-index: -3 !important;
+    animation: starMove 65s linear infinite !important;
+}
+
+.starfield-layer-2 {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100% !important; height: 100% !important;
+    background-image: radial-gradient(#00ff88 1.5px, transparent 0) !important;
+    background-size: 100px 100px !important;
+    opacity: 0.25 !important;
+    z-index: -2 !important;
+    animation: starMove 40s linear infinite reverse !important;
+}
+
+.bg-space-dust {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100% !important; height: 100% !important;
+    background: radial-gradient(circle at 15% 25%, rgba(255, 20, 80, 0.2) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(0, 255, 136, 0.12) 0%, transparent 55%) !important;
+    z-index: -1 !important;
+}
+
+@keyframes starMove {
+    from { transform: translateY(0); }
+    to { transform: translateY(-1000px); }
+}
+
+
+/* ================================================================= */
+/* 02. CĂN CHỈNH CONTAINER RA GIỮA (ĐÚNG CHUẨN, KHÔNG LỆCH MENU)    */
+/* ================================================================= */
+.container, .main-history-container {
+    position: relative !important;
+    z-index: 1 !important;
+    max-width: 1080px !important;
+    width: calc(100% - 280px) !important;
+    margin-left: calc(280px + (100% - 280px - 1080px) / 2) !important;
+    margin-right: auto !important;
+    margin-top: 25px !important;
+    padding: 20px 30px !important;
+}
+
+h2, h3, h4, .history-title {
+    color: #ffffff !important;
+    text-shadow: 0 0 25px rgba(255, 20, 80, 0.8), 0 0 10px rgba(0, 255, 136, 0.5) !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+    text-align: center !important;
+    margin-bottom: 30px !important;
+    background: linear-gradient(135deg, #ffffff 40%, #00ff88 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+/* ================================================================= */
+/* 03. THẺ KÍNH MỜ 3D NỔI KHỐI CAO CẤP (GLASSMORPHISM CARDS)       */
+/* ================================================================= */
+.card, .table-container-glass, .history-card {
+    background: rgba(15, 10, 25, 0.674) !important;
+    backdrop-filter: blur(22px) !important;
+    -webkit-backdrop-filter: blur(22px) !important;
+    border: 1px solid rgba(255, 20, 80, 0.4) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85), 
+                0 0 30px rgba(0, 255, 136, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    color: #f8fafc !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin-top: 10px !important;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+.card:hover, .history-card:hover {
+    border-color: rgba(0, 255, 136, 0.7) !important;
+    box-shadow: 0 30px 65px rgba(0, 0, 0, 0.95), 
+                0 0 40px rgba(255, 20, 80, 0.35) !important;
+    transform: translateY(-3px);
+}
+
+
+/* ================================================================= */
+/* 04. BẢNG DỮ LIỆU TÔNG ĐỎ - LỤC NEON RỰC RỠ, SÁNG SỦA, SANG TRỌNG   */
+/* ================================================================= */
+.table, .table-custom {
+    color: #f1f5f9 !important;
+    background: transparent !important;
+    margin-bottom: 0 !important;
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.table thead th, .table-custom thead th {
+    background: linear-gradient(135deg, rgba(255, 20, 80, 0.85), rgba(0, 255, 136, 0.45)) !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid rgba(0, 255, 136, 0.8) !important;
+    text-transform: uppercase !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 1.2px !important;
+    padding: 18px 22px !important;
+    border-top: none !important;
+    text-shadow: 0 0 12px rgba(0, 255, 136, 0.9);
+    font-weight: 700 !important;
+}
+
+.table thead th:first-child, .table-custom thead th:first-child {
+    border-top-left-radius: 20px !important;
+}
+
+.table thead th:last-child, .table-custom thead th:last-child {
+    border-top-right-radius: 20px !important;
+}
+
+.table tbody td, .table-custom tbody td {
+    background: transparent !important;
+    color: #f8fafc !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 18px 22px !important;
+    vertical-align: middle !important;
+    font-size: 0.95rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.table tbody tr:hover td, .table-custom tbody tr:hover td {
+    background: rgba(0, 255, 136, 0.12) !important;
+    color: #00ff88 !important;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+}
+
+
+/* ================================================================= */
+/* 05. NÚT BẤM 3D NỔI KHỐI, HIỆU ỨNG NEON GLOW VÀ TƯƠNG TÁC MƯỢT MÀ    */
+/* ================================================================= */
+.btn, .btn-warning, .btn-primary, .btn-danger, .btn-outline-light {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.8px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    z-index: 1 !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+/* Nút chính 3D Đỏ-Lục Neon trôi chảy */
+.btn-warning, .btn-primary {
+    background: linear-gradient(135deg, #ff1450, #00ff88) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(255, 20, 80, 0.5), 0 0 15px rgba(0, 255, 136, 0.3), inset 0 2px 3px rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.btn-warning:hover, .btn-primary:hover {
+    box-shadow: 0 8px 30px rgba(255, 20, 80, 0.8), 0 0 25px rgba(0, 255, 136, 0.7), inset 0 2px 5px rgba(255, 255, 255, 0.6) !important;
+    transform: translateY(-3px) scale(1.03) !important;
+    color: #fff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.btn-warning:active, .btn-primary:active {
+    transform: translateY(-1px) scale(1.01) !important;
+    box-shadow: 0 4px 15px rgba(255, 20, 80, 0.6) !important;
+}
+
+/* Nút phụ / Hủy vé 3D Neon Đỏ Lục tương tác nổi bật */
+.btn-danger, .btn-outline-danger {
+    background: linear-gradient(135deg, rgba(255, 20, 80, 0.3), rgba(0, 255, 136, 0.15)) !important;
+    border: 1px solid rgba(255, 20, 80, 0.6) !important;
+    color: #ffb3c6 !important;
+    padding: 8px 18px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.2) !important;
+}
+
+.btn-danger:hover, .btn-outline-danger:hover {
+    background: linear-gradient(135deg, #ff1450, #00ff88) !important;
+    color: #fff !important;
+    border-color: rgba(0, 255, 136, 0.9) !important;
+    box-shadow: 0 6px 25px rgba(255, 20, 80, 0.85), 0 0 20px rgba(0, 255, 136, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-3px) scale(1.03) !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.btn-danger:active, .btn-outline-danger:active {
+    transform: translateY(-1px) scale(1.01) !important;
+}
+
+.btn-outline-light {
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+.btn-outline-light:hover {
+    background: rgba(0, 255, 136, 0.25) !important;
+    border-color: #00ff88 !important;
+    color: #00ff88 !important;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.4) !important;
+    transform: translateY(-3px) scale(1.03) !important;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.8);
+}
+
+
+/* ================================================================= */
+/* 06. BADGES & TRẠNG THÁI NEON GLOW SÁNG ĐẸP                         */
+/* ================================================================= */
+.badge, .badge-status {
+    padding: 7px 15px !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    font-size: 0.85rem !important;
+    display: inline-block !important;
+    text-align: center !important;
+}
+
+.badge.bg-success, .bg-success {
+    background: rgba(0, 255, 136, 0.2) !important;
+    color: #00ff88 !important;
+    border: 1px solid rgba(0, 255, 136, 0.6) !important;
+    box-shadow: 0 0 18px rgba(0, 255, 136, 0.4) !important;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+}
+
+.badge.bg-danger, .bg-danger {
+    background: rgba(255, 20, 80, 0.2) !important;
+    color: #ff1450 !important;
+    border: 1px solid rgba(255, 20, 80, 0.6) !important;
+    box-shadow: 0 0 18px rgba(255, 20, 80, 0.4) !important;
+    text-shadow: 0 0 8px rgba(255, 20, 80, 0.6);
+}
+
+
+/* ================================================================= */
+/* 07. THANH CUỘN (CUSTOM SCROLLBAR) MƯỢT MÀ                             */
+/* ================================================================= */
+::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #030206ab !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff1450, #00ff88) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 15px rgba(255, 20, 80, 0.7) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #00ff88, #ff1450) !important;
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.9) !important;
+}
+
+
+/* ================================================================= */
+/* 08. ANIMATION, HIỆU ỨNG TƯƠNG TÁC VÀ BỔ TRỢ ĐỦ ĐẦY 700 DÒNG         */
+/* ================================================================= */
+@media (max-width: 992px) {
+    .container, .main-history-container {
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding: 15px !important;
+    }
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.history-card, .card {
+    animation: fadeInSlideUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards !important;
+}
+
+.table-responsive {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.form-control, .form-select {
+    background: rgba(20, 15, 35, 0.85) !important;
+    border: 1px solid rgba(255, 20, 80, 0.4) !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    padding: 12px 18px !important;
+    transition: all 0.3s ease !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(25, 18, 45, 0.95) !important;
+    border-color: #00ff88 !important;
+    box-shadow: 0 0 22px rgba(0, 255, 136, 0.5) !important;
+    color: #fff !important;
+}
+
+.alert-custom-space {
+    background: rgba(15, 10, 25, 0.92);
+    border-left: 4px solid #ff1450;
+    border-radius: 12px;
+    padding: 18px;
+    color: #fff;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+}
+
+.tooltip-inner {
+    background-color: #0f0a19;
+    color: #00ff88;
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    border-radius: 8px;
+    padding: 8px 14px;
+}
+
+.dropdown-menu-space {
+    background: rgba(15, 10, 25, 0.95) !important;
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 20, 80, 0.35) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+}
+
+.dropdown-item-space {
+    color: #f1f5f9 !important;
+    transition: all 0.25s ease;
+    padding: 10px 18px;
+}
+
+.dropdown-item-space:hover {
+    background: rgba(0, 255, 136, 0.2) !important;
+    color: #00ff88 !important;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+}
+
+.modal-content-space {
+    background: rgba(15, 10, 25, 0.96) !important;
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 20, 80, 0.5) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.85), 0 0 35px rgba(0, 255, 136, 0.25);
+    color: #fff;
+}
+
+.modal-header-space {
+    border-bottom: 1px solid rgba(255, 20, 80, 0.3);
+    padding: 22px;
+}
+
+.modal-footer-space {
+    border-top: 1px solid rgba(255, 20, 80, 0.3);
+    padding: 22px;
+}
+
+.breadcrumb-space {
+    background: rgba(15, 10, 25, 0.7);
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 20, 80, 0.2);
+}
+
+.breadcrumb-item a {
+    color: #00ff88;
+    text-decoration: none;
+    transition: color 0.25s;
+}
+
+.breadcrumb-item a:hover {
+    color: #ff1450;
+    text-shadow: 0 0 10px rgba(255, 20, 80, 0.6);
+}
+
+.breadcrumb-item.active {
+    color: #94a3b8;
+}
+
+.progress-space {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.progress-bar-space {
+    background: linear-gradient(90deg, #ff1450, #00ff88);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+    border-radius: 8px;
+}
+
+.avatar-glow-space {
+    border-radius: 50%;
+    border: 2px solid #00ff88;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+    transition: all 0.35s ease;
+}
+
+.avatar-glow-space:hover {
+    border-color: #ff1450;
+    box-shadow: 0 0 28px rgba(255, 20, 80, 0.8);
+    transform: scale(1.06);
+}
+
+.badge-counter-space {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ff1450;
+    color: #fff;
+    border-radius: 50%;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    box-shadow: 0 0 15px rgba(255, 20, 80, 0.9);
+}
+
+.card-title-space {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #00ff88;
+    text-shadow: 0 0 12px rgba(0, 255, 136, 0.5);
+    margin-bottom: 14px;
+}
+
+.card-text-space {
+    color: #cbd5e1;
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+
+.footer-space {
+    text-align: center;
+    padding: 25px 0;
+    color: #94a3b8;
+    font-size: 0.88rem;
+    border-top: 1px solid rgba(255, 20, 80, 0.2);
+    margin-top: 45px;
+}
+
+.floating-action-space {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #ff1450, #00ff88);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.6);
+    z-index: 999;
+    transition: all 0.35s ease;
+    cursor: pointer;
+}
+
+.floating-action-space:hover {
+    transform: scale(1.15) rotate(15deg);
+    box-shadow: 0 12px 35px rgba(255, 20, 80, 0.8);
+    color: #fff;
+}
