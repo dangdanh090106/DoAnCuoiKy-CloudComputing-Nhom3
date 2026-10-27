@@ -1,0 +1,592 @@
+/* ========================================================================== */
+/* FILE: css/header.css - SIDEBAR MENU DỌC ĐỎ & XANH LỤC CHUYỂN ĐỘNG CAO CẤP */
+/* ========================================================================== */
+
+.site-header, 
+.site-header * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+    --sidebar-width: 280px;
+    --bg-primary: #0a0d14;
+    --accent-red: #ff1e56;
+    --accent-green: #00f5a0;
+    --glass-bg: rgba(15, 12, 18, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 1. THANH SIDEBAR DỌC VỚI HIỆU ỨNG GRADIENT CHUYỂN MÀU QUA LẠI LIÊN TỤC */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    
+    /* Dải màu nền pha trộn giữa Đỏ tối và Xanh lục tối, chạy animation dịch chuyển */
+    background: linear-gradient(135deg, #3d0214, #04291c, #2b020a, #013220, #4f0318);
+    background-size: 400% 400%;
+    animation: dynamicSidebarFlow 12s ease infinite alternate;
+    
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(0, 245, 160, 0.2);
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 20px;
+    z-index: 9999;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Hiệu ứng trôi màu qua lại mượt mà cho nền Sidebar */
+@keyframes dynamicSidebarFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Custom Scrollbar */
+.site-header::-webkit-scrollbar {
+    width: 4px;
+}
+.site-header::-webkit-scrollbar-thumb {
+    background: rgba(0, 245, 160, 0.3);
+    border-radius: 10px;
+}
+
+/* 2. HEADER CONTAINER */
+.header-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+/* 3. BRAND / LOGO SECTION */
+.brand-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+    text-decoration: none;
+    padding-bottom: 25px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.brand-area::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 20%;
+    width: 60%;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--accent-green), var(--accent-red), transparent);
+}
+
+.main-logo {
+    height: 70px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+    transition: var(--transition-smooth);
+}
+
+.site-title {
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    transition: var(--transition-smooth);
+    line-height: 1.4;
+}
+
+.brand-area:hover .main-logo {
+    transform: scale(1.06) rotate(-2deg);
+    filter: drop-shadow(0 0 15px rgba(0, 245, 160, 0.6));
+}
+
+.brand-area:hover .site-title {
+    color: var(--accent-green);
+    text-shadow: 0 0 12px rgba(0, 245, 160, 0.8);
+}
+
+/* 4. NAVIGATION MENU */
+.right-header-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: flex-start;
+    gap: 25px;
+}
+
+.main-menu {
+    width: 100%;
+}
+
+.main-menu ul {
+    list-style: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.main-menu li {
+    width: 100%;
+    position: relative;
+}
+
+.main-menu a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: var(--transition-smooth);
+    white-space: nowrap !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Thanh chỉ báo bên trái */
+.main-menu a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) scaleY(0);
+    width: 4px;
+    height: 60%;
+    background: var(--accent-green);
+    border-radius: 0 4px 4px 0;
+    transition: var(--transition-smooth);
+}
+
+.main-menu a:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 245, 160, 0.3);
+    transform: translateX(4px);
+    box-shadow: 0 0 15px rgba(0, 245, 160, 0.15);
+}
+
+.main-menu a:hover::before {
+    transform: translateY(-50%) scaleY(1);
+}
+
+/* ========================================================================== */
+/* TRẠNG THÁI ACTIVE (TRANG ĐANG Ở): ĐỔI MÀU NỔI BẬT & CÓ ĐOM SÁNG BAY QUANH  */
+/* ========================================================================== */
+.main-menu a.active {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, rgba(0, 245, 160, 0.2) 0%, rgba(255, 30, 86, 0.2) 100%) !important;
+    border: 1px solid rgba(0, 245, 160, 0.5) !important;
+    box-shadow: 0 4px 20px rgba(0, 245, 160, 0.25), inset 0 0 12px rgba(255, 30, 86, 0.15);
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+.main-menu a.active::before {
+    transform: translateY(-50%) scaleY(1) !important;
+    background: linear-gradient(to bottom, var(--accent-green), var(--accent-red)) !important;
+    box-shadow: 0 0 15px var(--accent-green);
+}
+
+/* Hiệu ứng đom đóm sáng bay lượn quanh thẻ menu đang Active */
+.main-menu a.active::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 245, 160, 0.4) 0%, rgba(255, 30, 86, 0.2) 40%, transparent 70%);
+    opacity: 0.7;
+    pointer-events: none;
+    animation: firefly-orbit 4s infinite linear;
+}
+
+@keyframes firefly-orbit {
+    0% { transform: rotate(0deg) translate(10px) rotate(0deg); }
+    100% { transform: rotate(360deg) translate(10px) rotate(-360deg); }
+}
+
+/* 5. USER ACTION & AUTHENTICATION SECTION (BOTTOM) */
+.user-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+}
+
+.user-name {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 100%;
+}
+
+.user-name strong {
+    color: var(--accent-green);
+    font-weight: 700;
+    border-bottom: 1.5px dashed var(--accent-red);
+    padding-bottom: 2px;
+}
+
+/* NÚT ĐĂNG XUẤT */
+.btn-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #ffffff;
+    border: 1px solid rgba(255, 30, 86, 0.5);
+    background-color: rgba(255, 30, 86, 0.15);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(255, 30, 86, 0.2);
+    transition: var(--transition-smooth);
+}
+
+.btn-logout:hover {
+    background-color: var(--accent-red);
+    color: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 0 25px rgba(255, 30, 86, 0.8);
+    transform: translateY(-2px);
+}
+
+/* ========================================================================== */
+/* 6. NÚT ĐĂNG NHẬP / QUẢN TRỊ: HIỆU ỨNG ĐOM ĐÓM SÁNG BAY QUANH KỲ VỸ          */
+/* ========================================================================== */
+.user-action .btn-login, 
+.btn-admin-nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+    padding: 14px 20px;
+    
+    /* Nền Gradient phối sắc Đỏ Ruby & Xanh Lục Bảo */
+    background: linear-gradient(135deg, rgba(255, 30, 86, 0.85) 0%, rgba(0, 245, 160, 0.85) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    color: #ffffff !important;
+    font-weight: 900;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(0, 245, 160, 0.5),
+        0 0 20px rgba(255, 30, 86, 0.5),
+        inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap !important;
+}
+
+/* Đom đóm ánh sáng bay vòng quanh viền và thân nút */
+.user-action .btn-login::before, 
+.btn-admin-nav::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -120%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.8),
+        transparent
+    );
+    transform: rotate(25deg);
+    animation: firefly-beam 3s infinite linear;
+}
+
+@keyframes firefly-beam {
+    0% { left: -120%; }
+    50% { left: 160%; }
+    100% { left: 160%; }
+}
+
+/* Thêm các chấm đom đóm lấp lánh bay quanh nút khi hover */
+.user-action .btn-login:hover, 
+.btn-admin-nav:hover {
+    background: linear-gradient(135deg, rgba(255, 30, 86, 1) 0%, rgba(0, 245, 160, 1) 100%);
+    border-color: #ffffff;
+    box-shadow: 
+        0 12px 35px rgba(0, 0, 0, 0.8),
+        0 0 30px rgba(0, 245, 160, 0.9),
+        0 0 30px rgba(255, 30, 86, 0.9),
+        inset 0 0 15px rgba(255, 255, 255, 0.9);
+    transform: translateY(-3px) scale(1.02);
+}
+
+.user-action .btn-login:active, 
+.btn-admin-nav:active {
+    transform: translateY(-1px) scale(1.01);
+}
+
+/* ========================================================================== */
+/* 7. ĐIỀU CHỈNH KHUNG NỘI DUNG CHÍNH (BODY) ĐỂ KHÔNG BỊ MENU DỌC CHE KHUẤT       */
+/* ========================================================================== */
+body {
+    margin-left: var(--sidebar-width) !important;
+    background-color: var(--bg-primary) !important;
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+@media screen and (max-width: 1024px) {
+    :root {
+        --sidebar-width: 240px;
+    }
+    .site-header {
+        padding: 20px 15px;
+    }
+    .main-menu a {
+        font-size: 12px;
+        padding: 12px 14px;
+    }
+}
+/* ========================================================== */
+/* HẠT ĐOM ĐÓM / SAO BAY TỰ DO & PHÓNG TO CHUYỂN ĐỘNG CHẬM RÃI   */
+/* ========================================================== */
+
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(135deg, #3d0214, #04291c, #2b020a, #013220, #4f0318);
+    background-size: 400% 400%;
+    animation: dynamicSidebarFlow 12s ease infinite alternate;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(0, 245, 160, 0.2);
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 20px;
+    z-index: 9999;
+    overflow: hidden; /* Giữ các hạt không bay ra ngoài sidebar */
+}
+
+@keyframes dynamicSidebarFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Thẻ định nghĩa từng hạt đom đóm/sao độc lập với độ mờ dịu nhẹ */
+.floating-particle {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5); /* Giảm độ chói, tạo hiệu ứng mờ nhạt */
+    animation: floatAndGrow linear infinite;
+}
+
+@keyframes floatAndGrow {
+    0% {
+        transform: translateY(100vh) scale(0.3);
+        opacity: 0;
+    }
+    25% {
+        opacity: 0.35; /* Giới hạn độ đậm ở mức mờ ảo, không bị sáng chói */
+    }
+    75% {
+        opacity: 0.35;
+    }
+    100% {
+        transform: translateY(-50px) scale(2.0); /* Bay chậm lên trên và phồng to dần (tăng ra) */
+        opacity: 0; /* Biến mất khi bay lên đỉnh */
+    }
+}
+/* Khung chứa các nút xếp dọc */
+.user-action {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 14px !important;
+    width: 100% !important;
+}
+
+/* NÚT USER LOGIN - TỐI ƯU BÓNG LOÁ CHẠY QUÉT 3D */
+.btn-user-login {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    padding: 13px 0 !important;
+    text-align: center !important;
+    
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 15px !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    text-decoration: none !important;
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5) !important;
+    
+    border-radius: 20px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important; /* Cắt phần vệt sáng tràn ra ngoài */
+    cursor: pointer !important;
+    
+    /* Background chuyển màu Đỏ - Lục Neon */
+    background: linear-gradient(135deg, #e6005c 0%, #10b981 50%, #059669 100%) !important;
+    background-size: 200% 200% !important;
+    
+    /* Đổ bóng khối nổi 3D & Hào quang phát sáng */
+    box-shadow: 
+        0 6px 0 #084c37, 
+        0 10px 20px rgba(0, 0, 0, 0.6), 
+        0 0 25px rgba(16, 185, 129, 0.5), 
+        0 0 15px rgba(230, 0, 92, 0.5), 
+        inset 0 2px 2px rgba(255, 255, 255, 0.8) !important;
+        
+    animation: smoothColorShift 5s ease infinite alternate !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* 1. LỚP PHỦ BÓNG KÍNH VÒM PHÍA TRÊN */
+.btn-user-login::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 48% !important;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.65) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    ) !important;
+    border-top-left-radius: 18px !important;
+    border-top-right-radius: 18px !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+}
+
+/* 2. CẤU HÌNH HIỆU ỨNG BÓNG LOÁ CHẠY QUÉT (GLARE / SHINE SWEEP) */
+.btn-user-login::after {
+    content: '' !important;
+    position: absolute !important;
+    top: -50% !important;
+    left: -120% !important;
+    width: 70% !important;
+    height: 200% !important;
+    
+    /* Dải quang phổ bóng lóa thủy tinh cực nét */
+    background: linear-gradient(
+        115deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.2) 20%, 
+        rgba(255, 255, 255, 0.95) 50%, 
+        rgba(255, 255, 255, 0.2) 80%, 
+        rgba(255, 255, 255, 0) 100%
+    ) !important;
+    
+    transform: rotate(25deg) !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+    
+    /* Chạy quét bóng lóa tự động liên tục mỗi 2.5 giây */
+    animation: autoGlareSweep 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+/* HOVER: TĂNG TỐC QUÉT BÓNG LOÁ VÀ NỔI KHỐI NEON */
+.btn-user-login:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+    border-color: #ffffff !important;
+    box-shadow: 
+        0 9px 0 #084c37,
+        0 15px 30px rgba(0, 0, 0, 0.7),
+        0 0 35px rgba(16, 185, 129, 0.8),
+        0 0 25px rgba(230, 0, 92, 0.7),
+        inset 0 2px 4px rgba(255, 255, 255, 1) !important;
+}
+
+/* BẤM NÚT (PUSH DOWN) */
+.btn-user-login:active {
+    transform: translateY(4px) scale(0.98) !important;
+    box-shadow: 
+        0 2px 0 #084c37,
+        0 5px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* KEYFRAMES TẠO BÓNG LOÁ KÉO QUA NÚT */
+@keyframes autoGlareSweep {
+    0% {
+        left: -120%;
+    }
+    30% {
+        left: 180%; /* Quét nhanh qua nút */
+    }
+    100% {
+        left: 180%; /* Tạm nghỉ trước khi quét đợt tiếp theo */
+    }
+}
+
+@keyframes smoothColorShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
