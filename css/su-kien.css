@@ -1,0 +1,622 @@
+/* ==========================================================================
+   GIAO DIỆN DEEP SPACE SCI-FI - HIỆU ỨNG NEON VÀ SAO BAY NHẤP NHÁY
+   ========================================================================== */
+
+/* 1. Hình nền không gian vũ trụ sâu thẳm ẩn hiện các dải màu ngân hà tinh vân */
+body {
+    background: radial-gradient(circle at 50% 50%, #0a0d1a 0%, #03040b 100%) !important;
+    color: #f1f5f9 !important;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* HIỆU ỨNG NGÔI SAO NHẤP NHÁY VÀ SAO BĂNG BAY BỔNG PHÍA NỀN */
+body::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 50px 160px, #10b981, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 80px 120px, #f43f5e, rgba(0,0,0,0)),
+        radial-gradient(2.5px 2.5px at 110px 210px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 150px 90px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 200px 50px, #34d399, rgba(0,0,0,0));
+    background-size: 250px 250px;
+    animation: starsTwinkle 4s ease-in-out infinite alternate;
+    z-index: -2;
+    pointer-events: none;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    top: -100px;
+    left: -100px;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at top right, rgba(244,63,94,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom left, rgba(16,185,129,0.05) 0%, transparent 60%);
+    z-index: -3;
+    pointer-events: none;
+}
+
+/* Định nghĩa hiệu ứng nhấp nháy cho các ngôi sao */
+@keyframes starsTwinkle {
+    0% { opacity: 0.3; transform: scale(0.98); }
+    100% { opacity: 0.9; transform: scale(1.02); }
+}
+
+.event-container {
+    padding: 40px 35px 60px;
+    min-height: 85vh;
+}
+
+/* 2. Tiêu đề dạng Gradient phát sáng rực rỡ */
+.event-heading {
+    background: linear-gradient(135deg, #ff4d4d, #f43f5e, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    text-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
+    font-size: 2.5rem;
+}
+
+/* 3. Thanh tìm kiếm viền dạ quang Cyberpunk */
+.search-box-wrapper {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto 45px;
+    background: rgba(9, 13, 24, 0.7);
+    padding: 6px;
+    border-radius: 40px;
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    box-shadow: 0 0 15px rgba(244, 63, 94, 0.1), 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.search-icon-inside {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #f43f5e;
+    z-index: 5;
+    font-size: 18px;
+    text-shadow: 0 0 8px #f43f5e;
+}
+
+.custom-search-input {
+    background: #05070f !important;
+    border: 1px solid rgba(244, 63, 94, 0.3) !important;
+    color: #ffffff !important;
+    border-radius: 30px !important;
+    padding: 14px 20px 14px 52px !important;
+    font-size: 15px;
+    transition: all 0.3s ease !important;
+}
+
+.custom-search-input::placeholder {
+    color: #475569;
+}
+
+.custom-search-input:focus {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4), inset 0 0 5px rgba(16, 185, 129, 0.2) !important;
+}
+
+.btn-custom-search {
+    background: linear-gradient(135deg, #f43f5e 0%, #059669 100%);
+    background-size: 200% auto;
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 30px !important;
+    padding: 10px 28px;
+    margin-left: 10px !important;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 15px rgba(244, 63, 94, 0.2);
+}
+
+.btn-custom-search:hover {
+    background-position: right center;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+    transform: scale(1.02);
+}
+
+/* 4. Cấu hình luồng danh sách Card sự kiện hiệu ứng trôi nổi */
+#event-list {
+    row-gap: 25px;
+}
+
+.event-column {
+    display: flex;
+}
+
+.event-card {
+    width: 100%;
+    height: 100%;
+    padding: 22px;
+    background: rgba(15, 19, 34, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    overflow: hidden;
+    /* Hiệu ứng trôi nổi lơ lửng tự nhiên giống phi thuyền vũ trụ */
+    animation: floatingSpace 6s ease-in-out infinite alternate;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Tạo độ lệch chu kỳ lơ lửng cho card lẻ giúp trang sinh động */
+.event-column:nth-child(even) .event-card {
+    animation-delay: 1.5s;
+}
+
+@keyframes floatingSpace {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-8px); }
+}
+
+/* Khi di chuột qua Card: Tăng cường phát quang Neon Lục */
+.event-card:hover {
+    animation-play-state: paused; /* Tạm dừng trôi lơ lửng khi hover */
+    transform: translateY(-12px) scale(1.02) !important;
+    border-color: rgba(16, 185, 129, 0.5) !important;
+    background: rgba(21, 26, 44, 0.85);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 
+                0 0 25px rgba(16, 185, 129, 0.25) !important;
+}
+
+.event-image {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    background: #070913;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.event-title {
+    color: #34d399 !important;
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    overflow-wrap: anywhere;
+}
+
+.event-description {
+    color: #94a3b8 !important;
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    overflow-wrap: anywhere;
+}
+
+.event-info {
+    color: #cbd5e1 !important;
+    font-size: 13.5px;
+    line-height: 1.7;
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.event-info i {
+    color: #f43f5e !important;
+    margin-right: 9px;
+    text-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
+}
+
+.event-date {
+    color: #f43f5e !important;
+    font-weight: 600;
+}
+
+.event-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-event-detail,
+.btn-event-register {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-event-detail {
+    color: #34d399 !important;
+    background: transparent;
+    border: 1px solid rgba(52, 211, 153, 0.5) !important;
+    box-shadow: 0 0 5px rgba(52, 211, 153, 0.1);
+}
+
+.btn-event-detail:hover {
+    color: #03040b !important;
+    background: #34d399 !important;
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.5);
+}
+
+.btn-event-detail:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.btn-event-register {
+    color: #fff !important;
+    background: linear-gradient(135deg, #f43f5e 0%, #10b981 100%);
+    background-size: 150% auto;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
+}
+
+.btn-event-register:hover {
+    background-position: right center;
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.4);
+    transform: translateY(-2px);
+}
+
+.event-message {
+    text-align: center;
+    color: #64748b;
+    padding: 40px 10px;
+    width: 100%;
+}
+
+/* 5. Giao diện Modal kiếu dáng phi thuyền phát sáng Neon */
+#eventDetailModal .modal-dialog {
+    max-width: 540px;
+}
+
+#eventDetailModal .modal-content {
+    background: rgba(15, 19, 32, 0.96) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    color: #f1f5f9 !important;
+    border: 1px solid rgba(52, 211, 153, 0.4) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 
+                0 0 35px rgba(52, 211, 153, 0.15) !important;
+    border-radius: 24px !important;
+}
+
+#eventDetailModal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 20px 24px !important;
+}
+
+#eventDetailModal .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 16px 24px !important;
+}
+
+#eventDetailModal .modal-title {
+    color: #34d399 !important;
+    text-shadow: 0 0 12px rgba(52, 211, 153, 0.5);
+    font-weight: 800 !important;
+    font-size: 1.4rem !important;
+}
+
+#eventDetailModal .detail-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 14.5px;
+    overflow-wrap: anywhere;
+}
+
+#eventDetailModal .detail-info i {
+    color: #f43f5e !important;
+    font-size: 16px;
+    text-shadow: 0 0 8px #f43f5e;
+}
+
+#eventDetailModal .detail-label {
+    color: #94a3b8;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+/* SỬA LỖI CHỮ MÔ TẢ BỊ TỐI: Chữ hiển thị trắng xám rõ nét hoàn toàn */
+#detailDescription {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+    line-height: 1.7 !important;
+    color: #f1f5f9 !important; /* Đưa màu chữ về độ sáng tuyệt đối */
+    font-size: 14.5px !important;
+    opacity: 1 !important;
+    padding: 4px 2px;
+}
+
+/* ==========================================================================
+   CẤU HÌNH PHÂN ĐOẠN FORM ĐĂNG KÝ TRONG CỬA SỔ MODAL CHỦ
+   ========================================================================== */
+
+/* Thanh kẻ phân cách dải ngân hà phát sáng Đỏ Neon */
+#modalRegisterSection hr {
+    border: none !important;
+    height: 1px !important;
+    background: linear-gradient(90deg, transparent, #f43f5e, transparent) !important;
+    box-shadow: 0 0 8px #f43f5e;
+    margin: 25px 0 !important;
+    opacity: 0.6 !important;
+}
+
+/* Tiêu đề mục Đăng ký Neon Lục */
+        #modalRegisterSection h6 {
+            color: #10b981 !important;
+            text-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 15px;
+        }
+
+        /* Màu chữ của các thẻ Label gán form */
+        #modalRegisterForm .form-label {
+            color: #e2e8f0 !important;
+            font-weight: 600 !important;
+            font-size: 13.5px;
+            margin-bottom: 8px;
+        }
+
+        #modalRegisterForm .form-label .text-danger {
+            color: #f43f5e !important;
+            text-shadow: 0 0 5px #f43f5e;
+        }
+
+        /* Hộp Input nhập liệu tối chuyên sâu */
+        #modalRegisterForm .form-control {
+            background-color: #060810 !important;
+            border: 1px solid #273549 !important;
+            color: #ffffff !important;
+            padding: 12px 16px !important;
+            font-size: 14.5px;
+            border-radius: 10px !important;
+            transition: all 0.3s ease;
+        }
+
+        #modalRegisterForm .form-control::placeholder {
+            color: #414f66 !important;
+        }
+
+        /* Hiệu ứng bừng sáng Neon Lục khi click chuột vào ô input điền tên */
+        #modalRegisterForm .form-control:focus {
+            background-color: #0b0f1d !important;
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.05),
+                        0 0 15px rgba(16, 185, 129, 0.45) !important;
+            outline: none;
+        }
+
+        /* Nút bấm Đăng ký chuyển động lấp lánh đa sắc tộc */
+        #btnSubmitModal {
+            background: linear-gradient(135deg, #059669 0%, #10b981 55%, #e11d48 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            padding: 12px !important;
+            border-radius: 10px !important;
+            transition: all 0.4s ease !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+        }
+
+        #btnSubmitModal:hover {
+            background-position: right center !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5),
+                        0 0 22px rgba(225, 29, 72, 0.35) !important;
+            transform: translateY(-1px);
+        }
+
+        /* 6. Cấu hình tương thích giao diện các thiết bị di động (Responsive) */
+        @media (max-width: 991.98px) {
+            .event-container {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .event-image {
+                height: 190px;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .event-container {
+                padding: 30px 15px 40px;
+            }
+
+            .event-card {
+                padding: 20px;
+            }
+
+            .event-image {
+                height: 200px;
+            }
+
+            .event-heading {
+                font-size: 1.8rem;
+                text-align: center;
+            }
+
+            #eventDetailModal .modal-dialog {
+                margin: 16px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .event-actions {
+                flex-direction: column;
+            }
+
+            .btn-event-detail,
+            .btn-event-register {
+                width: 100%;
+            }
+        }
+        /* 7. Hiệu ứng thanh cuộn tùy chỉnh phát sáng Neon (Custom Scrollbar) cho Modal */
+        #eventDetailModal .modal-body::-webkit-scrollbar {
+            width: 8px !important;
+            background-color: #060810 !important;
+        }
+
+        #eventDetailModal .modal-body::-webkit-scrollbar-track {
+            background: #060810 !important;
+            border-radius: 10px !important;
+        }
+
+        #eventDetailModal .modal-body::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #10b981, #e11d48) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5) !important;
+        }
+
+        #eventDetailModal .modal-body::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #34d399, #f43f5e) !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.8) !important;
+        }
+
+        /* 8. Hiệu ứng vệt sáng quét động (Glow Shine Border Animation) trên các Input */
+        #modalRegisterForm .form-control {
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes inputPulse {
+            0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
+            50% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.6), 0 0 25px rgba(16, 185, 129, 0.2); }
+            100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
+        }
+
+        #modalRegisterForm .form-control:focus {
+            animation: inputPulse 2s infinite ease-in-out !important;
+        }
+
+        /* 9. Tối ưu hóa vùng hiển thị thông báo Alert phản hồi kết quả AJAX rực rỡ */
+        #registerAlert {
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        #registerAlert.alert-success {
+            background: rgba(16, 185, 129, 0.1) !important;
+            border: 1px solid #10b981 !important;
+            color: #34d399 !important;
+            text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2) !important;
+        }
+
+        #registerAlert.alert-danger {
+            background: rgba(225, 29, 72, 0.1) !important;
+            border: 1px solid #e11d48 !important;
+            color: #f43f5e !important;
+            text-shadow: 0 0 8px rgba(244, 63, 94, 0.5);
+            box-shadow: 0 0 15px rgba(225, 29, 72, 0.2) !important;
+        }
+/* ==========================================================================
+   NỀN VŨ TRỤ CYBERPUNK CHUYỂN ĐỘNG - SAO BAY VÀ TINH VÂN TRÔI NỔI
+   ========================================================================== */
+
+body {
+    /* Nền tối sâu thẳm của không gian */
+    background: #04060f !important;
+    color: #f1f5f9 !important;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* LỚP 1: Hiệu ứng các ngôi sao lớn nhỏ bay chéo qua lại liên tục */
+body::before {
+    content: "";
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    /* Khởi tạo các tầng mây sao có kích thước khác nhau */
+    background-image: 
+        radial-gradient(2px 2px at 40px 80px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2.5px 2.5px at 150px 300px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 300px 150px, #0ea5e9, rgba(0,0,0,0)), /* Sao màu xanh dương */
+        radial-gradient(3px 3px at 500px 450px, #10b981, rgba(0,0,0,0)), /* Sao màu lục neon */
+        radial-gradient(2px 2px at 750px 600px, #f43f5e, rgba(0,0,0,0)), /* Sao màu đỏ hồng */
+        radial-gradient(2.5px 2.5px at 900px 200px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 1200px 700px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 1400px 400px, #f43f5e, rgba(0,0,0,0));
+    background-size: 600px 600px;
+    /* Kích hoạt chuyển động bay chéo góc vũ trụ */
+    animation: spaceStarsFly 25s linear infinite;
+    z-index: -2;
+    pointer-events: none;
+}
+
+/* LỚP 2: Các dải tinh vân đa sắc (Hồng - Lục) trôi nổi vô định hướng làm nền sâu */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 30%, rgba(244, 63, 94, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+    /* Kích hoạt hiệu ứng dải ngân hà co giãn trôi nổi mượt mà */
+    animation: nebulaFloat 12s ease-in-out infinite alternate;
+    z-index: -3;
+    pointer-events: none;
+}
+
+/* ĐỊNH NGHĨA ANIMATION: Tạo hiệu ứng sao di chuyển bay qua lại */
+@keyframes spaceStarsFly {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        /* Đẩy lệch tọa độ để tạo cảm giác các ngôi sao đang lao đi chéo màn hình */
+        transform: translate(-150px, 150px);
+    }
+}
+
+/* ĐỊNH NGHĨA ANIMATION: Tạo hiệu ứng các dải màu tinh vân uốn lượn mờ ảo */
+@keyframes nebulaFloat {
+    0% {
+        filter: hue-rotate(0deg) blur(5px);
+        transform: scale(1);
+    }
+    100% {
+        /* Xoay nhẹ góc màu sắc giúp hiệu ứng neon đỏ - lục chuyển động lung linh */
+        filter: hue-rotate(15deg) blur(15px);
+        transform: scale(1.08);
+    }
+}

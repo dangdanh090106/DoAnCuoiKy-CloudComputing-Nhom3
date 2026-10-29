@@ -1,0 +1,141 @@
+
+/* ==========================================================================
+   CSS CHO 2 NÚT XÓA & SỬA GIỐNG HỆT NÚT ĐĂNG SỰ KIỆN
+   ========================================================================== */
+
+.btn-space-danger, .btn-space-warning {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ff1e56, #80002a) !important; /* Nền gradient Đỏ - Hồng rực rỡ */
+    color: #ffffff !important;
+    padding: 12px 24px !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    
+    /* Viền khung Lục Neon */
+    border: 2px solid #00ffcc !important;
+    position: relative;
+    
+    /* Hiệu ứng bóng đổ hào quang phát sáng */
+    box-shadow: 0 0 20px rgba(255, 30, 86, 0.8), 
+                0 0 10px rgba(0, 255, 204, 0.8),
+                inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
+    
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1;
+}
+
+/* Định dạng icon bên trong nút Xóa & Sửa */
+.btn-space-danger i, .btn-space-warning i {
+    font-size: 18px;
+    color: #c6e2ddf4 !important;
+    filter: drop-shadow(0 0 10px #00ffcc7f) !important;
+    display: flex;
+}
+
+/* Hiệu ứng khi rê chuột vào nút Xóa & Sửa */
+.btn-space-danger:hover, .btn-space-warning:hover {
+    background: linear-gradient(135deg, #ff4d79, #00ffcc) !important;
+    color: #02010a !important;
+    border-color: #ff1e56 !important;
+    box-shadow: 0 0 30px rgba(0, 255, 204, 1), 
+                0 0 20px rgba(255, 30, 86, 1),
+                0 0 50px rgba(0, 255, 204, 0.6) !important;
+    transform: translateY(-3px) scale(1.02) !important;
+}
+
+.btn-space-danger:hover i, .btn-space-warning:hover i {
+    color: #02010a !important;
+    filter: drop-shadow(0 0 12px rgba(255, 30, 86, 0.9)) !important;
+}
+    /* ==========================================================================
+   CSS CHO NÚT BẤM VÀ ICON DẤU CỘNG PHÁT SÁNG CAO CẤP (KHÔNG BỊ XẤU)
+   ========================================================================== */
+
+.btn-space-manager {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px; /* Khoảng cách cân đối giữa icon và chữ */
+    background: linear-gradient(135deg, #ff1e56, #80002a) !important; /* Nền gradient Đỏ - Hồng rực rỡ */
+    color: #ffffff !important;
+    padding: 12px 24px !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    
+    /* Khung viền 3D màu Lục Neon */
+    border: 2px solid #00ffcc !important;
+    position: relative;
+    
+    /* Hiệu ứng bóng đổ đa tầng cho cả nút bấm (Neon Đỏ - Lục) */
+    box-shadow: 0 0 20px rgba(255, 30, 86, 0.8), 
+                0 0 10px rgba(0, 255, 204, 0.8),
+                inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
+    
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1;
+}
+
+/* 🌟 PHẦN QUAN TRỌNG: CSS ĐỂ ICON PHÁT SÁNG RỰC RỠ, SẮC NÉT */
+.btn-space-manager i {
+    font-size: 18px; /* Tăng kích thước icon cho cân đối */
+    color: #c6e2ddf4 !important; /* Màu xanh lục neon sắc nét (đồng bộ với viền) */
+    
+    /* Áp dụng hào quang tỏa sáng Neon cho chính icon */
+    filter: drop-shadow(0 0 10px #00ffcc7f) drop-shadow(0 0 3px rgba(124, 132, 131, 0.61)) !important;
+    
+    display: flex; /* Đảm bảo icon được căn giữa hoàn hảo */
+    margin-top: -1px; /* Tinh chỉnh icon lên trên 1px cho thẳng hàng */
+}
+
+/* Hiệu ứng quét sáng lướt qua thân nút khi hover */
+.btn-space-manager:hover {
+    background: linear-gradient(135deg, #ff4d79, #00ffcc) !important;
+    color: #02010a !important; /* Chuyển chữ sang tối để icon nổi bật */
+    border-color: #ff1e56 !important; /* Viền chuyển sang Đỏ rực khi hover */
+    
+    /* Hiệu ứng Glow tỏa rộng hơn */
+    box-shadow: 0 0 30px rgba(0, 255, 204, 1), 
+                0 0 20px rgba(255, 30, 86, 1),
+                0 0 50px rgba(0, 255, 204, 0.6) !important;
+                
+    transform: translateY(-3px) scale(1.02) !important; /* Nổi khối nhẹ */
+}
+
+/* Khi hover, làm cho icon phát sáng mạnh hơn nữa với sắc đỏ neon */
+.btn-space-manager:hover i {
+    color: #02010a !important; /* Chuyển màu icon sang tối */
+    filter: drop-shadow(0 0 12px rgba(255, 30, 86, 0.9)) !important; /* Hào quang Đỏ */
+}
+   /* Video background cố định, bao phủ toàn màn hình và nằm dưới cùng */
+.video-background {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 100vh;
+  transform: translate(-50%, -50%);
+  object-fit: cover; /* Đảm bảo video phủ kín, tự động cắt viền thừa chứ không bị méo */
+  z-index: -100; /* Nằm dưới tất cả các nội dung khác */
+  
+  /* Các thuộc tính tối ưu hiệu năng của bạn */
+  filter: contrast(1.1) brightness(1.05) !important;
+  -webkit-filter: contrast(1.1) brightness(1.05) !important;
+  will-change: transform;
+}
+
+    /* Tìm đến class của thẻ sự kiện trong file css/su-kien.css và sửa background thành dạng rgba */
+.card, .event-card {
+    background: rgba(3, 2, 62, 0.67) !important; /* Giúp hộp sự kiện trong suốt nhìn xuyên thấu qua video phía sau */
+    backdrop-filter: blur(5px); /* Làm mờ nhẹ phần video đi qua hộp để chữ dễ đọc hơn */
+}
+
