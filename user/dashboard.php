@@ -103,6 +103,7 @@ if (!empty($user_id) && ($vai_tro === 'sinh_vien' || empty($vai_tro))) {
                 <button class="theme-toggle-btn" id="themeToggleBtn" title="Chuyển đổi giao diện Sáng/Tối">
                   <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
                 </button>
+                <a href="banners.php" class="btn btn-primary">Quản lý Banner</a>
 
                 <a href="#role-section" class="notification-bell btn btn-outline-secondary btn-sm position-relative me-2" title="Thông báo hệ thống">
                     🔔 Thông báo
