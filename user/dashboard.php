@@ -52,7 +52,7 @@ $active_event = null;
 if (!empty($user_id) && ($vai_tro === 'sinh_vien' || empty($vai_tro))) {
     $stmt_active = $conn->prepare("
         SELECT sk.* FROM su_kien sk
-        LEFT JOIN dang_ky_su_kien dk ON sk.ma_sukien = dk.su_kien_id AND dk.user_id = ?
+        LEFT JOIN dang_ky_su_kien dk ON sk.ma_sukien = dk.ma_sukien AND dk.ma_sv = ?
         WHERE sk.is_attendance_open = 1 
         AND (dk.trang_thai IS NULL OR dk.trang_thai != 'da_tham_gia')
         LIMIT 1

@@ -46,6 +46,29 @@ INSERT INTO `dang_ky` (`ma_dangky`, `ma_sv`, `ma_sukien`, `thoi_gian_dang_ky`, `
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `dang_ky_su_kien`
+-- (Tạo thêm bảng này để khớp với code dashboard.php hiện tại của bạn)
+--
+
+CREATE TABLE `dang_ky_su_kien` (
+  `ma_dangky` int(11) NOT NULL,
+  `ma_sv` varchar(50) NOT NULL,
+  `ma_sukien` int(11) NOT NULL,
+  `thoi_gian_dang_ky` timestamp NOT NULL DEFAULT current_timestamp(),
+  `trang_thai` varchar(50) DEFAULT 'Đã đăng ký'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `dang_ky_su_kien`
+--
+
+INSERT INTO `dang_ky_su_kien` (`ma_dangky`, `ma_sv`, `ma_sukien`, `thoi_gian_dang_ky`, `trang_thai`) VALUES
+(1, 'SV001', 1, '2026-10-06 04:36:56', 'Đã đăng ký'),
+(2, 'SV002', 2, '2026-10-06 04:36:56', 'Đã đăng ký');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `dat_ghe`
 --
 
@@ -77,7 +100,8 @@ CREATE TABLE `dia_diem` (
 
 INSERT INTO `dia_diem` (`ma_diadiem`, `ten_diadiem`, `suc_chua`, `vi_tri`) VALUES
 (1, 'Hội trường A', 500, 'Khu nhà trung tâm, Tầng 1'),
-(2, 'Phòng Hội thảo B1', 100, 'Dãy nhà B, Tầng 2');
+(2, 'Phòng Hội thảo B1', 100, 'Dãy nhà B, Tầng 2'),
+(3, 'Sân trường BDU', 1000, 'Khuôn viên ngoài trời');
 
 -- --------------------------------------------------------
 
@@ -359,7 +383,8 @@ CREATE TABLE `su_kien` (
   `file_path_key` varchar(500) DEFAULT NULL,
   `file_type` varchar(100) DEFAULT NULL,
   `file_size` int(11) DEFAULT NULL,
-  `upload_time` datetime DEFAULT NULL
+  `upload_time` datetime DEFAULT NULL,
+  `is_attendance_open` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -370,10 +395,12 @@ INSERT INTO `su_kien` (`ma_sukien`, `ten_sukien`, `mo_ta`, `thoi_gian_bat_dau`, 
 (1, 'Chào tân sinh viên 2026', 'Sự kiện giao lưu đầu khóa.', '2026-10-15 08:00:00', '2026-10-15 11:30:00', 1, NULL, NULL, NULL, NULL, NULL),
 (2, 'Workshop Kỹ năng mềm', 'Hướng dẫn viết CV và phỏng vấn.', '2026-10-20 14:00:00', '2026-10-20 16:30:00', 2, NULL, NULL, NULL, NULL, NULL),
 (3, 'Hội thảo ứng dụng trí tuệ nhân tạo trong học tập', 'Chia sẻ kinh nghiệm và kiến thức mới.', '2026-10-25 09:00:00', '2026-10-25 12:00:00', 1, NULL, NULL, NULL, NULL, NULL),
-(4, 'Hội thao Sinh viên BDU 2026', 'Tổ chức các hoạt động thể thao như bóng chuyền,cầu lông và bóng bàn, tạo sân chơi lành mạnh giúp sinh viên rèn luyện sức khỏe.', '2026-10-20 07:00:44.000000', '2026-10-20 11:00:44.000000', 3, NULL, NULL, NULL, NULL, NULL);
-(5, 'Giao lưu văn nghệ sinh viên','Chương trình giao lưu văn nghệ, biểu diễn tài năng và kết nối sinh viên giữa các lớp, tạo không khí học tập vui tươi và đoàn kết.','2026-10-30 18:00:00','2026-10-30 21:00:00',1,NULL,NULL,NULL,NULL,NULL);
-(6, 'Ngày hội hiến máu tình nguyện', 'Khuyến khích sinh viên tham gia hoạt động thiện nguyện, lan tỏa tinh thần tương thân tương ái và đóng góp cho cộng đồng.', '2026-10-30 09:00:05.000000', '2026-10-30 011:30:05.000000', '3', NULL, NULL, NULL, NULL, NULL);
+(4, 'Hội thao Sinh viên BDU 2026', 'Tổ chức các hoạt động thể thao như bóng chuyền, cầu lông và bóng bàn, tạo sân chơi lành mạnh giúp sinh viên rèn luyện sức khỏe.', '2026-10-20 07:00:44', '2026-10-20 11:00:44', 3, NULL, NULL, NULL, NULL, NULL),
+(5, 'Giao lưu văn nghệ sinh viên', 'Chương trình giao lưu văn nghệ, biểu diễn tài năng và kết nối sinh viên giữa các lớp, tạo không khí học tập vui tươi và đoàn kết.', '2026-10-30 18:00:00', '2026-10-30 21:00:00', 1, NULL, NULL, NULL, NULL, NULL),
+(6, 'Ngày hội hiến máu tình nguyện', 'Khuyến khích sinh viên tham gia hoạt động thiện nguyện, lan tỏa tinh thần tương thân tương ái và đóng góp cho cộng đồng.', '2026-10-30 09:00:05', '2026-10-30 11:30:05', 3, NULL, NULL, NULL, NULL, NULL);
+
 -- --------------------------------------------------------
+
 --
 -- Table structure for table `users`
 --
@@ -410,6 +437,14 @@ INSERT INTO `users` (`id`, `ma_sv`, `ho_ten`, `mat_khau`, `vai_tro`, `email`, `s
 -- Indexes for table `dang_ky`
 --
 ALTER TABLE `dang_ky`
+  ADD PRIMARY KEY (`ma_dangky`),
+  ADD UNIQUE KEY `duy_nhat_dang_ky` (`ma_sv`,`ma_sukien`),
+  ADD KEY `ma_sukien` (`ma_sukien`);
+
+--
+-- Indexes for table `dang_ky_su_kien`
+--
+ALTER TABLE `dang_ky_su_kien`
   ADD PRIMARY KEY (`ma_dangky`),
   ADD UNIQUE KEY `duy_nhat_dang_ky` (`ma_sv`,`ma_sukien`),
   ADD KEY `ma_sukien` (`ma_sukien`);
@@ -472,6 +507,12 @@ ALTER TABLE `dang_ky`
   MODIFY `ma_dangky` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `dang_ky_su_kien`
+--
+ALTER TABLE `dang_ky_su_kien`
+  MODIFY `ma_dangky` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `dat_ghe`
 --
 ALTER TABLE `dat_ghe`
@@ -481,7 +522,7 @@ ALTER TABLE `dat_ghe`
 -- AUTO_INCREMENT for table `dia_diem`
 --
 ALTER TABLE `dia_diem`
-  MODIFY `ma_diadiem` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ma_diadiem` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `ghe`
@@ -499,13 +540,13 @@ ALTER TABLE `phong_hoc`
 -- AUTO_INCREMENT for table `su_kien`
 --
 ALTER TABLE `su_kien`
-  MODIFY `ma_sukien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ma_sukien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -517,6 +558,13 @@ ALTER TABLE `users`
 ALTER TABLE `dang_ky`
   ADD CONSTRAINT `dang_ky_ibfk_1` FOREIGN KEY (`ma_sv`) REFERENCES `sinh_vien` (`ma_sv`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `dang_ky_ibfk_2` FOREIGN KEY (`ma_sukien`) REFERENCES `su_kien` (`ma_sukien`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `dang_ky_su_kien`
+--
+ALTER TABLE `dang_ky_su_kien`
+  ADD CONSTRAINT `dang_ky_su_kien_ibfk_1` FOREIGN KEY (`ma_sv`) REFERENCES `sinh_vien` (`ma_sv`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `dang_ky_su_kien_ibfk_2` FOREIGN KEY (`ma_sukien`) REFERENCES `su_kien` (`ma_sukien`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `ghe`
@@ -533,4 +581,3 @@ COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

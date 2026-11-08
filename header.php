@@ -15,22 +15,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         <!-- Khối Menu và Phân quyền bên phải -->
         <div class="right-header-content">
-            <nav class="main-menu">
-                <ul>
-                    <li>
-                        <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/index.php">Trang chủ</a>
-                    </li>
-                    <li>
-                      <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/su-kien.php">Sự kiện</a>
-                    </li>
-                    <li>
-                       <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/lich-su.php">Lịch sử</a>
-                    </li>
-                    <li>
-                      <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/dang-ky.php">Đăng ký</a>
-                    </li>
-                </ul>
-            </nav>
+           <nav class="main-menu">
+    <ul>
+        <li>
+            <a href="index.php">Trang chủ</a>
+        </li>
+        <li>
+            <a href="su-kien.php">Sự kiện</a>
+        </li>
+        <li>
+            <a href="lich-su.php">Lịch sử</a>
+        </li>
+        <li>
+            <a href="dang-ky.php">Đăng ký</a>
+        </li>
+    </ul>
+</nav>
 
             <!-- KHU VỰC CÁC NÚT: Cấu trúc xếp dọc hoàn toàn (Flex-direction: column) -->
             <div class="header-actions-vertical">
