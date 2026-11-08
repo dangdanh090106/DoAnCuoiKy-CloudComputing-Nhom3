@@ -18,18 +18,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="right-header-content">
             <nav class="main-menu">
                 <ul>
-                    <!-- Tự động thêm class active nếu đang ở file tương ứng -->
+                    <!-- Tự động thêm class active và sửa lại đường dẫn không bị lỗi 404 -->
                     <li>
-                        <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/index.php">Trang chủ</a>
+                        <a href="index.php" class="<?= ($current_page == 'index.php') ? 'active' : '' ?>">Trang chủ</a>
                     </li>
                     <li>
-                      <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/su-kien.php">Sự kiện</a>
+                        <a href="su-kien.php" class="<?= ($current_page == 'su-kien.php') ? 'active' : '' ?>">Sự kiện</a>
                     </li>
                     <li>
-                       <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/lich-su.php">Lịch sử</a>
+                        <a href="lich-su.php" class="<?= ($current_page == 'lich-su.php') ? 'active' : '' ?>">Lịch sử</a>
                     </li>
                     <li>
-                      <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/dang-ky.php">Đăng ký</a>
+                        <a href="dang-ky.php" class="<?= ($current_page == 'dang-ky.php') ? 'active' : '' ?>">Đăng ký</a>
                     </li>
                 </ul>
             </nav>
@@ -45,19 +45,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 ?>
 
                 <!-- 1. KHU VỰC DÀNH CHO NGƯỜI DÙNG (USER) -->
-<div class="user-action">
-    <?php if (isset($_SESSION['user_id']) || isset($_SESSION['username'])): ?>
-        <a href="user/dashboard.php" class="btn-user-login">
-            👤 <?= htmlspecialchars($_SESSION['username'] ?? 'Tài khoản') ?>
-        </a>
-        <a href="user/logout.php" class="btn-user-logout">Đăng xuất</a>
-    <?php else: ?>
-        <a href="user/login.php" class="btn-user-login">USER LOGIN</a>
-    <?php endif; ?>
-</div>
+                <div class="user-action-inner" style="display: inline-block;">
+                    <?php if ($isUser): ?>
+                        <a href="user/dashboard.php" class="btn-user-login">
+                            👤 <?= htmlspecialchars($_SESSION['username'] ?? 'Tài khoản') ?>
+                        </a>
+                        <a href="user/logout.php" class="btn-user-logout">Đăng xuất</a>
+                    <?php else: ?>
+                        <a href="user/login.php" class="btn-user-login">USER LOGIN</a>
+                    <?php endif; ?>
+                </div>
 
                 <!-- 2. KHU VỰC DÀNH CHO ADMIN -->
-                <div class="admin-box" style="display: inline-block; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 12px;">
+                <div class="admin-box" style="display: inline-block; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 12px; margin-left: 8px;">
                     <?php if ($isAdmin): ?>
                         <!-- Khi đã đăng nhập Admin, hiển thị nút Quản Trị -->
                         <a href="admin/dashboard.php" class="btn-admin-nav">⚙ Quản Trị</a>

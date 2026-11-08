@@ -1,6 +1,7 @@
+version: '3.8'
+
 services:
   # Service 1: Ứng dụng Web PHP
- # Service 1: PHP Application
   application:
     build: .
     container_name: nhom03_application
@@ -12,7 +13,7 @@ services:
     environment:
       DB_HOST: database
       DB_PORT: 3306
-      DB_NAME: projectdb
+      DB_NAME: do_an_cuoi_ky
       DB_USER: root
       DB_PASSWORD: change_this_root_password
     networks:
@@ -20,37 +21,38 @@ services:
     depends_on:
       - database
       - minio
+
   # Service 2: MySQL Database
   database:
     image: mysql:8.0
     container_name: nhom03_database
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-change_this_root_password}
+      MYSQL_DATABASE: do_an_cuoi_ky
+      MYSQL_USER: root
+      MYSQL_PASSWORD: change_this_root_password
     volumes:
       - database-data:/var/lib/mysql
     networks:
       - cloud-project-network
 
-
-# Service 3: MinIO Object Storage
+  # Service 3: MinIO Object Storage
   minio:
     image: rancher/mirrored-minio-minio:RELEASE.2020-07-13T18-09-56Z
     container_name: nhom03_minio
     restart: always
     command: server /data
     environment:
-      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
-      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
     ports:
       - "${MINIO_PORT:-9000}:9000"
     volumes:
       - minio-data:/data
     networks:
       - cloud-project-network
+
 # 2 Named Volume bắt buộc để lưu trữ dữ liệu bền vững
 volumes:
   database-data:
