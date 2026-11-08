@@ -1,0 +1,219 @@
+/* CSS/dashboard/CSS */
+body { 
+    font-family: Arial, sans-serif; 
+    background: #f4f6f9; 
+    margin: 0; 
+    padding: 20px; 
+}
+
+.container { 
+    max-width: 1100px; 
+    margin: 0 auto; 
+    background: #fff; 
+    padding: 25px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+}
+
+.header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 2px solid #eee; 
+    padding-bottom: 15px; 
+    margin-bottom: 20px; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+}
+
+.header h2 { 
+    color: #333; 
+    margin: 0; 
+}
+
+.header-nav { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+}
+
+/* Style chuông thông báo admin */
+.notification-bell {
+    position: relative;
+    display: inline-block;
+    background: #ffc107;
+    color: #000;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+}
+.notification-bell:hover { 
+    background: #e0a800; 
+}
+
+.notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 7px;
+    font-size: 11px;
+    font-weight: bold;
+    border: 2px solid #fff;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+.btn-home { 
+    background-color: #0d6efd; 
+    color: white; 
+    padding: 8px 12px; 
+    text-decoration: none; 
+    border-radius: 4px; 
+    font-weight: bold; 
+    font-size: 14px; 
+}
+.btn-home:hover { 
+    background-color: #0b5ed7; 
+}
+
+.btn-events { 
+    background-color: #198754; 
+    color: white; 
+    padding: 8px 12px; 
+    text-decoration: none; 
+    border-radius: 4px; 
+    font-weight: bold; 
+    font-size: 14px; 
+}
+.btn-events:hover { 
+    background-color: #157347; 
+}
+
+.btn-logout { 
+    background: #dc3545; 
+    color: white; 
+    padding: 8px 12px; 
+    text-decoration: none; 
+    border-radius: 4px; 
+    font-weight: bold; 
+    font-size: 14px; 
+}
+.btn-logout:hover { 
+    background: #bb2d3b; 
+}
+
+/* Box duyệt yêu cầu */
+.approval-box { 
+    background: #fff3cd; 
+    border: 1px solid #ffeeba; 
+    padding: 20px; 
+    border-radius: 8px; 
+    margin-bottom: 25px; 
+}
+.approval-box h3 { 
+    color: #856404; 
+    margin-top: 0; 
+}
+
+/* Thống kê Grid */
+.stats-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    margin-bottom: 20px; 
+}
+
+.stat-card { 
+    background: #e7f1ff; 
+    border-left: 5px solid #0d6efd; 
+    padding: 15px; 
+    border-radius: 4px; 
+}
+.stat-card h3 { 
+    margin: 0 0 5px 0; 
+    color: #0d6efd; 
+    font-size: 16px; 
+}
+.stat-card p { 
+    margin: 0; 
+    font-size: 15px; 
+    font-weight: bold; 
+    color: #333; 
+}
+
+.stat-card-staff { 
+    background: #e6f4ea; 
+    border-left: 5px solid #198754; 
+    padding: 15px; 
+    border-radius: 4px; 
+}
+.stat-card-staff h3 { 
+    margin: 0 0 5px 0; 
+    color: #198754; 
+    font-size: 16px; 
+}
+.stat-card-staff p { 
+    margin: 0; 
+    font-size: 15px; 
+    font-weight: bold; 
+    color: #333; 
+}
+
+.filter-form { 
+    margin-bottom: 20px; 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+}
+.filter-form select { 
+    padding: 8px 12px; 
+    border-radius: 4px; 
+    border: 1px solid #ccc; 
+    font-size: 14px; 
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 10px; 
+}
+th, td { 
+    border: 1px solid #ddd; 
+    padding: 10px; 
+    text-align: left; 
+    font-size: 14px; 
+}
+th { 
+    background-color: #f8f9fa; 
+    color: #333; 
+}
+tr:nth-child(even) { 
+    background-color: #f9f9f9; 
+}
+
+.badge-event { 
+    background-color: #0dcaf0; 
+    color: #000; 
+    padding: 3px 8px; 
+    border-radius: 12px; 
+    font-weight: bold; 
+    font-size: 13px; 
+}
+.badge-score { 
+    background-color: #ffc107; 
+    color: #000; 
+    padding: 3px 8px; 
+    border-radius: 12px; 
+    font-weight: bold; 
+    font-size: 13px; 
+}

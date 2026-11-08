@@ -1,0 +1,380 @@
+/* ================================================================= */
+/* 01. CẤU HÌNH TOÀN TRANG (GLOBAL RESET & 3D SPACE BACKGROUND)     */
+/* ================================================================= */
+*, ::after, ::before {
+    box-sizing: border-box !important;
+}
+
+html {
+    scroll-behavior: smooth !important;
+    font-size: 16px !important;
+}
+
+body {
+    background-color: #030206 !important;
+    color: #f1f5f9 !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+/* Lớp chiều sâu vũ trụ tối thẳm trung tâm */
+body::after {
+    content: '' !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: radial-gradient(circle at center, rgba(15, 5, 25, 0.65) 0%, rgba(3, 2, 6, 0.98) 100%) !important;
+    z-index: -5 !important;
+    pointer-events: none !important;
+}
+
+
+/* ================================================================= */
+/* 02. HỆ THỐNG ĐA TẦNG SAO TRÔI & BỤI NGÂN HÀ (MULTI-LAYER STARFIELD) */
+/* ================================================================= */
+
+/* Tầng sao thứ nhất: Chuyển động chậm, hạt sao nhỏ trắng bạc */
+.starfield-layer-1 {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.85) 1px, transparent 0) !important;
+    background-size: 50px 50px !important;
+    opacity: 0.35 !important;
+    z-index: -4 !important;
+    animation: stellarDriftSlow 70s linear infinite !important;
+    pointer-events: none !important;
+}
+
+/* Tầng sao thứ hai: Chuyển động nhanh hơn, ánh sáng xanh lục neon */
+.starfield-layer-2 {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-image: radial-gradient(#00ff88 1.5px, transparent 0) !important;
+    background-size: 90px 90px !important;
+    opacity: 0.25 !important;
+    z-index: -3 !important;
+    animation: stellarDriftFast 45s linear infinite reverse !important;
+    pointer-events: none !important;
+}
+
+/* Tầng sao thứ ba: Các điểm sáng lớn lung linh chớp nháy */
+.starfield-layer-3 {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-image: radial-gradient(rgba(255, 20, 80, 0.9) 2px, transparent 0) !important;
+    background-size: 140px 140px !important;
+    opacity: 0.2 !important;
+    z-index: -2 !important;
+    animation: stellarTwinkle 10s ease-in-out infinite alternate !important;
+    pointer-events: none !important;
+}
+
+/* Mây bụi không gian (Space Nebula & Dust) pha trộn Đỏ & Lục */
+.bg-space-dust {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: radial-gradient(circle at 12% 25%, rgba(255, 20, 80, 0.28) 0%, transparent 42%),
+                radial-gradient(circle at 88% 78%, rgba(0, 255, 136, 0.2) 0%, transparent 48%),
+                radial-gradient(circle at 50% 50%, rgba(100, 20, 200, 0.12) 0%, transparent 60%) !important;
+    z-index: -1 !important;
+    pointer-events: none !important;
+    filter: blur(40px) !important;
+}
+
+@keyframes stellarDriftSlow {
+    from { transform: translateY(0) rotate(0deg); }
+    to { transform: translateY(-1200px) rotate(3deg); }
+}
+
+@keyframes stellarDriftFast {
+    from { transform: translateY(0) translateX(0); }
+    to { transform: translateY(-900px) translateX(-50px); }
+}
+
+@keyframes stellarTwinkle {
+    0% { opacity: 0.1; transform: scale(0.95); }
+    50% { opacity: 0.35; transform: scale(1.05); }
+    100% { opacity: 0.2; transform: scale(1); }
+}
+
+
+/* ================================================================= */
+/* 03. KHUNG GIAO DIỆN KÍNH MỜ 3D (GLASSMORPHISM COSMIC BOX)         */
+/* ================================================================= */
+.login-box {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    background: rgba(14, 9, 25, 0.86) !important;
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+    border: 1px solid rgba(255, 20, 80, 0.45) !important;
+    border-radius: 26px !important;
+    box-shadow: 0 35px 70px rgba(0, 0, 0, 0.95), 
+                0 0 50px rgba(0, 255, 136, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    padding: 42px 38px !important;
+    overflow: hidden !important;
+    animation: cosmicBoxEntrance 0.7s cubic-bezier(0.165, 0.84, 0.44, 1) forwards !important;
+    z-index: 2 !important;
+}
+
+/* Hiệu ứng đốm sáng lơ lửng bên trong khung hộp */
+.login-box::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important;
+    width: 100% !important; height: 100% !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+    background-image: 
+        radial-gradient(circle, rgba(255, 20, 80, 0.85) 2px, transparent 3px),
+        radial-gradient(circle, rgba(0, 255, 136, 0.8) 2px, transparent 3px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.7) 1px, transparent 2px);
+    background-size: 135px 135px, 175px 175px, 95px 95px;
+    background-position: 0 0, 50px 70px, 20px 40px;
+    animation: cosmicParticlesFloat 18s linear infinite !important;
+    opacity: 0.55 !important;
+}
+
+@keyframes cosmicParticlesFloat {
+    0% {
+        background-position: 0 0, 50px 70px, 20px 40px;
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.02);
+    }
+    100% {
+        background-position: 0 -135px, 50px -105px, 20px -95px;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes cosmicBoxEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(35px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.login-box > * {
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+/* Tiêu đề chính */
+.login-box h2 {
+    color: #ffffff !important;
+    text-shadow: 0 0 25px rgba(255, 20, 80, 0.8), 0 0 10px rgba(0, 255, 136, 0.5) !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    text-align: center !important;
+    margin-bottom: 30px !important;
+    font-size: 1.75rem !important;
+    background: linear-gradient(135deg, #ffffff 35%, #00ff88 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+/* ================================================================= */
+/* 04. HỆ THỐNG FORM NHẬP LIỆU & TRƯỜNG DỮ LIỆU (INPUTS & LABELS)    */
+/* ================================================================= */
+.form-group {
+    margin-bottom: 22px !important;
+}
+
+.form-group label {
+    display: block !important;
+    color: #00ff88 !important;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+    font-size: 0.93rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 8px !important;
+}
+
+.form-group input {
+    width: 100% !important;
+    background: rgba(18, 12, 32, 0.92) !important;
+    border: 1px solid rgba(255, 20, 80, 0.45) !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+    padding: 14px 18px !important;
+    font-size: 0.96rem !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-sizing: border-box !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+.form-group input:focus {
+    background: rgba(24, 16, 42, 0.98) !important;
+    border-color: #00ff88 !important;
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.55),
+                inset 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+    outline: none !important;
+    color: #fff !important;
+}
+
+.form-group input::placeholder {
+    color: #64748b !important;
+}
+
+
+/* ================================================================= */
+/* 05. KHUNG THÔNG BÁO LỖI (ERROR ALERT BOX)                         */
+/* ================================================================= */
+.error {
+    background: rgba(220, 53, 69, 0.2) !important;
+    border-left: 4px solid #ff1450 !important;
+    color: #ff6b81 !important;
+    padding: 12px 16px !important;
+    border-radius: 12px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 22px !important;
+    text-align: center !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+}
+
+
+/* ================================================================= */
+/* 06. NÚT BẤM 3D HOÀNH TRÁNG, QUÉT SÁNG & HIỆU ỨNG NEON GLOW        */
+/* ================================================================= */
+button[type="submit"] {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 14px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    font-size: 1.05rem !important;
+    letter-spacing: 1.5px !important;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    z-index: 1 !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 16px 25px !important;
+    margin-top: 12px !important;
+    background: linear-gradient(135deg, #ff1450 0%, #00ff88 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 12px 35px rgba(255, 20, 80, 0.6), 
+                0 0 30px rgba(0, 255, 136, 0.45), 
+                inset 0 2px 5px rgba(255, 255, 255, 0.75),
+                inset 0 -4px 8px rgba(0, 0, 0, 0.5) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
+}
+
+/* Vệt sáng quét ngang qua nút khi rê chuột */
+button[type="submit"]::after {
+    content: '' !important;
+    position: absolute !important;
+    top: -50% !important; 
+    left: -50% !important;
+    width: 200% !important; 
+    height: 200% !important;
+    background: linear-gradient(60deg, transparent 40%, rgba(255, 255, 255, 0.5) 50%, transparent 60%) !important;
+    transform: rotate(30deg) translateX(-120%) !important;
+    transition: transform 0.7s ease-in-out !important;
+    pointer-events: none !important;
+}
+
+button[type="submit"]:hover::after {
+    transform: rotate(30deg) translateX(120%) !important;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(135deg, #ff2c64, #1aff96) !important;
+    box-shadow: 0 16px 45px rgba(255, 20, 80, 0.85), 
+                0 0 40px rgba(0, 255, 136, 0.8), 
+                inset 0 2px 8px rgba(255, 255, 255, 0.95),
+                inset 0 -4px 10px rgba(0, 0, 0, 0.6) !important;
+    transform: translateY(-4px) scale(1.02) !important;
+    color: #fff !important;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 1) !important;
+}
+
+button[type="submit"]:active {
+    transform: translateY(-1px) scale(1.005) !important;
+}
+
+
+/* ================================================================= */
+/* 07. TÙY CHỈNH THANH CUỘN & CANVAS PHÁO HOA                       */
+/* ================================================================= */
+#fireworksCanvas {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+    filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.45)) 
+            drop-shadow(0 0 14px rgba(255, 20, 80, 0.45)) !important;
+}
+
+::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #030206 !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff1450, #00ff88) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 15px rgba(255, 20, 80, 0.7) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ff2c64, #1aff96) !important;
+}
+
+
+/* ================================================================= */
+/* 08. MEDIA QUERIES (TƯƠNG THÍCH THIẾT BỊ DI ĐỘNG & MÀN HÌNH NHỎ)   */
+/* ================================================================= */
+@media (max-width: 576px) {
+    .login-box {
+        max-width: 92% !important;
+        padding: 30px 22px !important;
+        border-radius: 20px !important;
+    }
+    
+    .login-box h2 {
+        font-size: 1.45rem !important;
+        margin-bottom: 22px !important;
+    }
+}

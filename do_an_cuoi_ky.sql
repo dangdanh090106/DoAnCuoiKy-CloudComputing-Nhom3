@@ -370,8 +370,8 @@ INSERT INTO `su_kien` (`ma_sukien`, `ten_sukien`, `mo_ta`, `thoi_gian_bat_dau`, 
 (1, 'Chào tân sinh viên 2026', 'Sự kiện giao lưu đầu khóa.', '2026-10-15 08:00:00', '2026-10-15 11:30:00', 1, NULL, NULL, NULL, NULL, NULL),
 (2, 'Workshop Kỹ năng mềm', 'Hướng dẫn viết CV và phỏng vấn.', '2026-10-20 14:00:00', '2026-10-20 16:30:00', 2, NULL, NULL, NULL, NULL, NULL),
 (3, 'Hội thảo ứng dụng trí tuệ nhân tạo trong học tập', 'Chia sẻ kinh nghiệm và kiến thức mới.', '2026-10-25 09:00:00', '2026-10-25 12:00:00', 1, NULL, NULL, NULL, NULL, NULL),
-(4, 'Hội thao Sinh viên BDU 2026', 'Tổ chức các hoạt động thể thao như bóng chuyền,cầu lông và bóng bàn, tạo sân chơi lành mạnh giúp sinh viên rèn luyện sức khỏe.', '2026-10-20 07:00:44.000000', '2026-10-20 11:00:44.000000', 3, NULL, NULL, NULL, NULL, NULL),
-(5, 'Giao lưu văn nghệ sinh viên','Chương trình giao lưu văn nghệ, biểu diễn tài năng và kết nối sinh viên giữa các lớp, tạo không khí học tập vui tươi và đoàn kết.','2026-10-30 18:00:00','2026-10-30 21:00:00',1,NULL,NULL,NULL,NULL,NULL),
+(4, 'Hội thao Sinh viên BDU 2026', 'Tổ chức các hoạt động thể thao như bóng chuyền,cầu lông và bóng bàn, tạo sân chơi lành mạnh giúp sinh viên rèn luyện sức khỏe.', '2026-10-20 07:00:44.000000', '2026-10-20 11:00:44.000000', 3, NULL, NULL, NULL, NULL, NULL);
+(5, 'Giao lưu văn nghệ sinh viên','Chương trình giao lưu văn nghệ, biểu diễn tài năng và kết nối sinh viên giữa các lớp, tạo không khí học tập vui tươi và đoàn kết.','2026-10-30 18:00:00','2026-10-30 21:00:00',1,NULL,NULL,NULL,NULL,NULL);
 (6, 'Ngày hội hiến máu tình nguyện', 'Khuyến khích sinh viên tham gia hoạt động thiện nguyện, lan tỏa tinh thần tương thân tương ái và đóng góp cho cộng đồng.', '2026-10-30 09:00:05.000000', '2026-10-30 011:30:05.000000', '3', NULL, NULL, NULL, NULL, NULL);
 -- --------------------------------------------------------
 --

@@ -33,8 +33,8 @@ try {
     }
     $userId = $user['id'];
 
-    // 2. Kiểm tra thông tin sự kiện (Hỗ trợ quét cả ma_sukien lẫn id)
-    $stmt = $db->prepare("SELECT * FROM su_kien WHERE ma_sukien = ? OR id = ?");
+    // 2. CẬP NHẬT SỬA LỖI: Đổi 'id' thành 'su_kien_id' cho đúng với cấu trúc bảng su_kien
+    $stmt = $db->prepare("SELECT * FROM su_kien WHERE ma_sukien = ? OR su_kien_id = ?");
     $stmt->execute([$eventId, $eventId]);
     $event = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -43,7 +43,7 @@ try {
         exit;
     }
 
-    // Kiểm tra thời gian hết hạn passcode (nếu cột có tồn tại)
+    // Kiểm tra thời gian hết hạn passcode
     if (!empty($event['passcode_expired_at']) && strtotime($event['passcode_expired_at']) < time()) {
         echo json_encode(["status" => "error", "message" => "Mã Passcode đã hết hạn! Vui lòng liên hệ Ban tổ chức."]);
         exit;
@@ -56,7 +56,7 @@ try {
     }
 
     $targetEventId = $event['ma_sukien'] ?? $eventId;
-    $diemThuong = $event['diem_thuong'] ?? 5; // Mặc định cộng 5 điểm nếu sự kiện không cấu hình
+    $diemThuong = $event['diem_thuong'] ?? 5; 
 
     // 3. Kiểm tra xem sinh viên đã có bản ghi trong bảng dang_ky_su_kien chưa
     $stmtReg = $db->prepare("SELECT * FROM dang_ky_su_kien WHERE su_kien_id = ? AND user_id = ?");
@@ -72,16 +72,16 @@ try {
         }
     }
 
-    // Bắt đầu Transaction để đảm bảo tính toàn vẹn dữ liệu
+    // Bắt đầu Transaction 
     $db->beginTransaction();
 
-    if ($registration) {
-        // Đã có bản ghi -> Cập nhật trạng thái thành da_tham_gia
-        $updateStmt = $db->prepare("UPDATE dang_ky_su_kien SET trang_thai = 'da_tham_gia' WHERE id = ?");
+if ($registration) {
+        // CẬP NHẬT: Thêm thoi_gian_diem_danh = NOW()
+        $updateStmt = $db->prepare("UPDATE dang_ky_su_kien SET trang_thai = 'da_tham_gia', thoi_gian_diem_danh = NOW() WHERE id = ?");
         $updateStmt->execute([$registration['id']]);
     } else {
-        // Chưa có bản ghi -> Tự động chèn mới với trạng thái da_tham_gia
-        $insertStmt = $db->prepare("INSERT INTO dang_ky_su_kien (user_id, su_kien_id, trang_thai) VALUES (?, ?, 'da_tham_gia')");
+        // CẬP NHẬT: Thêm cột thoi_gian_diem_danh và giá trị NOW()
+        $insertStmt = $db->prepare("INSERT INTO dang_ky_su_kien (user_id, su_kien_id, trang_thai, thoi_gian_diem_danh) VALUES (?, ?, 'da_tham_gia', NOW())");
         $insertStmt->execute([$userId, $targetEventId]);
     }
 

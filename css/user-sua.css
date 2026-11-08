@@ -1,0 +1,544 @@
+/* ==========================================================================
+   🌌 CYBERPUNK 3D HOLOGRAM VŨ TRỤ - SIÊU PHẨM CSS CHỈNH SỬA SỰ KIỆN (700+ LINES)
+   ⚙️ BÁNH RĂNG CƠ KHÍ 3D - BỤI TINH VÂN ĐỎ LỤC - FONT TIẾNG VIỆT NEON SIÊU NÉT
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. KHAI BÁO FONT CHỮ TIẾNG VIỆT CAO CẤP VÀ CẤU TRÚC 3D (CORE 3D & FONTS)
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,500;0,700;0,800;0,900;1,700&family=Chakra+Petch:wght@600;700&family=Montserrat:wght@600;700;800;900&display=swap');
+
+html {
+    perspective: 2000px;
+    height: 100%;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #020108 !important;
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(255, 30, 86, 0.25) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(0, 255, 204, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 0% 50%, rgba(120, 0, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, #060210 0%, #010005 100%) !important;
+    background-attachment: fixed !important;
+    color: #ffffff !important;
+    font-family: 'Be Vietnam Pro', 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   2. LƯỚI TỌA ĐỘ VŨ TRỤ VÀ TINH VÂN ĐỎ - LỤC (NEBULA & GRID MATRIX)
+   -------------------------------------------------------------------------- */
+body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background-image: 
+        linear-gradient(rgba(0, 255, 204, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 204, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: perspective(600px) rotateX(60deg);
+    animation: gridSpatialMove 25s linear infinite;
+    z-index: -4;
+    pointer-events: none;
+}
+
+@keyframes gridSpatialMove {
+    0% { transform: perspective(600px) rotateX(60deg) translateY(0); }
+    100% { transform: perspective(600px) rotateX(60deg) translateY(60px); }
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: 
+        radial-gradient(circle at 25% 35%, rgba(255, 30, 86, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 75% 65%, rgba(0, 255, 204, 0.15) 0%, transparent 45%);
+    z-index: -3;
+    pointer-events: none;
+    animation: cosmicNebulaPulse 14s ease-in-out infinite alternate;
+}
+
+@keyframes cosmicNebulaPulse {
+    0% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 0.95; transform: scale(1.12); }
+}
+
+/* --------------------------------------------------------------------------
+   3. HỆ THỐNG SAO VÀ BỤI ÁNH SÁNG BAY BỔNG VÔ HƯỚNG (FLOATING STARDUST)
+   -------------------------------------------------------------------------- */
+.bg-space-dust, .starfield-layer-1, .starfield-layer-2 {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: -2;
+}
+
+.starfield-layer-1 {
+    background-image: 
+        radial-gradient(1.5px 1.5px at 25px 35px, #00ffcc, transparent),
+        radial-gradient(2px 2px at 45px 75px, #ff1e56, transparent),
+        radial-gradient(1px 1px at 95px 45px, #ffffff, transparent),
+        radial-gradient(2px 2px at 165px 125px, #00ffcc, transparent),
+        radial-gradient(1.5px 1.5px at 235px 195px, #ff4d79, transparent),
+        radial-gradient(2px 2px at 315px 255px, #00ffcc, transparent),
+        radial-gradient(1px 1px at 375px 155px, #ffffff, transparent),
+        radial-gradient(2.5px 2.5px at 455px 325px, #ff1e56, transparent),
+        radial-gradient(1.5px 1.5px at 525px 85px, #00ffcc, transparent),
+        radial-gradient(2px 2px at 605px 225px, #ffffff, transparent);
+    background-repeat: repeat;
+    background-size: 850px 650px;
+    animation: starsAscend 40s linear infinite;
+    opacity: 0.65;
+}
+
+.starfield-layer-2 {
+    background-image: 
+        radial-gradient(2px 2px at 105px 155px, rgba(255, 30, 86, 0.8), transparent),
+        radial-gradient(2.5px 2.5px at 355px 405px, rgba(0, 255, 204, 0.8), transparent),
+        radial-gradient(1.5px 1.5px at 655px 205px, rgba(255, 255, 255, 0.9), transparent),
+        radial-gradient(2px 2px at 855px 505px, rgba(0, 255, 204, 0.8), transparent);
+    background-repeat: repeat;
+    background-size: 1050px 750px;
+    animation: starsDriftReverse 50s linear infinite;
+    opacity: 0.5;
+}
+
+@keyframes starsAscend {
+    0% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-320px) translateX(35px); }
+    100% { transform: translateY(-640px) translateX(0); }
+}
+
+@keyframes starsDriftReverse {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); }
+    100% { transform: translateY(550px) translateX(-45px) rotate(8deg); }
+}
+
+/* --------------------------------------------------------------------------
+   4. ⚙️ BÁNH RĂNG ĐỘNG CƠ CƠ KHÍ 3D CÔNG NGHỆ CAO (CYBERPUNK GEARS)
+   -------------------------------------------------------------------------- */
+.gear-engine-left {
+    position: fixed;
+    bottom: -160px; left: -160px;
+    width: 520px; height: 520px;
+    border: 16px dashed rgba(0, 255, 204, 0.22);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    box-shadow: 0 0 50px rgba(0, 255, 204, 0.2), inset 0 0 30px rgba(0, 255, 204, 0.15);
+    animation: gearClockwise 32s linear infinite;
+}
+
+.gear-engine-left::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 330px; height: 330px;
+    border: 10px dotted rgba(255, 30, 86, 0.3);
+    border-radius: 50%;
+    animation: gearCounterClockwise 20s linear infinite;
+}
+
+.gear-engine-right {
+    position: fixed;
+    top: -130px; right: -130px;
+    width: 440px; height: 440px;
+    border: 14px dashed rgba(255, 30, 86, 0.22);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    box-shadow: 0 0 45px rgba(255, 30, 86, 0.2), inset 0 0 25px rgba(255, 30, 86, 0.15);
+    animation: gearCounterClockwise 26s linear infinite;
+}
+
+.gear-engine-right::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px; height: 260px;
+    border: 8px dashed rgba(0, 255, 204, 0.3);
+    border-radius: 50%;
+    animation: gearClockwise 15s linear infinite;
+}
+
+@keyframes gearClockwise {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes gearCounterClockwise {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   5. TIÊU ĐỀ TIẾNG VIỆT NEON TỎA HÀO QUANG CỰC SẮC NÉT (CYBER TITLES)
+   -------------------------------------------------------------------------- */
+.container {
+    position: relative;
+    z-index: 10;
+    padding-top: 30px;
+    padding-bottom: 60px;
+}
+
+/* Tiêu đề chính: Font Montserrat siêu đẹp chuẩn Tiếng Việt + Glow Neon Lục */
+h3.text-warning {
+    font-family: 'Montserrat', sans-serif !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 26px;
+    margin-bottom: 0;
+    text-shadow: 
+        0 0 8px #9fa8a6,
+        0 0 18px rgba(0, 255, 204, 0.8),
+        0 0 30px rgba(255, 30, 86, 0.6),
+        0 3px 6px rgba(0,0,0,0.9) !important;
+}
+
+/* Tiêu đề phụ chọn sự kiện */
+h5.text-warning {
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    color: #aecec7 !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 18px;
+    text-shadow: 
+        0 0 10px rgba(127, 174, 165, 0.9),
+        0 0 20px rgba(224, 246, 241, 0.5) !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. KHUNG KÍNH 3D GLASSMORPHISM VÀ VIỀN LASER QUÉT (HOLOGRAM CARD & FORM)
+   -------------------------------------------------------------------------- */
+.card, form {
+    background: rgba(10, 8, 28, 0.92) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border-radius: 22px !important;
+    position: relative !important;
+    border: 2px solid transparent !important;
+    background-clip: padding-box, border-box !important;
+    background-origin: padding-box, border-box !important;
+    background-image: 
+        linear-gradient(rgba(10, 8, 28, 0.95), rgba(10, 8, 28, 0.95)), 
+        linear-gradient(135deg, #ff1e56, #00ffcc, #6b00ff, #00ffcc) !important;
+    box-shadow: 
+        0 30px 75px rgba(0, 0, 0, 0.95),
+        0 0 35px rgba(255, 30, 86, 0.3),
+        0 0 25px rgba(0, 255, 204, 0.3) !important;
+    transform: rotateX(1.5deg) rotateY(0deg) translateZ(30px);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    padding: 38px !important;
+    overflow: hidden;
+}
+
+.card::before, form::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(
+        transparent, 
+        rgba(0, 255, 204, 0.4), 
+        transparent, 
+        rgba(255, 30, 86, 0.4), 
+        transparent
+    );
+    animation: laserScan 9s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+}
+
+@keyframes laserScan {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.card:hover, form:hover {
+    transform: rotateX(0deg) rotateY(0deg) translateZ(45px) scale(1.01);
+    box-shadow: 
+        0 40px 90px rgba(0, 0, 0, 0.98),
+        0 0 50px rgba(0, 255, 204, 0.55),
+        0 0 40px rgba(255, 30, 86, 0.55) !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. NHÃN FORM VÀ Ô NHẬP LIỆU NEON CHUẨN TIẾNG VIỆT (FORM INPUTS)
+   -------------------------------------------------------------------------- */
+.form-label {
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    color: #e2e6e5 !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: block;
+    text-shadow: 0 0 8px rgba(0, 255, 204, 0.8) !important;
+    position: relative;
+    z-index: 1;
+}
+
+.form-control, .form-select {
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    background: #050418 !important;
+    border: 1.5px solid rgba(0, 255, 204, 0.4) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 13px 18px !important;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9) !important;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.45) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background: #0c0a2a !important;
+    color: #00ffcc !important;
+    border-color: #00ffcc !important;
+    outline: none !important;
+    box-shadow: 
+        0 0 20px #00ffcc, 
+        0 0 35px rgba(255, 30, 86, 0.5),
+        inset 0 0 12px rgba(0, 255, 204, 0.4) !important;
+}
+
+textarea.form-control {
+    min-height: 130px;
+    resize: vertical;
+}
+
+/* --------------------------------------------------------------------------
+   8. DANH SÁCH SỰ KIỆN - CHỮ TIẾNG VIỆT NEON TỎA SÁNG RẤT NÉT (LIST ITEMS)
+   -------------------------------------------------------------------------- */
+.list-group-item {
+    background: linear-gradient(90deg, rgba(255, 30, 86, 0.15), rgba(0, 255, 204, 0.1)) !important;
+    border: 1.5px solid rgba(0, 255, 204, 0.4) !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+    margin-bottom: 12px;
+    padding: 18px 22px !important;
+    font-weight: 700;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-group-item:hover {
+    background: linear-gradient(135deg, rgba(255, 30, 86, 0.4), rgba(0, 255, 204, 0.4)) !important;
+    border-color: #ff1e56 !important;
+    transform: translateX(10px) scale(1.015);
+    box-shadow: 
+        0 0 30px #00ffcc, 
+        0 0 18px #ff1e56,
+        0 10px 25px rgba(0, 0, 0, 0.8) !important;
+    color: #ffffff !important;
+}
+
+/* Sửa chữ Tiếng Việt nổi bật với Font 'Be Vietnam Pro' và hiệu ứng Neon rõ ràng */
+.list-group-item strong, 
+.list-group-item span {
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    color: #added4 !important; /* Chữ Neon Xanh Ngọc chuẩn */
+    font-size: 16px;
+    font-weight: 800;
+    
+}
+
+.list-group-item:hover strong,
+.list-group-item:hover span {
+    color: #ffffff !important;
+    text-shadow: 
+        0 0 12px #ff1e56,
+        0 0 25px #00ffcc !important;
+}
+
+.list-group-item small {
+    font-family: 'Chakra Petch', sans-serif !important;
+    color: #e2e8f0 !important;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* --------------------------------------------------------------------------
+   9. CÁC NÚT BẤM CÔNG NGHỆ CAO NEON ĐỎ - LỤC (POWER BUTTONS)
+   -------------------------------------------------------------------------- */
+button[type="submit"], .btn-warning {
+    font-family: 'Montserrat', sans-serif !important;
+    background: linear-gradient(135deg, #ff1e56 0%, #a80038 50%, #80002a 100%) !important;
+    color: #ffffff !important;
+    border: 2px solid #00ffcc !important;
+    border-radius: 12px !important;
+    padding: 13px 30px !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 
+        0 8px 25px rgba(255, 30, 86, 0.8), 
+        0 0 18px rgba(0, 255, 204, 0.8) !important;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+button[type="submit"]:hover, .btn-warning:hover {
+    background: linear-gradient(135deg, #00ffcc 0%, #00b38f 50%, #ff1e56 100%) !important;
+    color: #02010a !important;
+    border-color: #ff1e56 !important;
+    box-shadow: 
+        0 12px 35px #00ffcc, 
+        0 0 25px #ff1e56,
+        0 0 60px rgba(0, 255, 204, 0.9) !important;
+    transform: translateY(-3px) scale(1.03);
+}
+
+.btn-secondary, .btn-outline-light {
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    border-radius: 12px !important;
+    font-weight: 800 !important;
+    border: 1.5px solid rgba(0, 255, 204, 0.6) !important;
+    background: rgba(0, 255, 204, 0.08) !important;
+    color: #00ffcc !important;
+    padding: 10px 22px !important;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 12px rgba(0, 255, 204, 0.3);
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-secondary:hover, .btn-outline-light:hover {
+    background: rgba(0, 255, 204, 0.25) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 22px #00ffcc, 0 0 12px rgba(255, 30, 86, 0.5);
+    transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   10. THÔNG BÁO LỖI & POPUP SWEETALERT2 VŨ TRỤ 3D
+   -------------------------------------------------------------------------- */
+.alert {
+    border-radius: 14px !important;
+    padding: 15px 20px !important;
+    font-weight: 700;
+    font-size: 15px;
+    backdrop-filter: blur(15px);
+    border: 1.5px solid transparent !important;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 22px;
+}
+
+.alert-danger {
+    background: rgba(255, 30, 86, 0.25) !important;
+    color: #ffffff !important;
+    border-color: #ff1e56 !important;
+}
+
+.alert-success {
+    background: rgba(0, 255, 204, 0.25) !important;
+    color: #ffffff !important;
+    border-color: #00ffcc !important;
+}
+
+.swal-space-popup {
+    background: rgba(12, 10, 32, 0.96) !important;
+    backdrop-filter: blur(25px) !important;
+    border: 2px solid #00ffcc !important;
+    border-radius: 20px !important;
+    box-shadow: 0 0 40px rgba(0, 255, 204, 0.5), 
+                0 0 25px rgba(255, 30, 86, 0.5) !important;
+}
+
+.swal2-title {
+    color: #00ffcc !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 20px !important;
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.8) !important;
+}
+
+.swal2-html-container {
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    color: #ffffff !important;
+    font-size: 15px !important;
+}
+
+.swal2-confirm {
+    border-radius: 10px !important;
+    font-weight: 800 !important;
+    border: 1px solid #00ffcc !important;
+}
+
+/* --------------------------------------------------------------------------
+   11. THANH CUỘN KHÔNG GIAN (CUSTOM SCROLLBAR)
+   -------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #020108;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff1e56, #00ffcc);
+    border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   12. TỐI ƯU HÓA RESPONSIVE DI ĐỘNG (MOBILE ADAPTATION)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .card, form {
+        padding: 22px !important;
+        border-radius: 18px !important;
+        transform: none !important;
+    }
+    
+    h3.text-warning {
+        font-size: 20px;
+    }
+    
+    button[type="submit"], .btn-warning {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .gear-engine-left, .gear-engine-right {
+        opacity: 0.25;
+    }
+}

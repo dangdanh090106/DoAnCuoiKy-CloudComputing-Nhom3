@@ -1,0 +1,225 @@
+/* =================================================================
+   TABLE OF CONTENTS - ĐIỂM RÈN LUYỆN CYBERPUNK STYLESHEET
+   1. Dynamic Variable Overrides & Core Palette Integrations
+   2. Score Overview Cards & Glassmorphism 3D FX
+   3. Table Customization, Neon Rows & Hover Glows
+   4. Status Badges & Typography Color Adjustments
+   5. Responsive Adjustments & Light/Dark Specific Contrast Rules
+   ================================================================ */
+
+/* =================================================================
+   1. COLOR VARIABLE OVERRIDES
+   ================================================================ */
+:root {
+  --score-card-bg: rgba(255, 255, 255, 0.92);
+  --table-head-bg: rgba(241, 245, 249, 0.95);
+  --table-row-hover: rgba(0, 135, 111, 0.08);
+  --table-border-color: rgba(214, 0, 54, 0.15);
+  --score-num-color: #047857;
+  --text-main-custom: #0f172a;
+  --text-muted-custom: #475569;
+  --text-accent-cyan: #0284c7;
+}
+
+[data-theme="dark"] {
+  --score-card-bg: rgba(13, 10, 25, 0.82);
+  --table-head-bg: rgba(20, 15, 38, 0.95);
+  --table-row-hover: rgba(5, 255, 225, 0.12);
+  --table-border-color: rgba(255, 42, 109, 0.3);
+  --score-num-color: #05ffe1;
+  --text-main-custom: #ffffff;
+  --text-muted-custom: #9fb3c8;
+  --text-accent-cyan: #00ff87;
+}
+
+/* =================================================================
+   2. SCORE CARDS & GLASSMORPHISM 3D FX
+   ================================================================ */
+.score-card, .info-card {
+  background: var(--score-card-bg) !important;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--card-border) !important;
+  border-radius: 24px !important;
+  box-shadow: var(--shadow-3d) !important;
+  transition: transform 0.35s var(--ease-elastic), box-shadow 0.35s ease, border-color 0.35s ease !important;
+}
+
+.score-card:hover, .info-card:hover {
+  transform: translateY(-6px) rotateX(1.5deg) !important;
+  border-color: var(--neon-green) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 0 25px var(--neon-green-glow) !important;
+}
+
+.score-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+
+.score-number {
+  font-size: 3.8rem;
+  font-weight: 900;
+  color: var(--score-num-color);
+  line-height: 1;
+  text-shadow: 0 0 20px var(--neon-green-glow);
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: var(--theme-transition);
+}
+
+.score-unit {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-muted-custom);
+}
+
+.bg-green-glow {
+  background: var(--neon-green-subtle);
+  color: var(--score-num-color);
+  border: 1px solid var(--neon-green);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.text-accent-cyan {
+  color: var(--text-accent-cyan) !important;
+  font-weight: 800;
+}
+
+.text-main-custom {
+  color: var(--text-main-custom) !important;
+}
+
+.text-muted-custom {
+  color: var(--text-muted-custom) !important;
+}
+
+.text-neon-green {
+  color: var(--neon-green) !important;
+}
+
+.text-neon-red {
+  color: var(--neon-red) !important;
+}
+
+.title-icon {
+  color: #f59e0b;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5));
+}
+
+/* =================================================================
+   3. TABLE CUSTOMIZATION, NEON ROWS & HOVER GLOWS
+   ================================================================ */
+.history-card {
+  background: var(--score-card-bg) !important;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--card-border) !important;
+  border-radius: 24px !important;
+  box-shadow: var(--shadow-3d) !important;
+  overflow: hidden;
+}
+
+.history-header {
+  background: var(--table-head-bg) !important;
+  border-bottom: 1px solid var(--table-border-color) !important;
+  padding: 18px 24px !important;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text-main-custom);
+}
+
+.cyber-table {
+  width: 100%;
+  margin-bottom: 0;
+  color: var(--text-main-custom) !important;
+  border-color: var(--table-border-color) !important;
+  background: transparent !important;
+}
+
+.cyber-table th {
+  background: var(--table-head-bg) !important;
+  color: var(--text-muted-custom) !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  letter-spacing: 1.2px;
+  padding: 16px 20px !important;
+  border-bottom: 2px solid var(--table-border-color) !important;
+}
+
+.cyber-table td {
+  padding: 18px 20px !important;
+  border-bottom: 1px solid var(--table-border-color) !important;
+  background: transparent !important;
+  color: var(--text-main-custom) !important;
+  transition: background 0.25s ease;
+}
+
+.cyber-table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.cyber-table tbody tr:hover {
+  background-color: var(--table-row-hover) !important;
+  box-shadow: inset 4px 0 0 var(--neon-green);
+}
+
+.event-name-box {
+  display: flex;
+  align-items: center;
+}
+
+/* =================================================================
+   4. BADGES & SCORE NUMBERS
+   ================================================================ */
+.status-badge-success {
+  background: rgba(5, 255, 225, 0.12) !important;
+  color: var(--neon-green) !important;
+  border: 1px solid var(--neon-green) !important;
+  padding: 8px 14px !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  box-shadow: 0 0 10px var(--neon-green-glow);
+}
+
+[data-theme="light"] .status-badge-success {
+  background: rgba(4, 120, 87, 0.1) !important;
+  color: #047857 !important;
+  border: 1px solid #047857 !important;
+  box-shadow: none;
+}
+
+.score-plus {
+  color: #f59e0b;
+  font-weight: 900;
+  font-size: 1.1rem;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="light"] .score-plus {
+  color: #d97706;
+  text-shadow: none;
+}
+
+.empty-state {
+  padding: 30px 10px;
+}
+
+/* =================================================================
+   5. RESPONSIVE DESIGN ADJUSTMENTS
+   ================================================================ */
+@media (max-width: 768px) {
+  .score-number {
+    font-size: 3rem;
+  }
+  .cyber-table th, .cyber-table td {
+    padding: 12px 14px !important;
+    font-size: 0.9rem;
+  }
+}

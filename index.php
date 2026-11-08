@@ -1,11 +1,20 @@
 <?php
-// BẮT BUỘC: Luôn đặt session_start() ở dòng đầu tiên của file index trước mọi mã HTML
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// (Tùy chọn) Nhúng file kết nối cơ sở dữ liệu của bạn nếu cần dùng ở dưới
-// include 'database.php'; 
+include_once 'database.php'; 
+
+// Truy vấn danh sách banner slide từ CSDL
+$listBanners = [];
+try {
+    if (isset($pdo)) {
+        $stmtBanners = $pdo->query("SELECT * FROM banners ORDER BY id DESC");
+        $listBanners = $stmtBanners->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (Exception $e) {
+    $listBanners = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -14,39 +23,76 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Lý Sự Kiện Sinh Viên</title>
     
-    <!-- Nhúng 2 file CSS của bạn -->
     <link rel="stylesheet" type="text/css" href="./css/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" type="text/css" href="./css/index.css?v=<?php echo time(); ?>">
+    
+    <!-- Bootstrap CSS để chạy Slide ảnh -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
-    <!-- 1. Chèn Video Background (tự động chạy lặp lại, tắt tiếng để trình duyệt cho phép tự phát) -->
+    <!-- 1. Video Background[cite: 2] -->
     <video autoplay loop muted playsinline preload="auto" class="video-background">
         <source src="videos/video02.mp4" type="video/mp4">
         Trình duyệt của bạn không hỗ trợ video background.
     </video>
 
-    <!-- 2. Nhúng file Header chứa Logo, Menu Phân Quyền và Khối Tài Khoản -->
+    <!-- 2. Header[cite: 2] -->
     <?php include 'header.php'; ?>
 
-    <!-- Banner Trang chủ (Hero Banner) -->
-    <div class="hero-banner">
-        <div class="hero-content">
-            <h2>Sự Kiện Công Nghệ & Sinh Viên 2026</h2>
-            <p>Cập nhật nhanh các hoạt động ngoại khóa, hội thảo chuyên đề và tích lũy điểm rèn luyện dễ dàng.</p>
-            <a href="su-kien.php" class="hero-btn">Khám phá ngay</a>
-        </div>
+    <!-- 3. Khu vực Slide Banner Chạy Qua Lại -->
+    <div class="container my-4">
+        <?php if (!empty($listBanners)): ?>
+            <div id="homeBannerCarousel" class="carousel slide shadow rounded overflow-hidden" data-bs-ride="carousel" style="max-height: 450px;">
+                <div class="carousel-indicators">
+                    <?php foreach ($listBanners as $index => $banner): ?>
+                        <button type="button" data-bs-target="#homeBannerCarousel" data-bs-slide-to="<?= $index ?>" <?= $index === 0 ? 'class="active" aria-current="true"' : '' ?>></button>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="carousel-inner">
+                    <?php foreach ($listBanners as $index => $banner): ?>
+                        <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+                            <!-- Thêm dấu ./ trước đường dẫn để hiển thị đúng ảnh từ thư mục uploads -->
+                            <img src="./<?= htmlspecialchars($banner['image_url']) ?>" class="d-block w-100" alt="<?= htmlspecialchars($banner['title']) ?>" style="height: 400px; object-fit: cover;">
+                            
+                            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+                                <h5 class="m-0 text-white"><?= htmlspecialchars($banner['title']) ?></h5>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        <?php else: ?>
+            <!-- Fallback: Banner tĩnh mặc định nếu chưa up ảnh nào -->
+            <div class="hero-banner" style="background: rgba(0,0,0,0.6); padding: 40px; border-radius: 10px; color: #fff; text-align: center;">
+                <div class="hero-content">
+                    <h2>Sự Kiện Công Nghệ & Sinh Viên 2026</h2>
+                    <p>Cập nhật nhanh các hoạt động ngoại khóa, hội thảo chuyên đề và tích lũy điểm rèn luyện dễ dàng.</p>
+                    <a href="su-kien.php" class="hero-btn btn btn-primary mt-2">Khám phá ngay</a>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 
     <main class="main-content">
         <div class="container">
-            <!-- 1. Tiêu đề chào mừng -->
+            <!-- Tiêu đề chào mừng[cite: 2] -->
             <div class="welcome-section">
                 <h1>Hệ Thống Quản Lý Sự Kiện Sinh Viên</h1>
                 <p class="welcome-text">Chào mừng bạn đến với trang quản trị dự án Cloud Computing.</p>
             </div>
 
-            <!-- 2. Thống kê nhanh (Quick Stats) -->
+            <!-- Thống kê nhanh[cite: 2] -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3>03</h3>
@@ -62,7 +108,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 </div>
             </div>
 
-            <!-- 2.5. Phần Giới thiệu trang web sự kiện sinh viên -->
+            <!-- Phần Giới thiệu[cite: 2] -->
             <div class="about-section">
                 <div class="about-card">
                     <h3>Về Hệ Thống Sự Kiện Sinh Viên</h3>
@@ -86,33 +132,31 @@ if (session_status() === PHP_SESSION_NONE) {
                 </div>
             </div>
             
-            <!-- 3. Khu vực tính năng phân quyền & Sự kiện nổi bật -->
+            <!-- Khu vực tính năng phân quyền[cite: 2] -->
             <div class="dashboard-grid">
                 <?php 
-                // Kiểm tra trạng thái đăng nhập của Admin (hỗ trợ cả session admin hoặc user role admin)
                 $isAdmin = (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) || 
                            (isset($_SESSION['user']) && is_array($_SESSION['user']) && $_SESSION['user']['role'] === 'admin');
                 
                 if ($isAdmin): 
                 ?>
-                    <!-- Giao diện hiển thị khi là Admin -->
                     <div class="card card-admin">
                         <h3>Chức năng Admin</h3>
                         <p>Bạn đang đăng nhập với quyền <strong>Quản trị viên</strong>. Bạn có thể quản lý sự kiện và phê duyệt dữ liệu sinh viên.</p>
                         <a href="admin/dashboard.php" class="card-btn">Đến trang quản lý Admin</a>
                     </div>
                 <?php else: ?>
-                    <!-- Giao diện hiển thị cho Sinh viên / Khách -->
                     <div class="card card-student">
                         <h3>Sự kiện của tôi</h3>
                         <p>Xem danh sách các sự kiện sắp diễn ra và đăng ký tham gia tích hợp điểm rèn luyện.</p>
                         <a href="su-kien.php" class="card-btn">Xem sự kiện</a>
                     </div>
                 <?php endif; ?>
-
             </div>
         </div>
     </main>
 
+    <!-- Bootstrap JS cho Carousel -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

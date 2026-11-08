@@ -2,11 +2,20 @@
 session_start();
 require_once '../database.php';
 
+// Kiểm tra kết nối cơ sở dữ liệu từ file database.php
 $db = isset($conn) ? $conn : (isset($pdo) ? $pdo : null);
 if (!$db) {
     die("Lỗi: Không tìm thấy kết nối cơ sở dữ liệu.");
 }
 
+// Cấu hình tăng timeout cho PDO để chống ngắt kết nối đột ngột (MySQL server has gone away)
+try {
+    $db->setAttribute(PDO::ATTR_TIMEOUT, 60);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->exec("SET SESSION wait_timeout=3600");
+} catch (Exception $e) {}
+
+// Kiểm tra quyền quản trị của người dùng
 $vai_tro = $_SESSION['vai_tro'] ?? '';
 $isManager = in_array(strtolower(trim($vai_tro)), ['admin', 'quan_ly_su_kien', 'quan_ly', 'management']);
 if (!$isManager) {
@@ -24,9 +33,15 @@ function getColValue($row, ...$keys) {
     return '';
 }
 
-$stmtCols = $db->query("SHOW COLUMNS FROM su_kien");
-$existingCols = $stmtCols->fetchAll(PDO::FETCH_COLUMN);
-$existingColsLower = array_map('strtolower', $existingCols);
+// Lấy danh sách các cột thực tế trong bảng su_kien để tương thích ngược
+try {
+    $stmtCols = $db->query("SHOW COLUMNS FROM su_kien");
+    $existingCols = $stmtCols->fetchAll(PDO::FETCH_COLUMN);
+    $existingColsLower = array_map('strtolower', $existingCols);
+} catch (Exception $e) {
+    $existingCols = [];
+    $existingColsLower = [];
+}
 
 function findRealCol($existingCols, $candidates, $default) {
     foreach ($candidates as $c) {
@@ -48,6 +63,7 @@ $colPosition = findRealCol($existingCols, ['vi_tri', 'vi_tri_cu_the', 'dia_chi_c
 $colTarget   = findRealCol($existingCols, ['doi_tuong_tham_gia', 'doi_tuong_ap_dung', 'doi_tuong'], 'doi_tuong_tham_gia');
 $colCapacity = findRealCol($existingCols, ['suc_chua', 'so_luong', 'so_nguoi_toi_da'], 'suc_chua');
 $colDesc     = findRealCol($existingCols, ['mo_ta', 'mota', 'chi_tiet', 'description'], 'mo_ta');
+$colImage    = findRealCol($existingCols, ['file_name', 'anh_bia', 'hinh_anh', 'anh', 'image'], '');
 
 $id = $_GET['ma_sukien'] ?? $_GET['id'] ?? $_GET['ma_sk'] ?? null;
 
@@ -80,6 +96,7 @@ if ($id) {
 $error_msg = "";
 $save_success = false;
 
+// Xử lý cập nhật dữ liệu khi submit form
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update') {
     $post_id      = $_POST['ma_sukien'] ?? null;
     $ten_su_kien  = trim($_POST['ten_su_kien'] ?? '');
@@ -92,7 +109,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $mo_ta        = trim($_POST['mo_ta'] ?? '');
 
     if ($post_id) {
+        $uploadedImagePath = null;
         try {
+            $uploadedImageName = null;
+            if (isset($_FILES['anh_su_kien']) && $_FILES['anh_su_kien']['error'] !== UPLOAD_ERR_NO_FILE) {
+                $imageFile = $_FILES['anh_su_kien'];
+                if ($imageFile['error'] !== UPLOAD_ERR_OK) {
+                    throw new RuntimeException("Lỗi tải ảnh (mã lỗi: {$imageFile['error']}).");
+                }
+                if ($colImage === '') {
+                    throw new RuntimeException("Không tìm thấy cột lưu ảnh trong bảng sự kiện.");
+                }
+                if ($imageFile['size'] > 5 * 1024 * 1024) {
+                    throw new RuntimeException("Dung lượng ảnh vượt quá 5MB.");
+                }
+
+                $extension = strtolower(pathinfo($imageFile['name'], PATHINFO_EXTENSION));
+                $allowedTypes = [
+                    'jpg' => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'png' => 'image/png',
+                    'gif' => 'image/gif',
+                    'webp' => 'image/webp',
+                ];
+                $imageInfo = @getimagesize($imageFile['tmp_name']);
+                if (
+                    !isset($allowedTypes[$extension])
+                    || $imageInfo === false
+                    || !in_array($imageInfo['mime'], $allowedTypes, true)
+                    || $allowedTypes[$extension] !== $imageInfo['mime']
+                ) {
+                    throw new RuntimeException("Ảnh không hợp lệ. Chỉ chấp nhận JPG, PNG, GIF hoặc WEBP.");
+                }
+
+                $uploadDir = __DIR__ . '/../images/';
+                if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
+                    throw new RuntimeException("Không thể tạo thư mục lưu ảnh.");
+                }
+
+                $uploadedImageName = time() . '_' . bin2hex(random_bytes(8)) . '.' . $extension;
+                $uploadedImagePath = $uploadDir . $uploadedImageName;
+                if (!move_uploaded_file($imageFile['tmp_name'], $uploadedImagePath)) {
+                    $uploadedImagePath = null;
+                    throw new RuntimeException("Không thể lưu ảnh vào thư mục images.");
+                }
+            }
+
             $updateFields = [];
             $params = [':id' => $post_id];
 
@@ -101,11 +163,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             if (in_array(strtolower($colStart), $existingColsLower)) {
                 $updateFields[] = "{$colStart} = :bat_dau";
-                $params[':bat_dau'] = !empty($bat_dau) ? $bat_dau : null;
+                $params[':bat_dau'] = !empty($bat_dau) ? date('Y-m-d H:i:s', strtotime($bat_dau)) : null;
             }
             if (in_array(strtolower($colEnd), $existingColsLower)) {
                 $updateFields[] = "{$colEnd} = :ket_thuc";
-                $params[':ket_thuc'] = !empty($ket_thuc) ? $ket_thuc : null;
+                $params[':ket_thuc'] = !empty($ket_thuc) ? date('Y-m-d H:i:s', strtotime($ket_thuc)) : null;
             }
 
             if (in_array('ma_diadiem', $existingColsLower)) {
@@ -146,6 +208,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $updateFields[] = "{$colDesc} = :mo_ta";
                 $params[':mo_ta'] = $mo_ta;
             }
+            if ($uploadedImageName !== null) {
+                $updateFields[] = "{$colImage} = :file_name";
+                $params[':file_name'] = $uploadedImageName;
+            }
 
             $sql = "UPDATE su_kien SET " . implode(", ", $updateFields) . " WHERE {$colPk} = :id";
             $updateStmt = $db->prepare($sql);
@@ -153,6 +219,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             $save_success = true;
         } catch (Exception $e) {
+            if ($uploadedImagePath !== null && is_file($uploadedImagePath)) {
+                unlink($uploadedImagePath);
+            }
             $error_msg = "Lỗi khi lưu dữ liệu: " . $e->getMessage();
         }
     }
@@ -224,7 +293,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $val_capacity = getColValue($event, $colCapacity, 'suc_chua');
             $val_desc     = getColValue($event, $colDesc, 'mo_ta', 'mota');
             ?>
-            <form method="POST" class="p-4 shadow">
+           <form id="editEventForm" method="POST" class="p-4 shadow" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="ma_sukien" value="<?php echo htmlspecialchars($val_id); ?>">
 
@@ -232,6 +301,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <label class="form-label">Tên sự kiện (*):</label>
                     <input type="text" name="ten_su_kien" class="form-control" value="<?php echo htmlspecialchars($val_title); ?>" required>
                 </div>
+            <div class="form-group mb-3">
+            <label class="form-label text-info fw-bold" style="font-size: 13px;">ĐỔI ẢNH BÌA SỰ KIỆN (Bỏ trống nếu không đổi, tối đa 5MB):</label>
+                <div class="d-flex align-items-center gap-3 bg-dark border border-info rounded p-2">
+                <?php 
+        // Hiển thị ảnh cũ nhỏ nhắn bên cạnh nút upload
+                $anh_cu = $event['file_name'] ?? $event['anh_hien_thi'] ?? '';
+                $src_anh = (!empty($anh_cu)) ? '../images/' . $anh_cu : '../images/sukien01.jpg';
+                ?>
+                <img src="<?php echo $src_anh; ?>" alt="Ảnh hiện tại" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #00f2c2;">
+        
+            <input type="file" name="anh_su_kien" id="anh_su_kien" class="form-control bg-dark text-white border-0 shadow-none" accept="image/jpeg, image/png, image/gif, image/webp">
+                </div>
+            </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">

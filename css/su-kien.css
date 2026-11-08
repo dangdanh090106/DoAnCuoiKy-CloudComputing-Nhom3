@@ -620,3 +620,1005 @@ body::after {
         transform: scale(1.08);
     }
 }
+/* ==========================================================================
+   HIỆU ỨNG CARD SỰ KIỆN - SIÊU PRO, ĐỨNG YÊN, RÕ CHỮ & HIỆU ỨNG KHI CLICK
+   ========================================================================== */
+
+/* Keyframes hiệu ứng ánh sáng chạy viền neon liên tục */
+@keyframes borderNeonGlow {
+    0% { border-color: rgba(52, 211, 153, 0.3); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 rgba(52, 211, 153, 0); }
+    50% { border-color: rgba(0, 243, 255, 0.7); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 243, 255, 0.25), inset 0 0 10px rgba(0, 243, 255, 0.1); }
+    100% { border-color: rgba(52, 211, 153, 0.3); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+.event-column {
+    display: flex;
+    perspective: 1200px;
+}
+
+.event-card {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 24px;
+    background: rgba(11, 15, 28, 0.92) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    
+    /* Viền mặc định và hiệu ứng chạy viền neon nhẹ nhàng, đứng yên ổn định */
+    border: 1.5px solid rgba(52, 211, 153, 0.3);
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    
+    transform-style: preserve-3d;
+    will-change: transform;
+    
+    animation: borderNeonGlow 6s ease-in-out infinite !important;
+               
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                box-shadow 0.3s ease, 
+                border-color 0.3s ease,
+                background 0.3s ease;
+    cursor: pointer;
+}
+
+/* LỚP PHẢN CHẾU (VỆT SÁNG BÓNG KÍNH QUÉT QUA KHI DI CHUỘT) */
+.event-card::before {
+    content: '';
+    position: absolute;
+    top: 0; 
+    left: -150%;
+    width: 150%; 
+    height: 100%;
+    background: linear-gradient(
+        120deg, 
+        transparent 0%, 
+        rgba(0, 243, 255, 0.15) 45%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        rgba(52, 211, 153, 0.15) 55%, 
+        transparent 100%
+    );
+    pointer-events: none;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 4;
+}
+
+/* KÍCH HOẠT PHẢN CHẾU QUÉT QUA KHI HOVER */
+.event-card:hover::before {
+    transform: translateX(200%);
+}
+
+/* TƯƠNG TÁC KHI HOVER: NỔI KHỐI SÁNG RÕ, PHÁT QUANG ĐỈNH CAO */
+.event-card:hover {
+    border-color: #00f3ff !important;
+    background: rgba(15, 22, 38, 0.98) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 
+                0 0 30px rgba(0, 243, 255, 0.35) !important;
+    transform: translateY(-6px) scale(1.01);
+}
+
+/* HIỆU ỨNG KHI CLICK VÀO CARD (NHẤN LÚN XUỐNG CỰC KỲ PRO) */
+.event-card:active {
+    transform: translateY(-2px) scale(0.995) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9), 
+                0 0 15px rgba(0, 243, 255, 0.5),
+                inset 0 0 15px rgba(0, 243, 255, 0.2) !important;
+    border-color: #34d399 !important;
+    transition: transform 0.1s ease, box-shadow 0.1s ease !important;
+}
+
+/* Ảnh bìa sắc nét */
+.event-image, 
+.event-card img, 
+.event-card .card-img-top {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    background: #070913;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: brightness(0.95);
+}
+
+.event-card:hover .event-image,
+.event-card:hover img {
+    transform: scale(1.03);
+    filter: brightness(1.1);
+}
+
+/* Thân Card & Định vị nội dung */
+.event-card .card-body {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+}
+
+/* Tiêu đề rõ ràng, màu sắc sang trọng */
+.event-title, 
+.event-card .card-title, 
+.event-card h5 {
+    color: #34d399 !important;
+    text-shadow: none !important;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 3.4rem !important;
+    transition: color 0.3s ease;
+}
+
+.event-card:hover .event-title,
+.event-card:hover .card-title,
+.event-card:hover h5 {
+    color: #00f3ff !important;
+}
+
+/* Mô tả dịu mắt, dễ đọc */
+.event-description, 
+.event-card .card-text, 
+.event-card p {
+    color: #94a3b8 !important;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.event-card:hover .event-description {
+    color: #cbd5e1 !important;
+}
+
+/* Khối thông tin Thời gian & Địa điểm (Đẩy xuống đáy, thẳng hàng tuyệt đối) */
+.event-info-wrapper,
+.event-details-group,
+.event-info:first-of-type {
+    margin-top: auto !important;
+}
+
+.event-info, .event-meta {
+    color: #cbd5e1 !important;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.event-info i, .event-meta i {
+    color: #f43f5e !important;
+    margin-right: 8px;
+    font-size: 14px;
+    text-shadow: none !important;
+}
+
+.event-date {
+    color: #fb7185 !important;
+    font-weight: 600;
+}
+
+/* Cụm nút bấm tinh tế, chuyên nghiệp */
+.event-actions,
+.event-card .card-footer-actions {
+    display: flex !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 12px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.btn-event-detail,
+.btn-event-register,
+.btn-detail-custom,
+.btn-register-custom,
+.event-actions .btn {
+    flex: 1 1 0 !important;
+    width: 50% !important;
+    height: 40px !important;
+    min-width: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 0 8px !important;
+    border-radius: 10px !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+.btn-event-detail, .btn-detail-custom {
+    color: #34d399 !important;
+    background: rgba(52, 211, 153, 0.06) !important;
+    border: 1px solid rgba(52, 211, 153, 0.3) !important;
+}
+
+.btn-event-detail:hover, .btn-detail-custom:hover {
+    color: #03040b !important;
+    background: #34d399 !important;
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.6) !important;
+    transform: translateY(-2px);
+}
+
+.btn-event-register, .btn-register-custom {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #e11d48 0%, #059669 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25) !important;
+}
+
+.btn-event-register:hover, .btn-register-custom:hover {
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.6) !important;
+    transform: translateY(-2px);
+}
+/* ========================================================================== */
+/* SUPREME SCI-FI DELUXE - HIỆU ỨNG CARD SỰ KIỆN ĐẲNG CẤP CAO                 */
+/* ========================================================================== */
+
+:root {
+    --card-bg-deep: rgba(9, 13, 25, 0.94);
+    --card-bg-hover: rgba(14, 20, 38, 0.98);
+    --neon-cyan: #00f3ff;
+    --neon-emerald: #10b981;
+    --neon-emerald-light: #34d399;
+    --neon-rose: #f43f5e;
+    --neon-purple: #a855f7;
+}
+
+/* HIỆU ỨNG LOAD TRANG: CÁC THẺ CARD BAY TRƯỢT LÊN MƯỢT MÀ (FADE IN & SLIDE UP) */
+@keyframes cardEntrancePro {
+    0% {
+        opacity: 0;
+        transform: translateY(60px) scale(0.92);
+        filter: blur(8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+.event-column {
+    display: flex !important;
+    align-items: stretch !important;
+    perspective: 1500px !important;
+    animation: cardEntrancePro 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    opacity: 0;
+}
+
+/* Thiết lập độ trễ xuất hiện từng thẻ so le nhau */
+.event-column:nth-child(1) { animation-delay: 0.1s !important; }
+.event-column:nth-child(2) { animation-delay: 0.2s !important; }
+.event-column:nth-child(3) { animation-delay: 0.3s !important; }
+.event-column:nth-child(4) { animation-delay: 0.4s !important; }
+.event-column:nth-child(n+5) { animation-delay: 0.5s !important; }
+
+/* THẺ CARD ĐỈNH CAO: ĐỨNG YÊN, VIỀN NEON ĐỔI MÀU, LÓE SÁNG LIÊN TỤC */
+.event-card {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 26px !important;
+    background: var(--card-bg-deep) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    
+    border: 1.5px solid rgba(52, 211, 153, 0.3) !important;
+    border-radius: 26px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    
+    transform-style: preserve-3d !important;
+    will-change: transform, box-shadow, border-color !important;
+    
+    /* Hiệu ứng nhịp đập viền đa sắc huyền ảo */
+    animation: deluxeBorderGlow 6s ease-in-out infinite alternate !important;
+               
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                border-color 0.4s ease, 
+                background 0.4s ease !important;
+                
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.2) !important;
+    cursor: pointer !important;
+}
+
+@keyframes deluxeBorderGlow {
+    0% {
+        border-color: rgba(52, 211, 153, 0.35);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 0 rgba(52, 211, 153, 0);
+    }
+    50% {
+        border-color: rgba(0, 243, 255, 0.7);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 243, 255, 0.35), inset 0 0 12px rgba(0, 243, 255, 0.12);
+    }
+    100% {
+        border-color: rgba(168, 85, 247, 0.5);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(168, 85, 247, 0.3), inset 0 0 10px rgba(168, 85, 247, 0.1);
+    }
+}
+
+/* VỆT LÓE SÁNG NGANG (SHINE SWEEP THẺ BÀI) TỰ ĐỘNG CHẠY LIÊN TỤC */
+.event-card::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -200% !important;
+    width: 150% !important;
+    height: 100% !important;
+    background: linear-gradient(
+        120deg, 
+        transparent 0%, 
+        rgba(0, 243, 255, 0.03) 30%, 
+        rgba(255, 255, 255, 0.45) 50%, 
+        rgba(52, 211, 153, 0.03) 70%, 
+        transparent 100%
+    ) !important;
+    pointer-events: none !important;
+    animation: deluxeAutoShine 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+    z-index: 5 !important;
+}
+
+@keyframes deluxeAutoShine {
+    0% { left: -180%; }
+    30% { left: 150%; }
+    100% { left: 150%; }
+}
+
+/* TƯƠNG TÁC KHI HOVER: NỔI KHỐI 3D SANG TRỌNG */
+.event-card:hover {
+    border-color: var(--neon-cyan) !important;
+    background: var(--card-bg-hover) !important;
+    box-shadow: 0 35px 70px rgba(0, 0, 0, 0.9), 
+                0 0 40px rgba(0, 243, 255, 0.5) !important;
+    transform: translateY(-10px) scale(1.02) rotateX(2deg) rotateY(-2deg) !important;
+}
+
+/* HIỆU ỨNG NHẤN LÚN KHI CLICK (ACTIVE) */
+.event-card:active {
+    transform: translateY(-3px) scale(0.995) !important;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.95), 
+                0 0 25px rgba(0, 243, 255, 0.7),
+                inset 0 0 20px rgba(0, 243, 255, 0.3) !important;
+    border-color: var(--neon-emerald) !important;
+    transition: transform 0.08s ease, box-shadow 0.08s ease !important;
+}
+
+/* HÌNH ẢNH SỰ KIỆN SẮC NÉT & HIỆU ỨNG PHÓNG TO */
+.event-image, 
+.event-card img, 
+.event-card .card-img-top {
+    display: block !important;
+    width: 100% !important;
+    height: 195px !important;
+    object-fit: cover !important;
+    margin-bottom: 20px !important;
+    border-radius: 16px !important;
+    background: #05070f !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    transform: translateZ(25px) !important;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s ease !important;
+    filter: brightness(0.95) contrast(1.05) !important;
+}
+
+.event-card:hover .event-image,
+.event-card:hover img {
+    transform: translateZ(35px) scale(1.04) !important;
+    filter: brightness(1.12) contrast(1.1) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* THÂN CARD VÀ CỐ ĐỊNH KHOẢNG CÁCH NỘI DUNG */
+.event-card .card-body {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    transform: translateZ(15px) !important;
+}
+
+/* TIÊU ĐỀ: CỐ ĐỊNH 2 DÒNG, MÀU SẮC DỊU MẮT, RÕ RÀNG */
+.event-title, 
+.event-card .card-title, 
+.event-card h5 {
+    color: var(--neon-emerald-light) !important;
+    text-shadow: none !important;
+    font-size: 1.22rem !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    height: 3.45rem !important;
+    transition: color 0.3s ease !important;
+}
+
+.event-card:hover .event-title,
+.event-card:hover .card-title,
+.event-card:hover h5 {
+    color: var(--neon-cyan) !important;
+}
+
+/* MÔ TẢ NGẮN GỌN */
+.event-description, 
+.event-card .card-text, 
+.event-card p {
+    color: #94a3b8 !important;
+    font-size: 13.8px !important;
+    line-height: 1.55 !important;
+    margin-top: 0 !important;
+    margin-bottom: 16px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    transition: color 0.3s ease !important;
+}
+
+.event-card:hover .event-description {
+    color: #cbd5e1 !important;
+}
+
+/* KHỐI THÔNG TIN THỜI GIAN & ĐỊA ĐIỂM (ĐẨY XUỐNG ĐÁY, THẲNG HÀNG 100%) */
+.event-info-wrapper,
+.event-details-group,
+.event-info:first-of-type {
+    margin-top: auto !important;
+}
+
+.event-info, .event-meta {
+    color: #cbd5e1 !important;
+    font-size: 13.2px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 7px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.event-info i, .event-meta i {
+    color: var(--neon-rose) !important;
+    margin-right: 9px !important;
+    font-size: 14.5px !important;
+    text-shadow: none !important;
+}
+
+.event-date {
+    color: #fb7185 !important;
+    font-weight: 600 !important;
+}
+
+/* CỤM NÚT BẤM (ACTION BUTTONS) */
+.event-actions,
+.event-card .card-footer-actions {
+    display: flex !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin-top: 15px !important;
+    padding-top: 15px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    transform: translateZ(20px) !important;
+}
+
+.btn-event-detail,
+.btn-event-register,
+.btn-detail-custom,
+.btn-register-custom,
+.event-actions .btn {
+    flex: 1 1 0 !important;
+    width: 50% !important;
+    height: 42px !important;
+    min-width: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 10px !important;
+    border-radius: 12px !important;
+    font-size: 13.8px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    cursor: pointer !important;
+}
+
+.btn-event-detail, .btn-detail-custom {
+    color: var(--neon-emerald-light) !important;
+    background: rgba(52, 211, 153, 0.06) !important;
+    border: 1px solid rgba(52, 211, 153, 0.35) !important;
+}
+
+.btn-event-detail:hover, .btn-detail-custom:hover {
+    color: #03040b !important;
+    background: var(--neon-emerald-light) !important;
+    box-shadow: 0 0 18px rgba(52, 211, 153, 0.7) !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn-event-register, .btn-register-custom {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--neon-rose) 0%, #059669 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3) !important;
+}
+
+.btn-event-register:hover, .btn-register-custom:hover {
+    box-shadow: 0 0 22px rgba(0, 243, 255, 0.65) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+}
+/* ========================================================================== */
+/* HIỆU ỨNG XÒE RA NHƯ BỘ BÀI (CARD FAN-OUT EFFECT)                           */
+/* ========================================================================== */
+
+/* Khi bao bọc các card trong một khung chứa, ta bật hiệu ứng xòe ngang */
+.event-container .row, 
+#event-list {
+    perspective: 2000px !important;
+}
+
+/* Hiệu ứng chuyển động xòe và nổi khối 3D cho từng cột card */
+.event-column {
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s ease !important;
+    transform-origin: center bottom !important;
+}
+
+/* Khi rê chuột vào khu vực danh sách, các thẻ lân cận sẽ dịch chuyển tách ra như xòe bài */
+#event-list:hover .event-column:not(:hover) {
+    transform: scale(0.95) translateY(10px);
+    filter: brightness(0.7) blur(1px);
+}
+
+/* Thẻ card chính được chọn khi hover sẽ vươn lên cao và tách hẳn góc xòe */
+.event-column:hover {
+    z-index: 100 !important;
+    transform: translateY(-15px) scale(1.04) !important;
+}
+
+/* Hiệu ứng xòe góc nghiêng tinh tế cho các thẻ ở vị trí khác nhau trong hàng */
+.event-column:nth-child(3n-2):hover {
+    transform: translateY(-15px) scale(1.04) rotate(-2deg) !important;
+}
+
+.event-column:nth-child(3n):hover {
+    transform: translateY(-15px) scale(1.04) rotate(2deg) !important;
+}
+/* ========================================================================== */
+/* ÉP CỤM NÚT DÍNH SÁT ĐÁY TUYỆT ĐỐI (TRỊ TẬN GỐC KHOẢNG TRỐNG)                */
+/* ========================================================================== */
+
+/* 1. Thiết lập thẻ card thành Flexbox dọc và cắt bỏ khoảng đệm đáy */
+.event-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    padding: 24px 24px 14px 24px !important;
+}
+
+/* 2. Thân card bên trong co giãn tối đa */
+.event-card .card-body {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* 3. Đẩy toàn bộ nhóm thông tin (tiêu đề, mô tả, ngày giờ, địa điểm) dồn lên trên, đẩy nút xuống dưới */
+.event-card .card-body > *:not(.event-actions):not(.card-footer-actions):not(.event-info-wrapper):last-of-type {
+    margin-bottom: auto !important;
+}
+
+/* 4. Khối chứa thời gian/địa điểm tự động đẩy sát ngay trên nút bấm */
+.event-info-wrapper,
+.event-details-group,
+.event-info:first-of-type {
+    margin-top: auto !important;
+    margin-bottom: 8px !important;
+}
+
+/* 5. Ép cụm nút bấm dính sát mép dưới cùng của thẻ card */
+.event-actions,
+.event-card .card-footer-actions {
+    margin-top: auto !important;
+    margin-bottom: -2px !important;
+    margin-left: -4px !important;
+    margin-right: -4px !important;
+    padding-top: 10px !important;
+    padding-bottom: 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    display: flex !important;
+    gap: 10px !important;
+}
+/* ==========================================================================
+   FIX TIÊU ĐỀ & THANH TÌM KIẾM - SIÊU CẤP PRO (SCI-FI DELUXE)
+   ========================================================================== */
+
+/* 1. TIÊU ĐỀ "DANH SÁCH SỰ KIỆN" SẮC NÉT & SANG TRỌNG */
+.event-heading {
+    color: #ffffff !important;
+    text-align: center !important;
+    font-size: 2.6rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 4px !important;
+    margin-top: 15px !important;
+    margin-bottom: 35px !important;
+    text-transform: uppercase !important;
+    
+    /* Gradient màu xanh Cyber/Cyan phát quang cực đẹp */
+    background: linear-gradient(180deg, #ffffff 0%, #34d399 50%, #00f3ff 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    
+    /* Viền đổ bóng sắc nét giúp không bị chìm vào đốm sáng video background */
+    filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.9)) 
+            drop-shadow(0 0 25px rgba(0, 243, 255, 0.6)) !important;
+}
+
+/* 2. KHUNG TÌM KIẾM BO TRÒN VŨ TRỤ (GLASSMORPHISM) */
+.search-box-wrapper {
+    position: relative !important;
+    max-width: 720px !important;
+    margin: 0 auto 45px auto !important;
+    background: rgba(10, 15, 29, 0.88) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    
+    border: 1.5px solid rgba(52, 211, 153, 0.4) !important;
+    border-radius: 50px !important;
+    padding: 6px 8px 6px 22px !important;
+    
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 
+                0 0 20px rgba(52, 211, 153, 0.2) !important;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.search-box-wrapper:hover,
+.search-box-wrapper:focus-within {
+    border-color: #00f3ff !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85), 
+                0 0 30px rgba(0, 243, 255, 0.5) !important;
+    transform: translateY(-3px) !important;
+}
+
+/* 3. FIX TRIỆT ĐỂ ICON KÍNH LÚP KHÔNG BỊ ĐÈ CHỮ */
+.search-icon-inside {
+    color: #00f3ff !important;
+    font-size: 1.25rem !important;
+    margin-right: 12px !important;
+    flex-shrink: 0 !important;
+    filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.8)) !important;
+    pointer-events: none !important;
+}
+
+.search-box-wrapper .input-group {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 4. Ô NHẬP NỘI DUNG TÌM KIẾM SẮC NÉT */
+.custom-search-input {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+    font-size: 15.5px !important;
+    font-weight: 500 !important;
+    padding: 10px 12px !important;
+    width: 100% !important;
+}
+
+.custom-search-input:focus {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
+
+.custom-search-input::placeholder {
+    color: #64748b !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+}
+
+/* 5. NÚT BẤM TÌM KIẾM PRO (CYBER NEON BUTTON) */
+.btn-custom-search {
+    background: linear-gradient(135deg, #e11d48 0%, #10b981 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 40px !important;
+    padding: 12px 34px !important;
+    font-weight: 800 !important;
+    font-size: 14.5px !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    box-shadow: 0 4px 18px rgba(225, 29, 72, 0.4) !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-custom-search:hover {
+    background: linear-gradient(135deg, #00f3ff 0%, #059669 100%) !important;
+    color: #03040b !important;
+    border-color: #00f3ff !important;
+    box-shadow: 0 0 28px rgba(0, 243, 255, 0.8) !important;
+    transform: scale(1.04) !important;
+}
+
+.btn-custom-search:active {
+    transform: scale(0.97) !important;
+}
+/* ==========================================================================
+   SUPREME 3D SCI-FI SEARCH BAR - THANH TÌM KIẾM 3D SIÊU CẤP
+   ========================================================================== */
+
+/* 1. Khung chứa tổng thể: Nổi khối 3D & Viền Neon nhịp đập đổi màu */
+.search-box-wrapper {
+    position: relative !important;
+    max-width: 740px !important;
+    margin: 10px auto 45px auto !important;
+    
+    /* Nền kính mờ công nghệ cao */
+    background: linear-gradient(135deg, rgba(11, 16, 32, 0.92) 0%, rgba(5, 8, 18, 0.96) 100%) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    
+    border: 1.8px solid rgba(0, 243, 255, 0.4) !important;
+    border-radius: 50px !important;
+    padding: 7px 9px 7px 18px !important;
+    
+    display: flex !important;
+    align-items: center !important;
+    
+    /* Hiệu ứng nổi khối 3D & Đổ bóng phát quang đa tầng */
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.25), 
+                inset 0 -2px 10px rgba(0, 243, 255, 0.15) !important;
+                
+    /* Tạo không gian 3D */
+    transform-style: preserve-3d !important;
+    perspective: 1000px !important;
+    
+    /* Animation trôi nổi bồng bềnh & Đổi màu viền Neon nhịp đập */
+    animation: searchBarFloat 5s ease-in-out infinite alternate,
+               searchNeonPulse 6s ease-in-out infinite alternate !important;
+               
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Hiệu ứng trôi nổi 3D bồng bềnh */
+@keyframes searchBarFloat {
+    0% { transform: translateY(0px) rotateX(0deg); }
+    100% { transform: translateY(-6px) rotateX(2deg); }
+}
+
+/* Hiệu ứng viền Neon nhịp đập đổi màu liên tục */
+@keyframes searchNeonPulse {
+    0% {
+        border-color: rgba(0, 243, 255, 0.45);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 243, 255, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    }
+    50% {
+        border-color: rgba(52, 211, 153, 0.7);
+        box-shadow: 0 25px 55px rgba(0, 0, 0, 0.9), 0 0 30px rgba(52, 211, 153, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+    }
+    100% {
+        border-color: rgba(244, 63, 94, 0.5);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(244, 63, 94, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    }
+}
+
+/* Tương tác khi Hover vào khung tìm kiếm */
+.search-box-wrapper:hover,
+.search-box-wrapper:focus-within {
+    border-color: #00f3ff !important;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.95), 
+                0 0 40px rgba(0, 243, 255, 0.6),
+                inset 0 0 15px rgba(0, 243, 255, 0.2) !important;
+    transform: translateY(-8px) scale(1.015) !important;
+}
+
+/* 2. Icon kính lúp 3D phát quang nổi bật */
+.search-icon-inside {
+    position: absolute !important;
+    left: 24px !important;
+    top: 50% !important;
+    transform: translateY(-50%) translateZ(15px) !important;
+    color: #00f3ff !important;
+    font-size: 1.35rem !important;
+    pointer-events: none !important;
+    filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.9)) !important;
+    z-index: 5 !important;
+    transition: all 0.3s ease !important;
+}
+
+.search-box-wrapper:focus-within .search-icon-inside {
+    color: #34d399 !important;
+    filter: drop-shadow(0 0 12px rgba(52, 211, 153, 1)) !important;
+    transform: translateY(-50%) translateZ(20px) scale(1.15) !important;
+}
+
+/* 3. Input Group chuẩn Bootstrap */
+.search-box-wrapper .input-group {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 4. Ô nhập liệu (Input) chuẩn lề trái không bao giờ đè icon */
+.custom-search-input {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    padding: 12px 18px 12px 48px !important; /* Lề trái 48px cực kỳ an toàn */
+    flex: 1 !important;
+    width: auto !important;
+}
+
+.custom-search-input:focus {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
+
+.custom-search-input::placeholder {
+    color: #64748b !important;
+    font-weight: 400 !important;
+    transition: color 0.3s ease !important;
+}
+
+.search-box-wrapper:focus-within .custom-search-input::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* 5. Nút bấm Tìm kiếm Cyberpunk 3D Nổi Khối */
+.btn-custom-search {
+    background: linear-gradient(135deg, #f43f5e 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 40px !important;
+    padding: 12px 36px !important;
+    font-weight: 800 !important;
+    font-size: 15px !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    
+    transform: translateZ(10px) !important;
+    box-shadow: 0 6px 20px rgba(244, 63, 94, 0.45), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Vệt lóe sáng quét qua nút bấm khi hover */
+.btn-custom-search::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+    transition: left 0.5s ease !important;
+}
+
+.btn-custom-search:hover::before {
+    left: 100% !important;
+}
+
+.btn-custom-search:hover {
+    background: linear-gradient(135deg, #00f3ff 0%, #10b981 100%) !important;
+    color: #03040b !important;
+    border-color: #00f3ff !important;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.85), 
+                0 6px 20px rgba(0, 243, 255, 0.5) !important;
+    transform: translateZ(15px) scale(1.04) !important;
+}
+
+.btn-custom-search:active {
+    transform: translateZ(5px) scale(0.97) !important;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.6) !important;
+}
+/* ========================================================================== */
+/* CỤM NÚT LỌC SỰ KIỆN - SCI-FI GLASSMORPHISM                                 */
+/* ========================================================================== */
+
+.filter-box-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 15px !important;
+    margin: 0 auto 40px auto !important;
+    flex-wrap: wrap !important;
+}
+
+.btn-filter-custom {
+    background: rgba(11, 15, 28, 0.75) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    border: 1.5px solid rgba(52, 211, 153, 0.3) !important;
+    color: #94a3b8 !important;
+    padding: 10px 24px !important;
+    border-radius: 30px !important;
+    font-size: 14.5px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* Hiệu ứng khi rê chuột */
+.btn-filter-custom:hover {
+    color: #00f3ff !important;
+    border-color: #00f3ff !important;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4) !important;
+    transform: translateY(-3px) !important;
+}
+
+/* Trạng thái Nút đang chọn (Active) */
+.btn-filter-custom.active {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.9) 0%, rgba(16, 185, 129, 0.9) 100%) !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.6), 
+                0 6px 15px rgba(244, 63, 94, 0.4) !important;
+    transform: translateY(-2px) scale(1.03) !important;
+}
+
+.btn-filter-custom.active i {
+    color: #ffffff !important;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important;
+}

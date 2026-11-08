@@ -1,0 +1,752 @@
+/* ==========================================================================
+   ULTIMATE SCI-FI 3D EVENT BUTTON & CUSTOM POPUP SYSTEM
+   TÔNG MÀU: ĐỎ RỰC (RED) & XANH LÁ (GREEN)
+   ========================================================================== */
+
+/* 01. KHUNG CHỨA HÀNH ĐỘNG CARD SỰ KIỆN */
+.event-actions {
+    margin-top: auto !important;
+    width: 100% !important;
+    padding-top: 16px !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.event-actions .d-flex {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
+    position: relative !important;
+}
+
+/* 02. CĂN CHỈNH TỶ LỆ KÍCH THƯỚC 3 NÚT */
+.event-actions .btn-open-detail {
+    flex: 1.1 1 0% !important;
+}
+
+.event-actions .btn-open-register {
+    flex: 1.3 1 0% !important;
+}
+
+.event-actions .dropdown {
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    height: 42px !important;
+    display: flex !important;
+    position: relative !important;
+}
+
+/* 03. ĐỊNH DẠNG CHUNG CHO CÁC NÚT (GLASSMORPHISM 3D) */
+.event-actions .btn {
+    height: 42px !important;
+    padding: 0 10px !important;
+    font-size: 13.5px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    line-height: 40px !important;
+    border-radius: 12px !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+}
+
+.event-actions .btn i {
+    font-size: 15px !important;
+    margin-right: 6px !important;
+    flex-shrink: 0 !important;
+    transition: transform 0.35s ease !important;
+}
+
+.event-actions .btn:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+}
+
+.event-actions .btn:active {
+    transform: translateY(0px) scale(0.97) !important;
+}
+
+/* 04. NÚT CHI TIẾT - XANH LÁ TƯƠI SÁNG (GREEN NEON) */
+.event-actions .btn-open-detail,
+.event-actions .btn-outline-success {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.2) 0%, rgba(34, 197, 94, 0.35) 100%) !important;
+    border: 1.5px solid #22c55e !important;
+    color: #22c55e !important;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.6) !important;
+}
+
+.event-actions .btn-open-detail:hover,
+.event-actions .btn-outline-success:hover {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 0 28px rgba(34, 197, 94, 0.9), inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+}
+
+.event-actions .btn-open-detail:hover i {
+    transform: scale(1.2) rotate(-8deg) !important;
+}
+
+/* 05. NÚT ĐĂNG KÝ - ĐỎ THUẦN RỰC RỠ (RED NEON) */
+.event-actions .btn-open-register,
+.event-actions .btn-danger:not(.btn-delete-event) {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
+    border: 1.5px solid rgba(254, 202, 202, 0.5) !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+    box-shadow: 0 8px 22px rgba(239, 68, 68, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4) !important;
+}
+
+.event-actions .btn-open-register i,
+.event-actions .btn-danger:not(.btn-delete-event) i {
+    font-size: 16px !important;
+    margin-right: 7px !important;
+    color: #fee2e2 !important;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)) !important;
+}
+
+.event-actions .btn-open-register:hover,
+.event-actions .btn-danger:not(.btn-delete-event):hover {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%) !important;
+    border-color: #ffffff !important;
+    transform: translateY(-3px) scale(1.03) !important;
+    box-shadow: 0 12px 30px rgba(239, 68, 68, 0.95), inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+}
+
+.event-actions .btn-open-register:hover i {
+    transform: scale(1.2) rotate(-8deg) !important;
+}
+
+/* 06. NÚT CÀI ĐẶT BÁNH RĂNG (VUÔNG VẤN 42x42px) */
+.event-actions .dropdown-toggle {
+    width: 42px !important;
+    height: 42px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+    border: 1.5px solid rgba(34, 197, 94, 0.35) !important;
+    color: #22c55e !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.event-actions .dropdown-toggle i {
+    margin-right: 0 !important;
+    font-size: 17px !important;
+    color: #22c55e !important;
+    transition: transform 0.5s ease !important;
+}
+
+.event-actions .dropdown-toggle:hover,
+.event-actions .dropdown.show .dropdown-toggle {
+    background: linear-gradient(135deg, rgba(51, 65, 85, 0.95) 0%, rgba(30, 41, 59, 0.98) 100%) !important;
+    border-color: #22c55e !important;
+    box-shadow: 0 0 22px rgba(34, 197, 94, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.4) !important;
+}
+
+.event-actions .dropdown-toggle:hover i,
+.event-actions .dropdown.show .dropdown-toggle i {
+    transform: rotate(180deg) !important;
+    color: #ffffff !important;
+}
+
+.event-actions .dropdown-toggle::after {
+    display: none !important;
+}
+
+/* 07. HỆ THỐNG DROPDOWN MENU BUNG NGƯỢC LÊN TRÊN */
+.event-actions .dropdown-menu {
+    position: absolute !important;
+    bottom: 100% !important;
+    top: auto !important;
+    right: 0 !important;
+    left: auto !important;
+    margin-bottom: 12px !important;
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(11, 15, 28, 0.99) 100%) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1.5px solid rgba(34, 197, 94, 0.45) !important;
+    border-radius: 16px !important;
+    padding: 8px !important;
+    min-width: 180px !important;
+    box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(34, 197, 94, 0.25) !important;
+    z-index: 999999 !important;
+}
+
+.event-actions .dropdown-item {
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+}
+
+.event-actions .dropdown-item i {
+    font-size: 16px !important;
+    margin-right: 10px !important;
+}
+
+.event-actions .dropdown-item.text-warning {
+    color: #fbbf24 !important;
+}
+.event-actions .dropdown-item.text-warning:hover {
+    background: rgba(251, 191, 36, 0.18) !important;
+    color: #fde047 !important;
+    transform: translateX(5px) !important;
+}
+
+.event-actions .dropdown-item.text-danger {
+    color: #f87171 !important;
+}
+.event-actions .dropdown-item.text-danger:hover {
+    background: rgba(248, 113, 113, 0.18) !important;
+    color: #fca5a5 !important;
+    transform: translateX(5px) !important;
+}
+
+.event-actions .dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    margin: 6px 0 !important;
+}
+
+/* 08. HỆ THỐNG POPUP 3D XÁC NHẬN XÓA (THAY THẾ CONFIRM MẶC ĐỊNH) */
+.sci-fi-confirm-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(3, 2, 38, 0.85) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9999999 !important;
+}
+
+.sci-fi-confirm-box {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(11, 15, 28, 0.99) 100%) !important;
+    border: 2px solid rgba(239, 68, 68, 0.75) !important;
+    border-radius: 22px !important;
+    padding: 32px 28px !important;
+    max-width: 440px !important;
+    width: 90% !important;
+    box-shadow: 0 25px 65px rgba(0, 0, 0, 0.9), 0 0 40px rgba(239, 68, 68, 0.45) !important;
+    text-align: center !important;
+    color: #ffffff !important;
+}
+
+.sci-fi-confirm-icon {
+    font-size: 3.2rem !important;
+    color: #ef4444 !important;
+    margin-bottom: 16px !important;
+    filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.85)) !important;
+}
+
+.sci-fi-confirm-title {
+    font-size: 1.45rem !important;
+    font-weight: 900 !important;
+    color: #ffffff !important;
+    margin-bottom: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.2px !important;
+}
+
+.sci-fi-confirm-text {
+    font-size: 15px !important;
+    color: #94a3b8 !important;
+    margin-bottom: 28px !important;
+    line-height: 1.6 !important;
+}
+
+.sci-fi-confirm-text strong {
+    color: #22c55e !important;
+    font-weight: 800 !important;
+}
+
+.sci-fi-confirm-actions {
+    display: flex !important;
+    gap: 12px !important;
+    justify-content: center !important;
+}
+
+.sci-fi-btn-cancel,
+.sci-fi-btn-ok {
+    flex: 1 !important;
+    height: 44px !important;
+    line-height: 44px !important;
+    padding: 0 15px !important;
+    font-weight: 800 !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-size: 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.sci-fi-btn-cancel {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.22) !important;
+    color: #cbd5e1 !important;
+}
+
+.sci-fi-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.16) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+}
+
+.sci-fi-btn-ok {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6) !important;
+}
+
+.sci-fi-btn-ok:hover {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%) !important;
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.9) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* 09. RESPONSIVE CHO MOBILE */
+@media (max-width: 576px) {
+    .event-actions .d-flex {
+        gap: 6px !important;
+    }
+    
+    .event-actions .btn {
+        padding: 0 8px !important;
+        font-size: 12px !important;
+        height: 38px !important;
+        line-height: 36px !important;
+        border-radius: 10px !important;
+    }
+
+    .event-actions .dropdown {
+        flex: 0 0 38px !important;
+        width: 38px !important;
+        height: 38px !important;
+    }
+
+    .event-actions .dropdown-toggle {
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 10px !important;
+    }
+
+    .event-actions .btn i {
+        margin-right: 4px !important;
+        font-size: 13px !important;
+    }
+}
+/* ==========================================================================
+   ULTIMATE CYBERPUNK SCI-FI 3D CONFIRMATION POPUP (SIÊU SỐNG ĐỘNG)
+   ========================================================================== */
+
+/* 1. Hiệu ứng nền mờ không gian sâu thẳm (Deep Space Blur Overlay) */
+.sci-fi-confirm-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: radial-gradient(circle at center, rgba(15, 23, 42, 0.8) 0%, rgba(3, 2, 24, 0.95) 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9999999 !important;
+    animation: sciOverlayFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes sciOverlayFadeIn {
+    from { opacity: 0; backdrop-filter: blur(0px); }
+    to { opacity: 1; backdrop-filter: blur(20px); }
+}
+
+/* 2. Hộp thoại Popup nổi khối 3D với viền năng lượng nhịp thở (Pulse Glow) */
+.sci-fi-confirm-box {
+    background: linear-gradient(145deg, rgba(18, 24, 38, 0.95) 0%, rgba(8, 11, 20, 0.98) 100%) !important;
+    border: 2px solid #ef4444 !important;
+    border-radius: 24px !important;
+    padding: 38px 32px !important;
+    max-width: 460px !important;
+    width: 90% !important;
+    box-shadow: 0 0 50px rgba(239, 68, 68, 0.4), 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(239, 68, 68, 0.15) !important;
+    text-align: center !important;
+    color: #ffffff !important;
+    position: relative !important;
+    overflow: hidden !important;
+    animation: sciBoxPopupIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    animation-name: sciBoxPopupIn, sciBorderPulse !important;
+    animation-duration: 0.45s, 3s !important;
+    animation-iteration-count: 1, infinite !important;
+}
+
+@keyframes sciBoxPopupIn {
+    0% {
+        opacity: 0;
+        transform: perspective(1000px) rotateX(-25deg) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: perspective(1000px) rotateX(0deg) scale(1);
+    }
+}
+
+@keyframes sciBorderPulse {
+    0% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.3), 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(239, 68, 68, 0.1); }
+    50% { box-shadow: 0 0 60px rgba(239, 68, 68, 0.7), 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(239, 68, 68, 0.3); }
+    100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.3), 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(239, 68, 68, 0.1); }
+}
+
+/* Hiệu ứng quét tia sáng la-de ngang hộp thoại */
+.sci-fi-confirm-box::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 2px !important;
+    background: linear-gradient(90deg, transparent, #ef4444, #22c55e, transparent) !important;
+    animation: sciLaserScan 3s linear infinite !important;
+}
+
+@keyframes sciLaserScan {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* 3. Icon cảnh báo phát sáng rực rỡ (Floating Animation) */
+.sci-fi-confirm-icon {
+    font-size: 3.5rem !important;
+    color: #ef4444 !important;
+    margin-bottom: 18px !important;
+    filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.9)) !important;
+    animation: sciIconFloat 2.5s ease-in-out infinite !important;
+}
+
+@keyframes sciIconFloat {
+    0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.8)); }
+    50% { transform: translateY(-8px); filter: drop-shadow(0 0 28px rgba(239, 68, 68, 1)); }
+}
+
+/* 4. Tiêu đề và nội dung chữ sắc nét */
+.sci-fi-confirm-title {
+    font-size: 1.5rem !important;
+    font-weight: 900 !important;
+    color: #ffffff !important;
+    margin-bottom: 14px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.4) !important;
+}
+
+.sci-fi-confirm-text {
+    font-size: 15px !important;
+    color: #94a3b8 !important;
+    margin-bottom: 30px !important;
+    line-height: 1.6 !important;
+}
+
+.sci-fi-confirm-text strong {
+    color: #22c55e !important;
+    font-weight: 800 !important;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.5) !important;
+}
+
+/* 5. Khu vực nút bấm hành động */
+.sci-fi-confirm-actions {
+    display: flex !important;
+    gap: 14px !important;
+    justify-content: center !important;
+}
+
+.sci-fi-btn-cancel,
+.sci-fi-btn-ok {
+    flex: 1 !important;
+    height: 46px !important;
+    line-height: 44px !important;
+    padding: 0 16px !important;
+    font-weight: 800 !important;
+    border-radius: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    font-size: 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Nút Hủy bỏ (Kính mờ sang trọng) */
+.sci-fi-btn-cancel {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    color: #cbd5e1 !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.sci-fi-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Nút Xác nhận xóa (Đỏ rực neon phát sáng 3D) */
+.sci-fi-btn-ok {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
+    border: 1.5px solid rgba(254, 202, 202, 0.6) !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+.sci-fi-btn-ok:hover {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%) !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 12px 35px rgba(239, 68, 68, 0.95), inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
+    transform: translateY(-3px) scale(1.03) !important;
+}
+/* ==========================================================================
+   ULTIMATE CYBERPUNK SCI-FI ROBOT 3D CONFIRMATION SYSTEM (ĐỈNH CAO HOÀNH TRÁNG)
+   ========================================================================== */
+
+/* 1. Khung nền không gian vũ trụ ảo giác (Deep Space Holographic Overlay) */
+.sci-fi-confirm-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: radial-gradient(circle at center, rgba(10, 15, 30, 0.88) 0%, rgba(2, 2, 10, 0.98) 100%) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9999999 !important;
+    animation: sciOverlayFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes sciOverlayFadeIn {
+    from { opacity: 0; backdrop-filter: blur(0px); }
+    to { opacity: 1; backdrop-filter: blur(25px); }
+}
+
+/* 2. Hộp thoại tổng thể 3D nổi khối không gian với lưới năng lượng */
+.sci-fi-confirm-box {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(7, 10, 18, 0.99) 100%) !important;
+    border: 2.5px solid #ef4444 !important;
+    border-radius: 28px !important;
+    padding: 42px 36px !important;
+    max-width: 500px !important;
+    width: 92% !important;
+    box-shadow: 0 0 70px rgba(239, 68, 68, 0.55), 0 30px 80px rgba(0, 0, 0, 0.95), inset 0 0 35px rgba(239, 68, 68, 0.2) !important;
+    text-align: center !important;
+    color: #ffffff !important;
+    position: relative !important;
+    overflow: hidden !important;
+    animation: sciBoxPopupIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, sciBorderPulse 3.5s infinite !important;
+}
+
+@keyframes sciBoxPopupIn {
+    0% {
+        opacity: 0;
+        transform: perspective(1200px) rotateX(-30deg) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: perspective(1200px) rotateX(0deg) scale(1);
+    }
+}
+
+@keyframes sciBorderPulse {
+    0%, 100% {
+        border-color: #ef4444;
+        box-shadow: 0 0 35px rgba(239, 68, 68, 0.4), 0 30px 80px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(239, 68, 68, 0.1);
+    }
+    50% {
+        border-color: #f87171;
+        box-shadow: 0 0 75px rgba(239, 68, 68, 0.85), 0 30px 80px rgba(0, 0, 0, 0.95), inset 0 0 40px rgba(239, 68, 68, 0.35);
+    }
+}
+
+/* Hiệu ứng tia la-de năng lượng quét ngang hộp thoại liên tục */
+.sci-fi-confirm-box::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, transparent, #ef4444, #22c55e, #38bdf8, transparent) !important;
+    animation: sciLaserScan 2.8s linear infinite !important;
+}
+
+@keyframes sciLaserScan {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* 3. Khu vực Robot AI & Vòng Radar Hologram */
+.sci-robot-container {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    margin-bottom: 22px !important;
+}
+
+.sci-radar-pulse {
+    position: absolute !important;
+    width: 90px !important;
+    height: 90px !important;
+    border-radius: 50% !important;
+    border: 2px dashed rgba(239, 68, 68, 0.6) !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3) !important;
+    animation: sciRadarSpin 5s linear infinite !important;
+}
+
+@keyframes sciRadarSpin {
+    from { transform: rotate(0deg) scale(0.95); opacity: 0.7; }
+    50% { transform: rotate(180deg) scale(1.1); opacity: 1; }
+    to { transform: rotate(360deg) scale(0.95); opacity: 0.7; }
+}
+
+.sci-robot-avatar {
+    width: 72px !important;
+    height: 72px !important;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%) !important;
+    border: 2.5px solid #ef4444 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 36px !important;
+    color: #ef4444 !important;
+    box-shadow: 0 0 28px rgba(239, 68, 68, 0.85), inset 0 0 12px rgba(239, 68, 68, 0.4) !important;
+    position: relative !important;
+    z-index: 2 !important;
+    animation: sciRobotFloat 2.8s ease-in-out infinite !important;
+}
+
+@keyframes sciRobotFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(-3deg); }
+}
+
+.sci-warning-badge {
+    margin-top: 12px !important;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.22) 0%, rgba(220, 38, 38, 0.35) 100%) !important;
+    border: 1px solid rgba(239, 68, 68, 0.7) !important;
+    color: #f87171 !important;
+    padding: 5px 14px !important;
+    font-size: 11.5px !important;
+    font-weight: 900 !important;
+    border-radius: 20px !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* 4. Tiêu đề và Nội dung thông điệp cảnh báo */
+.sci-fi-confirm-title {
+    font-size: 1.45rem !important;
+    font-weight: 900 !important;
+    color: #ffffff !important;
+    margin-bottom: 14px !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5) !important;
+}
+
+.sci-fi-confirm-text {
+    font-size: 15px !important;
+    color: #94a3b8 !important;
+    margin-bottom: 30px !important;
+    line-height: 1.65 !important;
+}
+
+.sci-fi-confirm-text strong {
+    color: #22c55e !important;
+    font-weight: 800 !important;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.6) !important;
+}
+
+/* 5. Khu vực nút bấm điều hướng siêu việt */
+.sci-fi-confirm-actions {
+    display: flex !important;
+    gap: 14px !important;
+    justify-content: center !important;
+}
+
+.sci-fi-btn-cancel,
+.sci-fi-btn-ok {
+    flex: 1 !important;
+    height: 48px !important;
+    padding: 0 16px !important;
+    font-weight: 800 !important;
+    border-radius: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    font-size: 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Nút Hủy bỏ (Hiệu ứng kính mờ không gian) */
+.sci-fi-btn-cancel {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.22) !important;
+    color: #cbd5e1 !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.sci-fi-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+    color: #ffffff !important;
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Nút Tiến hành xóa (Hiệu ứng Đỏ neon bùng nổ 3D) */
+.sci-fi-btn-ok {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
+    border: 1.5px solid rgba(254, 202, 202, 0.6) !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+.sci-fi-btn-ok:hover {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%) !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 14px 38px rgba(239, 68, 68, 0.95), inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
+    transform: translateY(-3px) scale(1.04) !important;
+}

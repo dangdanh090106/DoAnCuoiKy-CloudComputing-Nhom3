@@ -5,21 +5,19 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
 ?>
 <div style="text-align: right; margin: 20px 20px 0 0;">
     <a href="user/quan_ly_su_kien.php" class="btn-space-manager">
-        <!-- 🌟 ĐỔI DẤU + CŨ THÀNH ICON PHÁT SÁNG CAO CẤP -->
         <i class="bi bi-plus-circle-fill"></i> Đăng & Bổ Sung Sự Kiện Mới
     </a>
-   <!-- Nút Xóa sự kiện -->
-<a href="user/delete.php" class="btn-space-danger">
-    <i class="bi bi-gear-fill"></i> Xóa
-</a>
-
-<!-- Nút Sửa sự kiện -->
-<a href="user/xuly_sua.php" class="btn-space-warning">
-    <i class="bi bi-gear-fill"></i> Sửa
-</a>
+    <!-- Nút Xóa sự kiện -->
+    <a href="user/delete.php" class="btn-space-danger">
+        <i class="bi bi-gear-fill"></i> Xóa
+    </a>
+    <!-- Nút Sửa sự kiện -->
+    <a href="user/xuly_sua.php" class="btn-space-warning">
+        <i class="bi bi-gear-fill"></i> Sửa
+    </a>
 </div>
-
 <?php endif; ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -30,25 +28,21 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" type="text/css" href="./css/nut-su-kien.css?v=<?php echo time(); ?>">
-        <link rel="stylesheet" type="text/css" href="./css/model-su-kien.css?v=<?php echo time(); ?>">
-  <link rel="stylesheet" type="text/css" href="./css/su-kien.css?v=<?php echo time(); ?>">
-<link rel="stylesheet" href="css/header.css">
-    <!-- CSS để biến Video thành Background toàn màn hình -->
-<!-- CSS để biến Video thành Background toàn màn hình -->
-
-
+    <link rel="stylesheet" type="text/css" href="./css/model-su-kien.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" type="text/css" href="./css/su-kien.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" type="text/css" href="./css/THANH-LOC.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" type="text/css" href="./css/button-event.css?php echo time(); ?>">
+    
 </head>
 <body>
 
-    <!-- Chèn Video Background (autoplay: tự chạy, loop: lặp lại, muted: tắt tiếng bắt buộc để trình duyệt cho phép tự chạy) -->
-    <!-- Cập nhật lại thẻ video của bạn thành thế này -->
-<video autoplay loop muted playsinline preload="auto" class="video-background">
-    <source src="videos/video01.mp4" type="video/mp4">
-    Trình duyệt của bạn không hỗ trợ video background.
-</video>
-
+    <!-- Video Background -->
+    <video autoplay loop muted playsinline preload="auto" class="video-background">
+        <source src="videos/video01.mp4" type="video/mp4">
+        Trình duyệt của bạn không hỗ trợ video background.
+    </video>
     
-    <!-- Lớp phủ tối giúp chữ màu trắng/xanh của bạn không bị chìm vào video -->
+    <!-- Lớp phủ tối -->
     <div class="video-overlay"></div>
 
     <?php include_once 'header.php'; ?>
@@ -58,6 +52,7 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
             Danh sách sự kiện
         </h1>
         
+        <!-- Thanh tìm kiếm 3D -->
         <div class="search-box-wrapper">
             <i class="bi bi-search search-icon-inside"></i>
             <div class="input-group">
@@ -68,6 +63,22 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
             </div>
         </div>
 
+        <!-- Cụm nút lọc đầy đủ 4 trạng thái -->
+        <div class="filter-box-wrapper">
+            <button class="btn-filter-custom active" data-filter="all">
+                <i class="bi bi-grid-fill me-2"></i>Tất cả
+            </button>
+            <button class="btn-filter-custom" data-filter="newest">
+                <i class="bi bi-stars me-2"></i>Sự kiện mới
+            </button>
+            <button class="btn-filter-custom" data-filter="upcoming">
+                <i class="bi bi-hourglass-split me-2"></i>Sắp diễn ra
+            </button>
+            <button class="btn-filter-custom" data-filter="ended">
+                <i class="bi bi-check-circle-fill me-2"></i>Đã kết thúc
+            </button>
+        </div>
+
         <div id="event-list" class="row">
             <p class="event-message">
                 <i class="bi bi-arrow-repeat me-2"></i> Đang tải danh sách sự kiện.
@@ -75,7 +86,7 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
         </div>
     </main>
 
-    <!-- Cửa sổ xem chi tiết và Đăng ký kết hợp phân tách giao diện linh hoạt -->
+    <!-- Modal Xem chi tiết và Đăng ký -->
     <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="detailTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content" style="background-color: #1a1d29; color: #e2e8f0; border: 1px solid #2d3142;">
@@ -83,11 +94,9 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
                     <h5 class="modal-title text-success fw-bold" id="detailTitle">
                         Chi tiết sự kiện
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng">
-                    </button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- KHỐI THÔNG TIN -->
                     <div id="modalEventInfo">
                         <div class="detail-info mb-2">
                             <i class="bi bi-upc-scan text-success me-2"></i>
@@ -143,7 +152,6 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
                         <p id="detailDescription" class="mb-3 text-muted small"></p>
                     </div>
 
-                    <!-- KHỐI BIỂU MẪU -->
                     <div id="modalRegisterSection">
                         <hr id="modalRegisterDivider" style="border-color:#444;">
                         <h6 style="color:#10b981;" class="fw-bold mb-3">
@@ -153,10 +161,10 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
                         <form id="modalRegisterForm">
                             <input type="hidden" id="formEventId">
                             <div class="text-center mt-3">
-    <a id="btnRegisterModal" href="dang-ky.php" class="btn btn-danger w-100 fw-bold py-2">
-        <i class="bi bi-pencil-square me-2"></i>Đăng ký tham gia
-    </a>
-</div>
+                                <a id="btnRegisterModal" href="dang-ky.php" class="btn btn-danger w-100 fw-bold py-2">
+                                    <i class="bi bi-pencil-square me-2"></i>Đăng ký tham gia
+                                </a>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -169,15 +177,16 @@ if (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' |
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/su-kien.js"></script>
-    <!-- Truyền quyền từ PHP sang JavaScript -->
-<script>
-    const canManageEvents = <?php echo (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' || $_SESSION['vai_tro'] === 'admin')) ? 'true' : 'false'; ?>;
+    <script>
+        
+        const canManageEvents = <?php echo (isset($_SESSION['vai_tro']) && ($_SESSION['vai_tro'] === 'quan_ly_su_kien' || $_SESSION['vai_tro'] === 'admin')) ? 'true' : 'false'; ?>;
+    </script>
 
-</script>
 
-<!-- Sau đó mới gọi file js -->
-<script src="js/su-kien.js"></script>
+    <!-- Gọi file JS chính của bạn -->
+    
+    <script src="js/su-kien.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

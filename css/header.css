@@ -590,3 +590,113 @@ body {
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+/* ========================================================================== */
+/* TRẠNG THÁI ACTIVE (TRANG ĐANG Ở): SÁNG RỰC RỠ & ĐOM ĐÓM LẤP LÁNH             */
+/* ========================================================================== */
+.main-menu a.active {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, rgba(0, 245, 160, 0.3) 0%, rgba(255, 30, 86, 0.3) 100%) !important;
+    border: 1px solid rgba(0, 245, 160, 0.8) !important;
+    box-shadow: 0 0 30px rgba(0, 245, 160, 0.5), inset 0 0 15px rgba(255, 30, 86, 0.4) !important;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+}
+
+.main-menu a.active::before {
+    transform: translateY(-50%) scaleY(1) !important;
+    background: linear-gradient(to bottom, var(--accent-green), var(--accent-red)) !important;
+    box-shadow: 0 0 20px var(--accent-green);
+}
+
+/* Hiệu ứng đom đóm bay lượn quanh thẻ menu đang chọn */
+.main-menu a.active::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 245, 160, 0.5) 0%, rgba(255, 30, 86, 0.25) 40%, transparent 70%);
+    opacity: 0.8;
+    pointer-events: none;
+    animation: firefly-orbit 4s infinite linear;
+}
+
+@keyframes firefly-orbit {
+    0% { transform: rotate(0deg) translate(10px) rotate(0deg); }
+    100% { transform: rotate(360deg) translate(10px) rotate(-360deg); }
+}
+/* Styling cho nút Đăng xuất 3D */
+.btn-user-logout {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ffffff;
+  
+  /* Phủ nền Gradient đỏ quyến rũ / hiện đại */
+  background: linear-gradient(135deg, #ff4e50, #f9d423);
+  background: linear-gradient(180deg, #ff4b4b 0%, #dc2626 100%);
+  
+  border: none;
+  border-radius: 12px;
+  
+  /* Kỹ thuật 3D bằng box-shadow đa tầng */
+  box-shadow: 
+    0 6px 0 #991b1b,                  /* Lớp dày 3D phía dưới */
+    0 10px 20px rgba(220, 38, 38, 0.4), /* Bóng đổ phát sáng tỏa rộng */
+    inset 0 2px 0 rgba(255, 255, 255, 0.35); /* Viền sáng phản quang phía trên */
+    
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* Hiệu ứng tia sáng chạy qua khi rê chuột vào */
+.btn-user-logout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+/* Hover: Nút nổi lên thêm một chút và phát sáng */
+.btn-user-logout:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, #ff5c5c 0%, #ef4444 100%);
+  box-shadow: 
+    0 8px 0 #991b1b,
+    0 14px 25px rgba(239, 68, 68, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.45);
+}
+
+.btn-user-logout:hover::before {
+  left: 100%;
+}
+
+/* Active (Click): Hiệu ứng lún xuống 3D thật mắt */
+.btn-user-logout:active {
+  transform: translateY(4px);
+  box-shadow: 
+    0 2px 0 #991b1b,
+    0 4px 10px rgba(220, 38, 38, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.2);
+}

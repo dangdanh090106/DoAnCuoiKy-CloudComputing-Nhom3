@@ -1,0 +1,250 @@
+/* ==========================================================================
+   HIỆU ỨNG CARD SỰ KIỆN - SIÊU PRO, ĐỨNG YÊN, RÕ CHỮ & HIỆU ỨNG KHI CLICK
+   ========================================================================== */
+
+/* Keyframes hiệu ứng ánh sáng chạy viền neon liên tục */
+@keyframes borderNeonGlow {
+    0% { border-color: rgba(52, 211, 153, 0.3); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 rgba(52, 211, 153, 0); }
+    50% { border-color: rgba(0, 243, 255, 0.7); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 243, 255, 0.25), inset 0 0 10px rgba(0, 243, 255, 0.1); }
+    100% { border-color: rgba(52, 211, 153, 0.3); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+.event-column {
+    display: flex;
+    perspective: 1200px;
+}
+
+.event-card {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 24px;
+    background: rgba(11, 15, 28, 0.92) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    
+    /* Viền mặc định và hiệu ứng chạy viền neon nhẹ nhàng, đứng yên ổn định */
+    border: 1.5px solid rgba(52, 211, 153, 0.3);
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    
+    transform-style: preserve-3d;
+    will-change: transform;
+    
+    animation: borderNeonGlow 6s ease-in-out infinite !important;
+               
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                box-shadow 0.3s ease, 
+                border-color 0.3s ease,
+                background 0.3s ease;
+    cursor: pointer;
+}
+
+/* LỚP PHẢN CHẾU (VỆT SÁNG BÓNG KÍNH QUÉT QUA KHI DI CHUỘT) */
+.event-card::before {
+    content: '';
+    position: absolute;
+    top: 0; 
+    left: -150%;
+    width: 150%; 
+    height: 100%;
+    background: linear-gradient(
+        120deg, 
+        transparent 0%, 
+        rgba(0, 243, 255, 0.15) 45%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        rgba(52, 211, 153, 0.15) 55%, 
+        transparent 100%
+    );
+    pointer-events: none;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 4;
+}
+
+/* KÍCH HOẠT PHẢN CHẾU QUÉT QUA KHI HOVER */
+.event-card:hover::before {
+    transform: translateX(200%);
+}
+
+/* TƯƠNG TÁC KHI HOVER: NỔI KHỐI SÁNG RÕ, PHÁT QUANG ĐỈNH CAO */
+.event-card:hover {
+    border-color: #00f3ff !important;
+    background: rgba(15, 22, 38, 0.98) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 
+                0 0 30px rgba(0, 243, 255, 0.35) !important;
+    transform: translateY(-6px) scale(1.01);
+}
+
+/* HIỆU ỨNG KHI CLICK VÀO CARD (NHẤN LÚN XUỐNG CỰC KỲ PRO) */
+.event-card:active {
+    transform: translateY(-2px) scale(0.995) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9), 
+                0 0 15px rgba(0, 243, 255, 0.5),
+                inset 0 0 15px rgba(0, 243, 255, 0.2) !important;
+    border-color: #34d399 !important;
+    transition: transform 0.1s ease, box-shadow 0.1s ease !important;
+}
+
+/* Ảnh bìa sắc nét */
+.event-image, 
+.event-card img, 
+.event-card .card-img-top {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    background: #070913;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: brightness(0.95);
+}
+
+.event-card:hover .event-image,
+.event-card:hover img {
+    transform: scale(1.03);
+    filter: brightness(1.1);
+}
+
+/* Thân Card & Định vị nội dung */
+.event-card .card-body {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+}
+
+/* Tiêu đề rõ ràng, màu sắc sang trọng */
+.event-title, 
+.event-card .card-title, 
+.event-card h5 {
+    color: #34d399 !important;
+    text-shadow: none !important;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 3.4rem !important;
+    transition: color 0.3s ease;
+}
+
+.event-card:hover .event-title,
+.event-card:hover .card-title,
+.event-card:hover h5 {
+    color: #00f3ff !important;
+}
+
+/* Mô tả dịu mắt, dễ đọc */
+.event-description, 
+.event-card .card-text, 
+.event-card p {
+    color: #94a3b8 !important;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.event-card:hover .event-description {
+    color: #cbd5e1 !important;
+}
+
+/* Khối thông tin Thời gian & Địa điểm (Đẩy xuống đáy, thẳng hàng tuyệt đối) */
+.event-info-wrapper,
+.event-details-group,
+.event-info:first-of-type {
+    margin-top: auto !important;
+}
+
+.event-info, .event-meta {
+    color: #cbd5e1 !important;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.event-info i, .event-meta i {
+    color: #f43f5e !important;
+    margin-right: 8px;
+    font-size: 14px;
+    text-shadow: none !important;
+}
+
+.event-date {
+    color: #fb7185 !important;
+    font-weight: 600;
+}
+
+/* Cụm nút bấm tinh tế, chuyên nghiệp */
+.event-actions,
+.event-card .card-footer-actions {
+    display: flex !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 12px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.btn-event-detail,
+.btn-event-register,
+.btn-detail-custom,
+.btn-register-custom,
+.event-actions .btn {
+    flex: 1 1 0 !important;
+    width: 50% !important;
+    height: 40px !important;
+    min-width: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 0 8px !important;
+    border-radius: 10px !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+.btn-event-detail, .btn-detail-custom {
+    color: #34d399 !important;
+    background: rgba(52, 211, 153, 0.06) !important;
+    border: 1px solid rgba(52, 211, 153, 0.3) !important;
+}
+
+.btn-event-detail:hover, .btn-detail-custom:hover {
+    color: #03040b !important;
+    background: #34d399 !important;
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.6) !important;
+    transform: translateY(-2px);
+}
+
+.btn-event-register, .btn-register-custom {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #e11d48 0%, #059669 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25) !important;
+}
+
+.btn-event-register:hover, .btn-register-custom:hover {
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.6) !important;
+    transform: translateY(-2px);
+}

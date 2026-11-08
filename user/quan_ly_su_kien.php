@@ -36,18 +36,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['them_su_kien'])) {
 
     // 📸 Xử lý upload ảnh lưu trực tiếp vào thư mục ../images/
     $anh_bia_name = "";
-    if (isset($_FILES['anh_bia']) && $_FILES['anh_bia']['error'] === UPLOAD_ERR_OK) {$file_tmp = $_FILES['anh_bia']['tmp_name'];$file_size = $_FILES['anh_bia']['size'];$file_ext = strtolower(pathinfo($_FILES['anh_bia']['name'], PATHINFO_EXTENSION));$allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    if (isset($_FILES['anh_su_kien']) && $_FILES['anh_su_kien']['error'] === UPLOAD_ERR_OK) {$file_tmp = $_FILES['anh_su_kien']['tmp_name'];$file_size = $_FILES['anh_su_kien']['size'];$file_ext = strtolower(pathinfo($_FILES['anh_su_kien']['name'], PATHINFO_EXTENSION));$allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
         // Giới hạn phía server: 5MB (5242880 bytes)
         if ($file_size > 5 * 1024 * 1024) {$error = "Dung lượng ảnh quá lớn! Vui lòng chọn ảnh dưới 5MB.";
         } elseif (!in_array($file_ext, $allowed_ext)) {$error = "Định dạng ảnh không hợp lệ (Chỉ chấp nhận JPG, PNG, GIF, WEBP).";
         } else {
-            $upload_dir = '../images/'; 
-            if (!is_dir($upload_dir)) {
-                mkdir($upload_dir, 0777, true);
+            $upload_dir = __DIR__ . '/../images/';
+            if (!is_dir($upload_dir) && !mkdir($upload_dir, 0777, true) && !is_dir($upload_dir)) {
+                $error = "Không thể tạo thư mục lưu ảnh.";
+            } else {
+                $anh_bia_name = time() . '_' . uniqid() . '.' . $file_ext;
+                if (!move_uploaded_file($file_tmp, $upload_dir . $anh_bia_name)) {
+                    $error = "Không thể lưu ảnh vào thư mục images.";
+                    $anh_bia_name = "";
+                }
             }
-            $anh_bia_name = time() . '_' . uniqid() . '.' . $file_ext;
-            move_uploaded_file($file_tmp, $upload_dir .$anh_bia_name);
         }
     }
 
@@ -175,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['them_su_kien'])) {
 
             <div class="form-group">
                 <label>🖼️ Ảnh bìa sự kiện (Tối đa 5MB):</label>
-                <input type="file" name="anh_bia" id="anh_bia" accept="image/*">
+                <input type="file" name="anh_su_kien" id="anh_su_kien" accept="image/*">
             </div>
 
             <div class="form-row">
@@ -231,24 +235,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['them_su_kien'])) {
             locale: "vn"
         });
 
-        // Chặn submit và báo lỗi ngay trên trình duyệt nếu ảnh vượt quá 5MB
+// HÀM XỬ LÝ LƯU SỰ KIỆN QUA API VỚI FORMDATA (CÓ CHỨA ẢNH)
         document.getElementById('eventForm').addEventListener('submit', function(e) {
-            const fileInput = document.getElementById('anh_bia');
-            if (fileInput.files.length > 0) {
-                const fileSize = fileInput.files[0].size; // tính theo byte
+            e.preventDefault(); // Ngăn form tự động chuyển trang mặc định của HTML
+
+            console.log("1. Đã bấm nút lưu, bắt đầu kiểm tra dữ liệu...");
+
+            // Kiểm tra dung lượng ảnh (nếu có chọn)
+            const fileInput = document.getElementById('anh_su_kien');
+            if (fileInput && fileInput.files.length > 0) {
+                const fileSize = fileInput.files[0].size; 
                 const maxSize = 5 * 1024 * 1024; // 5MB
                 if (fileSize > maxSize) {
-                    e.preventDefault(); // Ngăn form gửi đi
-                    alert('⚠️ Ảnh bạn chọn có dung lượng quá lớn (' + (fileSize / (1024*1024)).toFixed(2) + ' MB). Vui lòng chọn ảnh nhỏ hơn 5MB để tránh lỗi hệ thống!');
+                    alert('⚠️ Ảnh bạn chọn có dung lượng quá lớn (' + (fileSize / (1024*1024)).toFixed(2) + ' MB). Vui lòng chọn ảnh nhỏ hơn 5MB!');
                     return false;
                 }
+                console.log("2. Ảnh hợp lệ, chuẩn bị đóng gói...");
+            } else {
+                console.log("2. Không có ảnh nào được chọn, bỏ qua phần kiểm tra dung lượng.");
             }
 
-            // Đồng bộ ngầm qua API api_su_kien.php
+            // Gom toàn bộ thông tin chữ + File ảnh
+            let formData = new FormData(this);
+
+            // Xử lý lại định dạng ngày giờ để gửi qua API (vì MySQL cần Y-m-d H:i:s)
             const rawStart = document.getElementById('thoi_gian_bat_dau').value;
             const rawEnd = document.getElementById('thoi_gian_ket_thuc').value;
             
-            function parseDate(str) {
+            function parseDateForMySQL(str) {
                 if(!str) return '';
                 if(str.includes('/')) {
                     const parts = str.split(' ');
@@ -258,23 +272,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['them_su_kien'])) {
                 return str;
             }
 
-            const payload = {
-                ten_su_kien: document.querySelector('input[name="ten_su_kien"]').value,
-                tieu_de: document.querySelector('input[name="ten_su_kien"]').value,
-                thoi_gian_bat_dau: parseDate(rawStart),
-                thoi_gian_ket_thuc: parseDate(rawEnd),
-                dia_diem: document.querySelector('input[name="dia_diem"]').value,
-                vi_tri: document.querySelector('input[name="vi_tri"]').value,
-                doi_tuong_tham_gia: document.querySelector('input[name="doi_tuong_tham_gia"]').value,
-                suc_chua: document.querySelector('input[name="suc_chua"]').value,
-                mo_ta: document.querySelector('textarea[name="mo_ta"]').value
-            };
+            // Ghi đè lại định dạng ngày đã chuẩn hóa vào formData trước khi gửi đi
+            formData.set('thoi_gian_bat_dau', parseDateForMySQL(rawStart));
+            formData.set('thoi_gian_ket_thuc', parseDateForMySQL(rawEnd));
 
+            console.log("3. Đang gửi dữ liệu qua Fetch tới api_su_kien.php...");
+
+            // Bắt đầu gửi Fetch
             fetch('../api_su_kien.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).catch(err => console.error("Lỗi đồng bộ API:", err));
+                body: formData // Truyền thẳng formData, trình duyệt sẽ tự động biết có file ảnh và set Content-Type
+            })
+            .then(response => {
+                console.log("4. Đã nhận phản hồi từ server, đang phân tích JSON...");
+                return response.json();
+            })
+            .then(data => {
+                console.log("5. Phản hồi JSON:", data);
+                if (data.status === 'success') {
+                    alert('🎉 Thêm sự kiện và upload ảnh thành công!');
+                    window.location.href = '../su-kien.php'; // Chuyển về trang danh sách
+                } else {
+                    alert('Lỗi từ Server: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error("LỖI NGHIÊM TRỌNG:", err);
+                alert('Có lỗi xảy ra khi kết nối tới hệ thống! Vui lòng ấn F12 -> Console để xem chi tiết.');
+            });
         });
     </script>
 </body>
