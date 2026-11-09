@@ -110,22 +110,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt_add = $conn->prepare("INSERT INTO sinh_vien (ma_sv, ho_ten, email, mat_khau) VALUES (:mssv, :ho_ten, :email, '123456')");
                 $stmt_add->execute([':mssv' => $mssv, ':ho_ten' => $ho_ten, ':email' => $email]);
             }
-
+ 
             // 4. Xử lý lưu đăng ký sự kiện 
-            $stmt_check_dk = $conn->prepare("SELECT trang_thai FROM dang_ky WHERE user_id = :user_id AND su_kien_id = :su_kien_id");
-            $stmt_check_dk->execute([':user_id' => $user_id_hien_tai, ':su_kien_id' => $su_kien_id]);
+            $stmt_check_dk = $conn->prepare("SELECT trang_thai FROM dang_ky WHERE ma_sv = :mssv AND ma_sukien = :su_kien_id");
+            $stmt_check_dk->execute([':mssv' => $mssv, ':su_kien_id' => $su_kien_id]);
             $dk_exist = $stmt_check_dk->fetch(PDO::FETCH_ASSOC);
 
             if ($dk_exist) {
                 if ($dk_exist['trang_thai'] == 'Đã hủy') {
-                    $stmt_update_dk = $conn->prepare("UPDATE dang_ky SET trang_thai = 'Đã đăng ký' WHERE user_id = :user_id AND su_kien_id = :su_kien_id");
-                    $stmt_update_dk->execute([':user_id' => $user_id_hien_tai, ':su_kien_id' => $su_kien_id]);
+                    $stmt_update_dk = $conn->prepare("UPDATE dang_ky SET trang_thai = 'Đã đăng ký' WHERE ma_sv = :mssv AND ma_sukien = :su_kien_id");
+                    $stmt_update_dk->execute([':mssv' => $mssv, ':su_kien_id' => $su_kien_id]);
                 } else {
                     throw new Exception("Bạn đã đăng ký tham gia sự kiện này rồi!");
                 }
             } else {
-                $stmt_insert = $conn->prepare("INSERT INTO dang_ky (user_id, su_kien_id, trang_thai) VALUES (:user_id, :su_kien_id, 'Đã đăng ký')");
-                $stmt_insert->execute([':user_id' => $user_id_hien_tai, ':su_kien_id' => $su_kien_id]);
+                $stmt_insert = $conn->prepare("INSERT INTO dang_ky (ma_sv, ma_sukien, trang_thai) VALUES (:mssv, :su_kien_id, 'Đã đăng ký')");
+                $stmt_insert->execute([':mssv' => $mssv, ':su_kien_id' => $su_kien_id]);
             }
 
             // 5. Chốt ghế ngồi 

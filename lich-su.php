@@ -15,7 +15,9 @@ if (isset($_SESSION['ma_sv']) && (isset($_SESSION['user_id']) || isset($_SESSION
     $ma_sv_hien_tai = $_SESSION['ma_sv'];
     $user_id_hien_tai = $_SESSION['user_id'] ?? $_SESSION['id'];
 
-    // 2. XỬ LÝ HỦY ĐĂNG KÝ SỰ KIỆN (Chỉ chạy khi đã đăng nhập)
+
+   // 2. XỬ LÝ HỦY ĐĂNG KÝ SỰ KIỆN (Chỉ chạy khi đã đăng nhập)
+  
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'cancel') {
         $su_kien_id_huy = intval($_POST['su_kien_id']);
         
@@ -23,9 +25,11 @@ if (isset($_SESSION['ma_sv']) && (isset($_SESSION['user_id']) || isset($_SESSION
             try {
                 $conn->beginTransaction();
 
-                $stmt_huy_dk = $conn->prepare("UPDATE dang_ky SET trang_thai = 'Đã hủy' WHERE user_id = :user_id AND su_kien_id = :su_kien_id");
-                $stmt_huy_dk->execute([':user_id' => $user_id_hien_tai, ':su_kien_id' => $su_kien_id_huy]);
+                // Đã sửa: Truyền đúng biến $ma_sv_hien_tai vào cột ma_sv
+                $stmt_huy_dk = $conn->prepare("UPDATE dang_ky SET trang_thai = 'Đã hủy' WHERE ma_sv = :ma_sv AND ma_sukien = :su_kien_id");
+                $stmt_huy_dk->execute([':ma_sv' => $ma_sv_hien_tai, ':su_kien_id' => $su_kien_id_huy]);
 
+                // Bảng dat_ghe dùng user_id và su_kien_id
                 $stmt_huy_ghe = $conn->prepare("UPDATE dat_ghe SET trang_thai = 'DA_HUY' WHERE user_id = :user_id AND su_kien_id = :su_kien_id");
                 $stmt_huy_ghe->execute([':user_id' => $user_id_hien_tai, ':su_kien_id' => $su_kien_id_huy]);
 
@@ -47,15 +51,19 @@ if (isset($_SESSION['ma_sv']) && (isset($_SESSION['user_id']) || isset($_SESSION
                dd.ten_diadiem,
                g.hang, g.so_ghe
         FROM dang_ky dk
-        JOIN su_kien sk ON dk.su_kien_id = sk.ma_sukien
+        JOIN su_kien sk ON dk.ma_sukien = sk.ma_sukien
         LEFT JOIN dia_diem dd ON sk.ma_diadiem = dd.ma_diadiem
         LEFT JOIN dat_ghe dg ON dg.su_kien_id = sk.ma_sukien AND dg.user_id = :user_id AND dg.trang_thai = 'DA_DAT'
         LEFT JOIN ghe g ON dg.ghe_id = g.id
-        WHERE dk.user_id = :user_id
+        WHERE dk.ma_sv = :ma_sv
         ORDER BY dk.thoi_gian_dang_ky DESC
     ";
     $stmt_history = $conn->prepare($sql_history);
-    $stmt_history->execute([':user_id' => $user_id_hien_tai]);
+    // Đã sửa: Truyền cả :user_id (cho bảng ghế) và :ma_sv (cho bảng đăng ký)
+    $stmt_history->execute([
+        ':user_id' => $user_id_hien_tai,
+        ':ma_sv'   => $ma_sv_hien_tai
+    ]);
     $history_list = $stmt_history->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
