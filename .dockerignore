@@ -1,0 +1,29 @@
+
+# Secrets
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Git
+.git
+.gitignore
+
+# Uploaded data is stored using Bind Mount
+uploads
+
+# Backups and database exports
+*.bak
+**/*.bak
+*.sql
+**/*.sql
+*.log
+**/*.log
+backup*
+**/backup*
+
+# Local development files
+.vscode
+.idea
+.DS_Store
+Thumbs.db

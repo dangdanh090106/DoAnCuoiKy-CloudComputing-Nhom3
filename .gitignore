@@ -1,5 +1,31 @@
+# Environment / Secrets
 .env
-vendor/
-node_modules/
+.env.*
+!.env.example
+*.key
+service-account*.json
+
+# PHP dependencies
+/vendor/
+/node_modules/
+
+# Runtime uploads
+/uploads/
+
+# Database backups
+*.tar
+*.tar.gz
+*backup*.sql
+*.bak
+
+# Temporary files
+*.log
+/tmp/
+/cache/
+
+# IDE / OS
+.vscode/
+.idea/
+.vs/
 .DS_Store
 Thumbs.db

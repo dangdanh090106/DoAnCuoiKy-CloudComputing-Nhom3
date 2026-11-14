@@ -7,6 +7,14 @@ RUN docker-php-ext-install pdo pdo_mysql mysqli
 # 3. Kích hoạt mod_rewrite để phục vụ định tuyến REST API
 RUN a2enmod rewrite
 
+# Block direct access to sensitive files
+RUN printf '%s\n' \
+    '<FilesMatch "^(\.env(\..*)?|.*\.(bak|sql|log))$">' \
+    '    Require all denied' \
+    '</FilesMatch>' \
+    > /etc/apache2/conf-available/deny-sensitive.conf \
+    && a2enconf deny-sensitive
+
 # 4. Thư mục chạy code web mặc định của Apache
 WORKDIR /var/www/html
 

@@ -5,33 +5,46 @@ include '../database.php';
 $conn = $conn ?? $pdo ?? null;
 
 $ma_sv = $_SESSION['ma_sv'] ?? '';
-$user_id = $_SESSION['user_id'] ?? '';
 
 if (empty($ma_sv)) {
     header("Location: login.php");
     exit();
 }
 
-// 1. Truy vấn thông tin người dùng
-$stmt_user = $conn->prepare("SELECT * FROM users WHERE ma_sv = ?");
+// Lấy tổng điểm trực tiếp từ users, thống nhất với Dashboard.
+$stmt_user = $conn->prepare("SELECT * FROM users WHERE ma_sv = ? LIMIT 1");
 $stmt_user->execute([$ma_sv]);
 $user = $stmt_user->fetch(PDO::FETCH_ASSOC);
+if (!$user) {
+    http_response_code(404);
+    exit('Không tìm thấy tài khoản sinh viên.');
+}
+$tong_diem = (int) ($user['diem_ren_luyen'] ?? 0);
 
-// 2. Lấy danh sách các sự kiện sinh viên đã tham gia thành công
+// Lịch sử chỉ gồm các sự kiện có bản ghi điểm danh thành công.
+// Dự án có hai bảng đăng ký dùng ma_sv/ma_sukien; gộp theo mã sự kiện
+// để tránh hiển thị trùng nếu cùng sự kiện nằm ở cả hai bảng.
 $stmt_history = $conn->prepare("
-    SELECT sk.*, dk.trang_thai 
-    FROM dang_ky_su_kien dk 
-    JOIN su_kien sk ON dk.su_kien_id = sk.ma_sukien 
-    WHERE dk.user_id = ? AND dk.trang_thai = 'da_tham_gia'
+    SELECT sk.*, attended.diem_cong
+    FROM su_kien sk
+    INNER JOIN (
+        SELECT ma_sukien, MAX(diem_cong) AS diem_cong
+        FROM (
+            SELECT ma_sukien, diem_cong FROM dang_ky
+            WHERE ma_sv = ? AND trang_thai IN ('da_tham_gia', 'present', 'Đã tham gia')
+            UNION ALL
+            SELECT ma_sukien, NULL AS diem_cong FROM dang_ky_su_kien
+            WHERE ma_sv = ? AND trang_thai IN ('da_tham_gia', 'present', 'Đã tham gia')
+        ) AS checkins
+        GROUP BY ma_sukien
+    ) attended ON attended.ma_sukien = sk.ma_sukien
+    ORDER BY sk.thoi_gian_bat_dau DESC
 ");
-$stmt_history->execute([$user_id]);
+$stmt_history->execute([$ma_sv, $ma_sv]);
 $diem_schedules = $stmt_history->fetchAll(PDO::FETCH_ASSOC);
 
-// Tự động tính tổng điểm dựa trên các sự kiện đã tham gia
-$tong_diem = 0;
-foreach ($diem_schedules as $row) {
-    $tong_diem += ($row['diem_thuong'] ?? 5);
-}
+// Điểm từng lần điểm danh lấy từ dang_ky.diem_cong.
+// Bản ghi cũ chưa có dữ liệu vẫn để trống, không tự suy diễn.
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -149,7 +162,7 @@ foreach ($diem_schedules as $row) {
                                         </span>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <span class="score-plus">+<?php echo htmlspecialchars($row['diem_thuong'] ?? 5); ?> điểm</span>
+                                        <span class="score-plus">+<?php echo isset($row['diem_cong']) ? htmlspecialchars((string) $row['diem_cong']) . ' điểm' : 'Chưa có dữ liệu'; ?></span>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -158,7 +171,7 @@ foreach ($diem_schedules as $row) {
                                 <td colspan="4" class="text-center py-5">
                                     <div class="empty-state">
                                         <i class="bi bi-calendar-x fs-1 text-muted d-block mb-2"></i>
-                                        <span class="text-muted-custom">Bạn chưa tham gia sự kiện nào để được tính điểm rèn luyện.</span>
+                                        <span class="text-muted-custom">Chưa tìm thấy lịch sử điểm danh thành công trong dữ liệu đăng ký. Tổng điểm được lấy từ hồ sơ sinh viên.</span>
                                     </div>
                                 </td>
                             </tr>

@@ -1,0 +1,368 @@
+/* ==========================================================================
+   ULTIMATE 3D CYBERPUNK GLASSMORPHIC BANNER SYSTEM v2026
+   Tối ưu hóa riêng cho: Hệ thống Quản lý Sự kiện Sinh Viên (1000x400px)
+   ========================================================================== */
+
+:root {
+    --b-width: 1000px;
+    --b-height: 400px;
+    --neon-cyan: #00ffcc;
+    --neon-pink: #ff0055;
+    --neon-purple: #9d00ff;
+    --dark-bg: #07090e;
+    --glass-bg: rgba(12, 15, 25, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --easing-3d: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* 1. KHUNG TỔNG THỂ & HIỆU ỨNG KHÔNG GIAN 3D PERSPECTIVE */
+.container.my-4.d-flex.justify-content-center {
+    perspective: 1500px;
+    overflow: visible;
+}
+
+#homeBannerCarousel {
+    width: 100%;
+    max-width: var(--b-width);
+    height: var(--b-height);
+    border-radius: 20px;
+    background: var(--dark-bg);
+    position: relative;
+    overflow: hidden;
+    border: 1.5px solid rgba(0, 255, 204, 0.35);
+    box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.9),
+        0 0 35px rgba(0, 255, 204, 0.2),
+        inset 0 0 30px rgba(255, 0, 85, 0.15);
+    transform-style: preserve-3d;
+    transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+/* Hiệu ứng phát sáng mạnh hơn khi hover */
+#homeBannerCarousel:hover {
+    border-color: rgba(0, 255, 204, 0.8);
+    box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.95),
+        0 0 50px rgba(0, 255, 204, 0.45),
+        inset 0 0 40px rgba(255, 0, 85, 0.25);
+}
+
+/* Lớp phủ lưới kỹ thuật số 3D (Cyberpunk Scanline & Vignette) */
+#homeBannerCarousel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0, 0, 0, 0.6) 100%),
+                radial-gradient(circle at center, rgba(0,255,204,0.05) 0%, rgba(0,0,0,0.4) 100%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+#homeBannerCarousel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+    background-size: 100% 4px;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+
+/* 2. HIỆU ỨNG ẢNH ĐỘNG 3D (PARALLAX & SLOW ZOOM) */
+#homeBannerCarousel .carousel-inner,
+#homeBannerCarousel .carousel-item {
+    width: 100%;
+    height: 100%;
+}
+
+#homeBannerCarousel .carousel-item img {
+    width: var(--b-width) !important;
+    height: var(--b-height) !important;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(0.92) contrast(1.1) saturate(1.15);
+    transform: scale(1) translateZ(0);
+    transition: transform 1.5s var(--easing-3d), filter 0.8s ease;
+}
+
+#homeBannerCarousel .carousel-item.active img {
+    animation: activeSlideZoom 10s infinite alternate var(--easing-3d);
+}
+
+@keyframes activeSlideZoom {
+    0% {
+        transform: scale(1) translateZ(0);
+    }
+    100% {
+        transform: scale(1.07) translateZ(20px);
+    }
+}
+
+
+/* 3. KHUNG TIÊU ĐỀ GLASSMORPHISM NỔI 3D SANG TRỌNG */
+#homeBannerCarousel .carousel-caption {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(220%);
+    -webkit-backdrop-filter: blur(24px) saturate(220%);
+    border: 1px solid var(--glass-border);
+    border-left: 6px solid var(--neon-cyan);
+    border-radius: 16px;
+    bottom: 28px;
+    left: 32px;
+    right: 32px;
+    padding: 18px 26px !important;
+    text-align: left;
+    z-index: 5;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateZ(40px);
+    animation: captionFloat3D 0.9s var(--easing-3d) forwards;
+}
+
+@keyframes captionFloat3D {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) translateZ(0) rotateX(10deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) translateZ(40px) rotateX(0deg);
+    }
+}
+
+#homeBannerCarousel:hover .carousel-caption {
+    background: rgba(12, 15, 25, 0.9);
+    border-left-color: var(--neon-pink);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85), 
+                0 0 25px rgba(255, 0, 85, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Kiểu chữ tiêu đề độc quyền kết hợp Neon Glow */
+#homeBannerCarousel .banner-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1.2px;
+    margin: 0;
+    text-shadow: 0 2px 15px rgba(0, 0, 0, 0.9), 
+                 0 0 10px rgba(0, 255, 204, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Biểu tượng chấm tròn phát sáng 3D */
+#homeBannerCarousel .banner-title::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--neon-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--neon-cyan), 0 0 30px var(--neon-cyan);
+    animation: neonDotGlow 1.8s infinite alternate;
+}
+
+@keyframes neonDotGlow {
+    0% {
+        transform: scale(0.8) translateZ(0);
+        background-color: var(--neon-cyan);
+        box-shadow: 0 0 10px var(--neon-cyan);
+    }
+    100% {
+        transform: scale(1.3) translateZ(10px);
+        background-color: var(--neon-pink);
+        box-shadow: 0 0 20px var(--neon-pink), 0 0 35px var(--neon-pink);
+    }
+}
+
+
+/* 4. HỆ THỐNG NÚT ĐIỀU HƯỚNG SCI-FI 3D (PREV / NEXT) */
+#homeBannerCarousel .carousel-control-prev,
+#homeBannerCarousel .carousel-control-next {
+    width: 70px;
+    height: 70px;
+    top: 50%;
+    transform: translateY(-50%) translateZ(60px);
+    opacity: 0;
+    z-index: 6;
+    transition: all 0.4s var(--easing-3d);
+}
+
+#homeBannerCarousel:hover .carousel-control-prev {
+    left: 18px;
+    opacity: 1;
+}
+
+#homeBannerCarousel:hover .carousel-control-next {
+    right: 18px;
+    opacity: 1;
+}
+
+#homeBannerCarousel .carousel-control-prev-icon,
+#homeBannerCarousel .carousel-control-next-icon {
+    width: 52px;
+    height: 52px;
+    background-color: rgba(12, 15, 25, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(0, 255, 204, 0.6);
+    border-radius: 50%;
+    background-size: 40%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    transition: all 0.4s var(--easing-3d);
+}
+
+#homeBannerCarousel .carousel-control-prev-icon:hover,
+#homeBannerCarousel .carousel-control-next-icon:hover {
+    background-color: var(--neon-cyan);
+    border-color: #ffffff;
+    box-shadow: 0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan);
+    transform: scale(1.2) translateZ(20px);
+    filter: invert(1);
+}
+
+
+/* 5. THANH CHỈ SỐ SLIDE (3D GRADIENT PROGRESS INDICATORS) */
+#homeBannerCarousel .carousel-indicators {
+    bottom: 12px;
+    margin-bottom: 0;
+    z-index: 6;
+    gap: 8px;
+    transform: translateZ(50px);
+}
+
+#homeBannerCarousel .carousel-indicators [data-bs-target] {
+    width: 35px;
+    height: 5px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border: none;
+    margin: 0;
+    transition: all 0.5s var(--easing-3d);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+#homeBannerCarousel .carousel-indicators .active {
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+    width: 65px;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.9), 0 0 35px rgba(255, 0, 85, 0.6);
+}
+
+
+/* 6. GIAO DIỆN DỰ PHÒNG (3D HERO BANNER FALLBACK) */
+.hero-banner {
+    max-width: var(--b-width);
+    height: var(--b-height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(12, 15, 25, 0.95), rgba(30, 15, 45, 0.9));
+    border: 1.5px solid rgba(0, 255, 204, 0.4);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+    border-radius: 20px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-banner h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 12px;
+    text-shadow: 0 0 25px rgba(0, 255, 204, 0.6);
+    letter-spacing: 1px;
+}
+
+.hero-banner p {
+    color: #c0d0ff;
+    font-size: 1.1rem;
+    max-width: 680px;
+    margin-bottom: 25px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.hero-btn {
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 12px 32px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border-radius: 35px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 0 8px 25px rgba(255, 0, 85, 0.5);
+    transition: all 0.4s var(--easing-3d);
+}
+
+.hero-btn:hover {
+    transform: translateY(-4px) scale(1.08) translateZ(20px);
+    box-shadow: 0 12px 40px rgba(255, 0, 85, 0.8), 0 0 25px var(--neon-cyan);
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+    color: #07090e;
+}
+
+
+/* 7. TỐI ƯU HÓA RESPONSIVE CHO MỌI THIẾT BỊ */
+@media (max-width: 1024px) {
+    #homeBannerCarousel,
+    .hero-banner {
+        max-width: 100%;
+        height: 360px;
+    }
+    
+    #homeBannerCarousel .carousel-item img,
+    .hero-banner {
+        height: 360px !important;
+    }
+    
+    #homeBannerCarousel .carousel-caption {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        padding: 14px 20px !important;
+    }
+    
+    #homeBannerCarousel .banner-title {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    #homeBannerCarousel,
+    .hero-banner {
+        height: 280px;
+        border-radius: 14px;
+    }
+    
+    #homeBannerCarousel .carousel-item img {
+        height: 280px !important;
+    }
+    
+    #homeBannerCarousel .carousel-caption {
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 10px 14px !important;
+    }
+    
+    #homeBannerCarousel .banner-title {
+        font-size: 0.95rem;
+    }
+    
+    .hero-banner h2 {
+        font-size: 1.4rem;
+    }
+    
+    .hero-banner p {
+        font-size: 0.85rem;
+        padding: 0 15px;
+    }
+}

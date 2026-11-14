@@ -1,6 +1,15 @@
 <?php
 session_start();
-require_once '../database.php'; 
+
+require_once __DIR__ . '/../database.php';
+
+$db_connection = $pdo ?? $conn ?? null;
+
+if (!($db_connection instanceof PDO)) {
+    http_response_code(500);
+    exit('Không thể kết nối cơ sở dữ liệu.');
+}
+
 
 // 1. Kiểm tra đăng nhập và phân quyền
 if (!isset($_SESSION['vai_tro'])) {
@@ -13,113 +22,12 @@ if ($_SESSION['vai_tro'] !== 'quan_ly_su_kien' &&$_SESSION['vai_tro'] !== 'admin
     exit();
 }
 
-// 2. Xử lý khi người dùng gửi Form Đăng sự kiện
-$thong_bao = "";
-$error = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['them_su_kien'])) {
-    $ten_input          = trim($_POST['ten_su_kien'] ?? '');
-    
-    // Chuyển đổi định dạng d/m/Y H:i sang Y-m-d H:i:s cho MySQL
-    $raw_start          =$_POST['thoi_gian_bat_dau'] ?? '';
-    $raw_end            =$_POST['thoi_gian_ket_thuc'] ?? '';
-    
-    $thoi_gian_bat_dau  = !empty($raw_start) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $raw_start))) : '';
-    $thoi_gian_ket_thuc = !empty($raw_end) ? date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $raw_end))) : '';
-    
-    $dia_diem           = trim($_POST['dia_diem'] ?? '');
-    $vi_tri             = trim($_POST['vi_tri'] ?? '');
-    $doi_tuong_tham_gia = trim($_POST['doi_tuong_tham_gia'] ?? '');
-    $suc_chua           = (int)($_POST['suc_chua'] ?? 0);
-    $mo_ta              = trim($_POST['mo_ta'] ?? '');
-    $ma_sv_tao          =$_SESSION['ma_sv'] ?? ''; 
-
-    // 📸 Xử lý upload ảnh lưu trực tiếp vào thư mục ../images/
-    $anh_bia_name = "";
-    if (isset($_FILES['anh_su_kien']) && $_FILES['anh_su_kien']['error'] === UPLOAD_ERR_OK) {$file_tmp = $_FILES['anh_su_kien']['tmp_name'];$file_size = $_FILES['anh_su_kien']['size'];$file_ext = strtolower(pathinfo($_FILES['anh_su_kien']['name'], PATHINFO_EXTENSION));$allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-        // Giới hạn phía server: 5MB (5242880 bytes)
-        if ($file_size > 5 * 1024 * 1024) {$error = "Dung lượng ảnh quá lớn! Vui lòng chọn ảnh dưới 5MB.";
-        } elseif (!in_array($file_ext, $allowed_ext)) {$error = "Định dạng ảnh không hợp lệ (Chỉ chấp nhận JPG, PNG, GIF, WEBP).";
-        } else {
-            $upload_dir = __DIR__ . '/../images/';
-            if (!is_dir($upload_dir) && !mkdir($upload_dir, 0777, true) && !is_dir($upload_dir)) {
-                $error = "Không thể tạo thư mục lưu ảnh.";
-            } else {
-                $anh_bia_name = time() . '_' . uniqid() . '.' . $file_ext;
-                if (!move_uploaded_file($file_tmp, $upload_dir . $anh_bia_name)) {
-                    $error = "Không thể lưu ảnh vào thư mục images.";
-                    $anh_bia_name = "";
-                }
-            }
-        }
-    }
-
-    if (empty($error)) {
-        if (!empty($ten_input) && !empty($thoi_gian_bat_dau) && !empty($thoi_gian_ket_thuc)) {
-            try {
-                $db_connection = isset($pdo) ?$pdo : (isset($conn) ?$conn : null);
-
-                if (!$db_connection) {
-                    throw new Exception("Không tìm thấy kết nối CSDL hợp lệ!");
-                }
-
-                // Tự động quét danh sách cột thực tế của bảng su_kien
-                $stmt_cols =$db_connection->query("SHOW COLUMNS FROM su_kien");
-                $columns =$stmt_cols->fetchAll(PDO::FETCH_COLUMN);
-
-                // Tìm cột tiêu đề sự kiện
-                $col_title = '';$candidates = ['ten_su_kien', 'tieu_de', 'tieude', 'ten_sk', 'ten'];
-                foreach ($candidates as$c) {
-                    if (in_array($c,$columns)) {
-                        $col_title =$c;
-                        break;
-                    }
-                }
-                if (empty($col_title) && count($columns) > 1) {
-                    $col_title =$columns[1]; 
-                } elseif (empty($col_title)) {$col_title = 'ten_su_kien';
-                }
-
-                // Tìm cột chứa ảnh trong CSDL
-                $col_img = '';$img_candidates = ['anh_bia', 'hinh_anh', 'anh', 'image', 'file_name'];
-                foreach ($img_candidates as$ic) {
-                    if (in_array($ic,$columns)) {
-                        $col_img =$ic;
-                        break;
-                    }
-                }
-
-                // Xây dựng mảng dữ liệu chèn vào CSDL
-                $insert_data = [];$insert_data[$col_title] =$ten_input;
-
-                if (in_array('thoi_gian_bat_dau', $columns)) $insert_data['thoi_gian_bat_dau'] =$thoi_gian_bat_dau;
-                if (in_array('thoi_gian_ket_thuc', $columns)) $insert_data['thoi_gian_ket_thuc'] =$thoi_gian_ket_thuc;
-                if (in_array('dia_diem', $columns)) $insert_data['dia_diem'] =$dia_diem;
-                if (in_array('vi_tri', $columns)) $insert_data['vi_tri'] =$vi_tri;
-                if (in_array('doi_tuong_tham_gia', $columns)) $insert_data['doi_tuong_tham_gia'] =$doi_tuong_tham_gia;
-                if (in_array('suc_chua', $columns)) $insert_data['suc_chua'] =$suc_chua;
-                if (in_array('mo_ta', $columns)) $insert_data['mo_ta'] =$mo_ta;
-                if (!empty($col_img) && !empty($anh_bia_name))$insert_data[$col_img] =$anh_bia_name;
-                if (in_array('ma_sv_tao', $columns)) $insert_data['ma_sv_tao'] =$ma_sv_tao;
-
-                $fields = array_keys($insert_data);
-                $placeholders = array_fill(0, count($fields), '?');
-
-                $sql = "INSERT INTO su_kien (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
-                $stmt =$db_connection->prepare($sql);$success = $stmt->execute(array_values($insert_data));
-
-                if ($success) {$thong_bao = "🎉 Thêm sự kiện mới thành công!";
-                } else {
-                    $error = "Lỗi khi thêm sự kiện vào cơ sở dữ liệu.";
-                }
-            } catch (Exception $e) {$error = "Lỗi hệ thống CSDL: " . $e->getMessage();
-            }
-        } else {
-            $error = "Vui lòng nhập đầy đủ Tên sự kiện, Thời gian bắt đầu và Thời gian kết thúc!";
-        }
-    }
+// Token dùng cho POST multipart/form-data gửi tới api_su_kien.php.
+if (empty($_SESSION['event_csrf_token'])) {
+    $_SESSION['event_csrf_token'] = bin2hex(random_bytes(32));
 }
+$thong_bao = '';
+$error = '';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -170,7 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['them_su_kien'])) {
         <?php endif; ?>
 
         <!-- Form Đăng sự kiện -->
-        <form id="eventForm" action="" method="POST" enctype="multipart/form-data">
+        <form id="eventForm" action="../api_su_kien.php" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['event_csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
             
             <div class="form-group">
                 <label>Tên sự kiện (*):</label>
@@ -185,18 +94,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['them_su_kien'])) {
             <div class="form-row">
                 <div class="form-group">
                     <label>⏰ Thời gian bắt đầu (*):</label>
-                    <input type="text" id="thoi_gian_bat_dau" name="thoi_gian_bat_dau" value="20/10/2026 17:13" required placeholder="Chọn ngày bắt đầu...">
+                    <input type="text" id="thoi_gian_bat_dau" name="thoi_gian_bat_dau" value="" required placeholder="Chọn ngày bắt đầu...">
                 </div>
                 <div class="form-group">
                     <label>🏁 Thời gian kết thúc (*):</label>
-                    <input type="text" id="thoi_gian_ket_thuc" name="thoi_gian_ket_thuc" value="20/10/2026 19:13" required placeholder="Chọn ngày kết thúc...">
+                    <input type="text" id="thoi_gian_ket_thuc" name="thoi_gian_ket_thuc" value="" required placeholder="Chọn ngày kết thúc...">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>📍 Địa điểm:</label>
-                    <input type="text" name="dia_diem" placeholder="Ví dụ: Hội trường A, Sân bóng...">
+                    <label>📍 Phòng tổ chức:</label>
+                    <select name="ma_diadiem" class="form-control">
+                        <option value="">-- Chọn phòng tổ chức --</option>
+                        <?php
+                        try {
+                            $rooms = $db_connection->query("SELECT ma_diadiem, ten_diadiem FROM dia_diem ORDER BY ten_diadiem")
+                                ->fetchAll(PDO::FETCH_ASSOC);
+                            foreach ($rooms as $room) {
+                                echo '<option value="' . (int)$room['ma_diadiem'] . '">';
+                                echo htmlspecialchars($room['ten_diadiem'], ENT_QUOTES, 'UTF-8');
+                                echo '</option>';
+                            }
+                        } catch (Exception $e) {
+                            error_log("Không tải được danh sách phòng: " . $e->getMessage());
+                            echo '<option value="" disabled>Không tải được danh sách phòng</option>';
+                        }
+                        ?>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>📌 Vị trí cụ thể:</label>
@@ -224,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['them_su_kien'])) {
         </form>
     </div>
 
-    <!-- Script Kích hoạt Bộ chọn Ngày Giờ chuẩn Việt Nam & Kiểm tra kích thước ảnh -->
+    <!-- Script kích hoạt bộ chọn ngày giờ và kiểm tra kích thước ảnh -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
     <script>

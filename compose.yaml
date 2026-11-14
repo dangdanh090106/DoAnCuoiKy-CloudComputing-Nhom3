@@ -1,63 +1,74 @@
-version: '3.8'
 
 services:
-
   application:
     build: .
     container_name: nhom03_application
     ports:
-      - "8080:80"
+      - "${APP_PORT:-8080}:80"
     environment:
-      - DB_HOST=database
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-do_an_cuoi_ky}
+      DB_USER: ${DB_USER:-projectuser}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MINIO_ENDPOINT: minio:9000
+      MINIO_BUCKET: ${MINIO_BUCKET_NAME:-event-posters}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_USE_SSL: "false"
+    depends_on:
+      database:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    volumes:
+      - ./uploads:/var/www/html/uploads
+      - ./images:/var/www/html/images
     networks:
       - cloud-project-network
+    restart: unless-stopped
 
   database:
     image: mysql:8.0
     container_name: nhom03_database
     environment:
-      MYSQL_DATABASE: do_an_cuoi_ky
-      MYSQL_USER: projectuser
-      MYSQL_PASSWORD: change_this_password
-      MYSQL_ROOT_PASSWORD: change_this_password
+      MYSQL_DATABASE: ${DB_NAME:-do_an_cuoi_ky}
+      MYSQL_USER: ${DB_USER:-projectuser}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - database-data:/var/lib/mysql
-      - ./do_an_cuoi_ky.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./do_an_cuoi_ky.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - cloud-project-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
 
   minio:
-    image: rancher/mirrored-minio-minio:RELEASE.2020-07-13T18-09-56Z
+    image: cgr.dev/chainguard/minio:latest
     container_name: nhom03_minio
+    command: server /data --console-address ":9001"
     ports:
       - "9000:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     environment:
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: change_this_password
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - minio-data:/data
     networks:
       - cloud-project-network
-
-  # --- THÊM PHẦN NÀY ĐỂ CHẠY PHPMYADMIN ---
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: nhom03_phpmyadmin
-    environment:
-      PMA_HOST: database
-      MYSQL_ROOT_PASSWORD: change_this_password
-    ports:
-      - "8081:80"
-    networks:
-      - cloud-project-network
+    restart: unless-stopped
 
 volumes:
   database-data:
-    name: database-data
   minio-data:
-    name: minio-data
 
 networks:
   cloud-project-network:
-    name: cloud-project-network
     driver: bridge

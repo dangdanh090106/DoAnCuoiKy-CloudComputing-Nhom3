@@ -23,46 +23,52 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Lý Sự Kiện Sinh Viên</title>
     
+    <!-- CSS Hệ thống -->
     <link rel="stylesheet" type="text/css" href="./css/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" type="text/css" href="./css/index.css?v=<?php echo time(); ?>">
+    <!-- CSS Banner 3D Glassmorphic -->
+    <link rel="stylesheet" type="text/css" href="./css/banner.css?v=<?php echo time(); ?>">
     
-    <!-- Bootstrap CSS để chạy Slide ảnh -->
+    <!-- Bootstrap CSS để chạy Slide Carousel -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
-    <!-- 1. Video Background[cite: 2] -->
+    <!-- 1. Video Background -->
     <video autoplay loop muted playsinline preload="auto" class="video-background">
         <source src="videos/video02.mp4" type="video/mp4">
         Trình duyệt của bạn không hỗ trợ video background.
     </video>
 
-    <!-- 2. Header[cite: 2] -->
+    <!-- 2. Header -->
     <?php include 'header.php'; ?>
 
-    <!-- 3. Khu vực Slide Banner Chạy Qua Lại -->
-    <div class="container my-4">
+    <!-- 3. Khu vực Slide Banner Trang chủ (Tự động chuyển trang sau mỗi 4 giây & Kích thước 1000x400px) -->
+    <div class="container my-4 d-flex justify-content-center">
         <?php if (!empty($listBanners)): ?>
-            <div id="homeBannerCarousel" class="carousel slide shadow rounded overflow-hidden" data-bs-ride="carousel" style="max-height: 450px;">
+            <div id="homeBannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+                <!-- Thanh chỉ số phía dưới -->
                 <div class="carousel-indicators">
                     <?php foreach ($listBanners as $index => $banner): ?>
                         <button type="button" data-bs-target="#homeBannerCarousel" data-bs-slide-to="<?= $index ?>" <?= $index === 0 ? 'class="active" aria-current="true"' : '' ?>></button>
                     <?php endforeach; ?>
                 </div>
 
+                <!-- Khung chứa danh sách slide ảnh -->
                 <div class="carousel-inner">
                     <?php foreach ($listBanners as $index => $banner): ?>
                         <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-                            <!-- Thêm dấu ./ trước đường dẫn để hiển thị đúng ảnh từ thư mục uploads -->
-                            <img src="./<?= htmlspecialchars($banner['image_url']) ?>" class="d-block w-100" alt="<?= htmlspecialchars($banner['title']) ?>" style="height: 400px; object-fit: cover;">
+                            <img src="./<?= htmlspecialchars($banner['image_url']) ?>" class="d-block w-100" alt="<?= htmlspecialchars($banner['title']) ?>">
                             
-                            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
-                                <h5 class="m-0 text-white"><?= htmlspecialchars($banner['title']) ?></h5>
+                            <!-- Khung tiêu đề kính mờ Glassmorphism nổi bật -->
+                            <div class="carousel-caption d-none d-md-block">
+                                <h5 class="banner-title"><?= htmlspecialchars($banner['title']) ?></h5>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
 
+                <!-- Nút điều hướng Trái / Phải -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
@@ -73,8 +79,8 @@ try {
                 </button>
             </div>
         <?php else: ?>
-            <!-- Fallback: Banner tĩnh mặc định nếu chưa up ảnh nào -->
-            <div class="hero-banner" style="background: rgba(0,0,0,0.6); padding: 40px; border-radius: 10px; color: #fff; text-align: center;">
+            <!-- Giao diện dự phòng khi chưa có banner nào -->
+            <div class="hero-banner w-100 text-center text-white">
                 <div class="hero-content">
                     <h2>Sự Kiện Công Nghệ & Sinh Viên 2026</h2>
                     <p>Cập nhật nhanh các hoạt động ngoại khóa, hội thảo chuyên đề và tích lũy điểm rèn luyện dễ dàng.</p>
@@ -84,15 +90,16 @@ try {
         <?php endif; ?>
     </div>
 
+    <!-- 4. Nội dung chính của Trang chủ -->
     <main class="main-content">
         <div class="container">
-            <!-- Tiêu đề chào mừng[cite: 2] -->
+            <!-- Tiêu đề chào mừng -->
             <div class="welcome-section">
                 <h1>Hệ Thống Quản Lý Sự Kiện Sinh Viên</h1>
                 <p class="welcome-text">Chào mừng bạn đến với trang quản trị dự án Cloud Computing.</p>
             </div>
 
-            <!-- Thống kê nhanh[cite: 2] -->
+            <!-- Thống kê nhanh -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <h3>03</h3>
@@ -108,7 +115,7 @@ try {
                 </div>
             </div>
 
-            <!-- Phần Giới thiệu[cite: 2] -->
+            <!-- Phần Giới thiệu hệ thống -->
             <div class="about-section">
                 <div class="about-card">
                     <h3>Về Hệ Thống Sự Kiện Sinh Viên</h3>
@@ -132,7 +139,7 @@ try {
                 </div>
             </div>
             
-            <!-- Khu vực tính năng phân quyền[cite: 2] -->
+            <!-- Khu vực thẻ tính năng phân quyền -->
             <div class="dashboard-grid">
                 <?php 
                 $isAdmin = (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) || 
@@ -156,7 +163,7 @@ try {
         </div>
     </main>
 
-    <!-- Bootstrap JS cho Carousel -->
+    <!-- Bootstrap JS Bundle để kích hoạt hiệu ứng chuyển slide tự động -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -11,7 +11,7 @@ $ma_sv = $_SESSION['ma_sv'] ?? '';
 $user_id = $_SESSION['user_id'] ?? '';
 
 if (empty($ma_sv) || empty($user_id)) {
-    header("Location: ../login.php");
+    header("Location: /user/login.php");
     exit();
 }
 
@@ -47,18 +47,42 @@ $ly_do_cu = $user['ly_do_nang_cap'] ?? '';
 
 $has_notification = ($yeu_cau === 'approved' || $yeu_cau === 'rejected');
 
-// Kiểm tra sự kiện đang mở điểm danh 
+// Chỉ hiển thị popup điểm danh cho sự kiện sinh viên thực sự đã đăng ký.
+// Bảng dang_ky dùng ma_sv và ma_sukien (không dùng user_id hoặc su_kien_id).
 $active_event = null;
-if (!empty($user_id) && ($vai_tro === 'sinh_vien' || empty($vai_tro))) {
+if (!empty($ma_sv) && $vai_tro === 'sinh_vien') {
     $stmt_active = $conn->prepare("
-        SELECT sk.* FROM su_kien sk
-        LEFT JOIN dang_ky_su_kien dk ON sk.ma_sukien = dk.ma_sukien AND dk.ma_sv = ?
-        WHERE sk.is_attendance_open = 1 
-        AND (dk.trang_thai IS NULL OR dk.trang_thai != 'da_tham_gia')
-        LIMIT 1
+        SELECT sk.*
+        FROM su_kien sk
+        WHERE sk.is_attendance_open = 1
+          AND sk.passcode IS NOT NULL
+          AND EXISTS (
+              SELECT 1 FROM dang_ky dk
+              WHERE dk.ma_sukien = sk.ma_sukien
+                AND dk.ma_sv = ?
+                AND dk.trang_thai IN ('Đã đăng ký', 'da_dang_ky', 'registered', 'confirmed')
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM dang_ky checked
+              WHERE checked.ma_sukien = sk.ma_sukien
+                AND checked.ma_sv = ?
+                AND checked.trang_thai IN ('da_tham_gia', 'present', 'Đã tham gia')
+          )
+        ORDER BY sk.passcode_expired_at ASC
     ");
-    $stmt_active->execute([$user_id]);
-    $active_event = $stmt_active->fetch(PDO::FETCH_ASSOC);
+    $stmt_active->execute([$ma_sv, $ma_sv]);
+
+    // Dùng cùng cách kiểm tra thời hạn với api_checkin.php (theo timezone PHP).
+    // Không hiển thị mã đã hết hạn hoặc không có thời điểm hết hạn.
+    while ($candidate = $stmt_active->fetch(PDO::FETCH_ASSOC)) {
+        $expiresAt = !empty($candidate['passcode_expired_at'])
+            ? strtotime($candidate['passcode_expired_at'])
+            : false;
+        if ($expiresAt !== false && $expiresAt > time()) {
+            $active_event = $candidate;
+            break;
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -103,16 +127,52 @@ if (!empty($user_id) && ($vai_tro === 'sinh_vien' || empty($vai_tro))) {
                 <button class="theme-toggle-btn" id="themeToggleBtn" title="Chuyển đổi giao diện Sáng/Tối">
                   <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
                 </button>
-                <a href="banners.php" class="btn btn-primary">Quản lý Banner</a>
+            
 
-                <a href="#role-section" class="notification-bell btn btn-outline-secondary btn-sm position-relative me-2" title="Thông báo hệ thống">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#notificationsModal" role="button" class="notification-bell btn btn-outline-secondary btn-sm position-relative me-2" title="Thông báo hệ thống">
                     🔔 Thông báo
                     <?php if ($has_notification): ?>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">1</span>
                     <?php endif; ?>
                 </a>
                 <a href="../index.php" class="btn btn-outline-light btn-sm me-2">Trang chủ</a>
-                <a href="/QUAN-LY-SU-KIEN-SINH-VIEN/user/logout.php" class="btn btn-danger btn-sm">Đăng xuất</a>
+                <a href="/user/logout.php" class="btn btn-danger btn-sm">Đăng xuất</a>
+            </div>
+        </div>
+
+        <!-- Thông báo phân quyền: dữ liệu lấy từ bảng users, không tạo thông báo giả -->
+        <div class="modal fade" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="background:#100b20;color:#f5f5fa;border:1px solid #55ddc5;border-radius:18px;">
+                    <div class="modal-header" style="border-color:#344055;">
+                        <h5 class="modal-title" id="notificationsModalLabel"><i class="bi bi-bell-fill me-2"></i>Thông báo của bạn</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <?php if ($yeu_cau === 'approved'): ?>
+                            <div class="alert alert-success mb-0">
+                                <strong><i class="bi bi-check-circle-fill me-2"></i>Yêu cầu đã được phê duyệt</strong>
+                                <p class="mb-0 mt-2">Admin đã phê duyệt yêu cầu nâng quyền quản lý sự kiện của bạn.</p>
+                            </div>
+                        <?php elseif ($yeu_cau === 'rejected'): ?>
+                            <div class="alert alert-danger mb-0">
+                                <strong><i class="bi bi-x-circle-fill me-2"></i>Yêu cầu bị từ chối</strong>
+                                <p class="mb-0 mt-2">Admin đã từ chối yêu cầu nâng quyền quản lý sự kiện của bạn.</p>
+                            </div>
+                        <?php elseif ($yeu_cau === 'pending'): ?>
+                            <div class="alert alert-warning mb-0">
+                                <strong><i class="bi bi-hourglass-split me-2"></i>Đang chờ phê duyệt</strong>
+                                <p class="mb-0 mt-2">Yêu cầu nâng quyền của bạn đã được gửi và đang chờ Admin xét duyệt.</p>
+                            </div>
+                        <?php else: ?>
+                            <p class="mb-0 text-center py-3" style="color:#cbd5e1;">Hiện chưa có thông báo mới về yêu cầu phân quyền.</p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="modal-footer" style="border-color:#344055;">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="document.getElementById('roleSectionContent') && bootstrap.Collapse.getOrCreateInstance(document.getElementById('roleSectionContent'), {toggle:false}).show(); document.getElementById('role-section').scrollIntoView({behavior:'smooth',block:'start'});">Xem trạng thái chi tiết</button>
+                    </div>
+                </div>
             </div>
         </div>
 

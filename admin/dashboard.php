@@ -8,13 +8,17 @@ require_once __DIR__ . '/../database.php';   // Kết nối CSDL
 
 /** @var PDO $conn */
 
-// Tự động thêm các cột điểm danh vào bảng su_kien nếu chưa tồn tại
-try {
-    $conn->exec("ALTER TABLE su_kien ADD COLUMN IF NOT EXISTS is_attendance_open INT DEFAULT 0");
-    $conn->exec("ALTER TABLE su_kien ADD COLUMN IF NOT EXISTS passcode VARCHAR(10) DEFAULT NULL");
-    $conn->exec("ALTER TABLE su_kien ADD COLUMN IF NOT EXISTS passcode_expired_at DATETIME DEFAULT NULL");
-} catch (PDOException $e) {
-    // Bỏ qua nếu cột đã có sẵn
+// Cấu trúc CSDL được quản lý riêng bằng migration SQL, không ALTER TABLE khi tải trang.
+// Token chống CSRF cho các thao tác Admin.
+if (empty($_SESSION['admin_dashboard_csrf'])) {
+    $_SESSION['admin_dashboard_csrf'] = bin2hex(random_bytes(32));
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $submittedToken = (string)($_POST['csrf_token'] ?? '');
+    if (!hash_equals($_SESSION['admin_dashboard_csrf'], $submittedToken)) {
+        http_response_code(403);
+        exit('Yêu cầu không hợp lệ (CSRF). Vui lòng tải lại trang và thử lại.');
+    }
 }
 
 // Lấy thông tin tài khoản Admin đang đăng nhập từ Session
@@ -29,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
     if ($eventId !== '') {
         try {
             if ($action === 'open') {
-                $passcode = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+                $passcode = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
                 $expiredAt = date('Y-m-d H:i:s', strtotime('+5 minutes'));
                 $stmt_update = $conn->prepare("UPDATE su_kien SET is_attendance_open = 1, passcode = ?, passcode_expired_at = ? WHERE ma_sukien = ?");
                 $stmt_update->execute([$passcode, $expiredAt, $eventId]);
@@ -47,17 +51,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
 
 // 1. Xử lý khi Admin bấm Duyệt hoặc Từ chối yêu cầu phân quyền của sinh viên
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_admin'])) {
-    $target_user_id = $_POST['target_user_id'] ?? '';
+    $target_user_id = filter_var($_POST['target_user_id'] ?? null, FILTER_VALIDATE_INT);
     $admin_action   = $_POST['action_admin'];
 
-    if ($target_user_id) {
+    if ($target_user_id && in_array($admin_action, ['approve', 'reject'], true)) {
         if ($admin_action === 'approve') {
-            $stmt_approve = $conn->prepare("UPDATE users SET vai_tro = 'quan_ly_su_kien', yeu_cau_phan_quyen = 'approved' WHERE id = ?");
+            $stmt_approve = $conn->prepare("UPDATE users SET vai_tro = 'quan_ly_su_kien', yeu_cau_phan_quyen = 'approved' WHERE id = ? AND yeu_cau_phan_quyen = 'pending'");
             $stmt_approve->execute([$target_user_id]);
-        } elseif ($admin_action === 'reject') {
-            $stmt_reject = $conn->prepare("UPDATE users SET vai_tro = 'rejected', yeu_cau_phan_quyen = 'rejected' WHERE id = ?");
+        } else {
+            // Từ chối là trạng thái yêu cầu, không phải vai trò tài khoản.
+            $stmt_reject = $conn->prepare("UPDATE users SET yeu_cau_phan_quyen = 'rejected' WHERE id = ? AND yeu_cau_phan_quyen = 'pending'");
             $stmt_reject->execute([$target_user_id]);
         }
+        header('Location: dashboard.php');
+        exit();
     }
 }
 
@@ -94,10 +101,10 @@ $sql_students = "
     SELECT u.*,
         COALESCE(u.diem_ren_luyen, 0) AS tong_diem_ren_luyen,
         (
-            SELECT COUNT(DISTINCT dk.su_kien_id)
+            SELECT COUNT(DISTINCT dk.ma_sukien)
             FROM dang_ky_su_kien dk
-            JOIN su_kien sk ON dk.su_kien_id = sk.ma_sukien
-            WHERE dk.user_id = u.id
+            JOIN su_kien sk ON dk.ma_sukien = sk.ma_sukien
+            WHERE dk.ma_sv = u.ma_sv
               AND (dk.trang_thai = 'da_tham_gia' OR dk.trang_thai = 'present')
               AND sk.thoi_gian_bat_dau BETWEEN :first_day AND :last_day
         ) AS so_su_kien_thang
@@ -310,7 +317,8 @@ $classes = $stmt_classes->fetchAll();
                                     <td><span style="font-style: italic; opacity: 0.8;"><?php echo htmlspecialchars($req['ly_do_nang_cap'] ?? 'Không có lý do'); ?></span></td>
                                     <td style="text-align: center;">
                                         <form method="POST" style="display: inline-block;">
-                                            <input type="hidden" name="target_user_id" value="<?php echo $req['id']; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['admin_dashboard_csrf'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" name="target_user_id" value="<?php echo (int)$req['id']; ?>">
                                             <button type="submit" name="action_admin" value="approve" class="btn btn-success btn-sm fw-bold px-3 me-1">Duyệt</button>
                                             <button type="submit" name="action_admin" value="reject" class="btn btn-danger btn-sm fw-bold px-3">Từ chối</button>
                                         </form>
@@ -369,7 +377,8 @@ $classes = $stmt_classes->fetchAll();
                                     </td>
                                     <td>
                                         <form action="" method="POST" class="d-inline">
-                                            <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($evId); ?>">
+                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['admin_dashboard_csrf'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" name="event_id" value="<?php echo (int)$evId; ?>">
                                             <?php if ($isOpen): ?>
                                                 <button type="submit" name="action" value="close" class="btn btn-danger btn-sm fw-bold px-3">
                                                     <i class="bi bi-lock-fill me-1"></i> Đóng

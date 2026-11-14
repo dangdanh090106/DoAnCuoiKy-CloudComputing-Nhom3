@@ -1,230 +1,178 @@
 <?php
+// Sửa sự kiện: giữ giao diện cũ; ghi poster lên MinIO + metadata vào MySQL.
 session_start();
-require_once '../database.php';
+require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/../minio_storage.php';
 
-// Kiểm tra kết nối cơ sở dữ liệu từ file database.php
-$db = isset($conn) ? $conn : (isset($pdo) ? $pdo : null);
-if (!$db) {
-    die("Lỗi: Không tìm thấy kết nối cơ sở dữ liệu.");
+$db = $pdo ?? $conn ?? null;
+if (!$db instanceof PDO) {
+    http_response_code(500);
+    exit('Không thể kết nối cơ sở dữ liệu.');
 }
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Cấu hình tăng timeout cho PDO để chống ngắt kết nối đột ngột (MySQL server has gone away)
-try {
-    $db->setAttribute(PDO::ATTR_TIMEOUT, 60);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $db->exec("SET SESSION wait_timeout=3600");
-} catch (Exception $e) {}
-
-// Kiểm tra quyền quản trị của người dùng
-$vai_tro = $_SESSION['vai_tro'] ?? '';
-$isManager = in_array(strtolower(trim($vai_tro)), ['admin', 'quan_ly_su_kien', 'quan_ly', 'management']);
-if (!$isManager) {
-    header("Location: login.php");
+$vai_tro = strtolower(trim((string)($_SESSION['vai_tro'] ?? '')));
+if (!in_array($vai_tro, ['admin', 'quan_ly_su_kien'], true)) {
+    header('Location: login.php');
     exit();
 }
 
-function getColValue($row, ...$keys) {
+if (empty($_SESSION['event_csrf_token'])) {
+    $_SESSION['event_csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['event_csrf_token'];
+
+function getColValue($row, ...$keys): string {
     if (!$row) return '';
-    foreach ($keys as $k) {
-        if (isset($row[$k]) && $row[$k] !== '') {
-            return $row[$k];
-        }
+    foreach ($keys as $key) {
+        if (isset($row[$key]) && $row[$key] !== '') return (string)$row[$key];
     }
     return '';
 }
-
-// Lấy danh sách các cột thực tế trong bảng su_kien để tương thích ngược
-try {
-    $stmtCols = $db->query("SHOW COLUMNS FROM su_kien");
-    $existingCols = $stmtCols->fetchAll(PDO::FETCH_COLUMN);
-    $existingColsLower = array_map('strtolower', $existingCols);
-} catch (Exception $e) {
-    $existingCols = [];
-    $existingColsLower = [];
+function validEventId($value): ?int {
+    $id = filter_var($value, FILTER_VALIDATE_INT);
+    return ($id !== false && $id > 0) ? (int)$id : null;
+}
+function eventDateFromForm($value): string {
+    $value = str_replace('T', ' ', trim((string)$value));
+    if (preg_match('/^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$/D', $value)) $value .= ':00';
+    $dt = DateTimeImmutable::createFromFormat('!Y-m-d H:i:s', $value);
+    if (!$dt || $dt->format('Y-m-d H:i:s') !== $value) {
+        throw new InvalidArgumentException('Ngày giờ không hợp lệ.');
+    }
+    return $value;
 }
 
-function findRealCol($existingCols, $candidates, $default) {
-    foreach ($candidates as $c) {
-        foreach ($existingCols as $ec) {
-            if (strtolower($ec) === strtolower($c)) {
-                return $ec;
+// Các tên cột theo schema do_an_cuoi_ky của nhóm.
+$colPk = 'ma_sukien';
+$colTitle = 'ten_sukien';
+$colStart = 'thoi_gian_bat_dau';
+$colEnd = 'thoi_gian_ket_thuc';
+$colLocation = 'ten_diadiem';
+$colPosition = 'vi_tri';
+$colTarget = 'doi_tuong_tham_gia';
+$colCapacity = 'suc_chua';
+$colDesc = 'mo_ta';
+
+$error_msg = '';
+$save_success = false;
+$eventId = validEventId($_POST['ma_sukien'] ?? $_GET['ma_sukien'] ?? $_GET['id'] ?? null);
+
+// Chỉ cho phép cập nhật với POST có CSRF; không xử lý dữ liệu sửa bằng GET.
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    $newPoster = null;
+    try {
+        $submittedToken = (string)($_POST['csrf_token'] ?? '');
+        if (!hash_equals((string)$csrf_token, $submittedToken)) {
+            throw new InvalidArgumentException('Phiên làm việc không hợp lệ. Hãy tải lại trang.');
+        }
+        if (($_POST['action'] ?? '') !== 'update' || $eventId === null) {
+            throw new InvalidArgumentException('Mã sự kiện hoặc thao tác không hợp lệ.');
+        }
+        $title = trim((string)($_POST['ten_su_kien'] ?? ''));
+        $desc = trim((string)($_POST['mo_ta'] ?? ''));
+        $start = eventDateFromForm($_POST['thoi_gian_bat_dau'] ?? '');
+        $end = eventDateFromForm($_POST['thoi_gian_ket_thuc'] ?? '');
+        if ($title === '' || (function_exists('mb_strlen') ? mb_strlen($title) : strlen($title)) > 255) {
+            throw new InvalidArgumentException('Tên sự kiện phải có từ 1 đến 255 ký tự.');
+        }
+        if ($end <= $start) throw new InvalidArgumentException('Thời gian kết thúc phải sau thời gian bắt đầu.');
+
+        $locationText = trim((string)($_POST['dia_diem'] ?? ''));
+        $position = trim((string)($_POST['vi_tri'] ?? ''));
+        $target = trim((string)($_POST['doi_tuong'] ?? ''));
+        $capacityRaw = trim((string)($_POST['suc_chua'] ?? ''));
+        $capacity = $capacityRaw === '' ? 0 : filter_var($capacityRaw, FILTER_VALIDATE_INT);
+        if ($capacity === false || $capacity < 0) throw new InvalidArgumentException('Sức chứa phải là số nguyên không âm.');
+
+        $db->beginTransaction();
+        $check = $db->prepare('SELECT * FROM su_kien WHERE ma_sukien = ? FOR UPDATE');
+        $check->execute([$eventId]);
+        $oldEvent = $check->fetch(PDO::FETCH_ASSOC);
+        if (!$oldEvent) throw new InvalidArgumentException('Không tìm thấy sự kiện cần sửa.');
+        $oldKey = (string)($oldEvent['file_path_key'] ?? '');
+
+        $locationId = $oldEvent['ma_diadiem'] ?? null;
+        if ($locationText !== '') {
+            $find = $db->prepare('SELECT ma_diadiem FROM dia_diem WHERE ten_diadiem = ? LIMIT 1');
+            $find->execute([$locationText]);
+            $foundId = $find->fetchColumn();
+            if ($foundId !== false) {
+                $locationId = (int)$foundId;
+            } else {
+                // Khi người dùng gõ địa điểm mới, tạo bản ghi địa điểm như code cũ.
+                $create = $db->prepare('INSERT INTO dia_diem (ten_diadiem, vi_tri, suc_chua) VALUES (?, ?, ?)');
+                $create->execute([$locationText, $position, $capacity]);
+                $locationId = (int)$db->lastInsertId();
             }
         }
+
+        $fields = [
+            'ten_sukien' => $title,
+            'mo_ta' => $desc,
+            'thoi_gian_bat_dau' => $start,
+            'thoi_gian_ket_thuc' => $end,
+            'ma_diadiem' => $locationId,
+        ];
+        // Chỉ lưu các trường bổ sung nếu database thực tế có cột tương ứng.
+        $columnNames = $db->query('SHOW COLUMNS FROM su_kien')->fetchAll(PDO::FETCH_COLUMN);
+        if (in_array('doi_tuong_tham_gia', $columnNames, true)) $fields['doi_tuong_tham_gia'] = $target;
+        if (in_array('suc_chua', $columnNames, true)) $fields['suc_chua'] = $capacity;
+        if (in_array('vi_tri', $columnNames, true)) $fields['vi_tri'] = $position;
+
+        $upload = $_FILES['anh_su_kien'] ?? null;
+        if ($upload !== null && ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            $newPoster = eventUploadPoster($upload);
+            $fields['file_name'] = $newPoster['original_name'];
+            $fields['file_path_key'] = $newPoster['object_key'];
+            $fields['file_type'] = $newPoster['mime_type'];
+            $fields['file_size'] = $newPoster['file_size'];
+            $fields['upload_time'] = $newPoster['uploaded_at'];
+        }
+        $assignments = [];
+        $params = [];
+        foreach ($fields as $column => $value) {
+            $assignments[] = '`' . $column . '` = ?';
+            $params[] = $value;
+        }
+        $params[] = $eventId;
+        $stmt = $db->prepare('UPDATE su_kien SET ' . implode(', ', $assignments) . ' WHERE ma_sukien = ?');
+        $stmt->execute($params);
+        $db->commit();
+        $save_success = true;
+
+        // Chỉ xóa ảnh cũ SAU KHI MySQL cập nhật thành công.
+        if ($newPoster !== null && $oldKey !== '' && $oldKey !== $newPoster['object_key']) {
+            try {
+                $count = $db->prepare('SELECT COUNT(*) FROM su_kien WHERE file_path_key = ?');
+                $count->execute([$oldKey]);
+                if ((int)$count->fetchColumn() === 0) eventDeletePoster($oldKey);
+            } catch (Throwable $e) {
+                error_log('Không dọn được poster cũ MinIO: ' . $e->getMessage());
+            }
+        }
+    } catch (Throwable $e) {
+        if ($db->inTransaction()) $db->rollBack();
+        if ($newPoster !== null) {
+            try { eventDeletePoster((string)$newPoster['object_key']); }
+            catch (Throwable $cleanupError) { error_log('MinIO orphan cần dọn: ' . $cleanupError->getMessage()); }
+        }
+        if ($e instanceof InvalidArgumentException) {
+            $error_msg = $e->getMessage();
+        } else {
+            error_log('Lỗi sửa sự kiện: ' . $e->getMessage());
+            $error_msg = 'Không thể cập nhật sự kiện. Kiểm tra log Docker.';
+        }
     }
-    return $default;
 }
-
-$colPk       = findRealCol($existingCols, ['ma_sukien', 'id', 'ma_sk', 'id_sukien'], 'ma_sukien');
-$colTitle    = findRealCol($existingCols, ['ten_su_kien', 'ten_sukien', 'tieu_de', 'ten'], 'ten_su_kien');
-$colStart    = findRealCol($existingCols, ['thoi_gian_bat_dau', 'bat_dau', 'ngay_to_chuc'], 'thoi_gian_bat_dau');
-$colEnd      = findRealCol($existingCols, ['thoi_gian_ket_thuc', 'ket_thuc'], 'thoi_gian_ket_thuc');
-$colLocation = findRealCol($existingCols, ['ten_diadiem', 'dia_diem', 'diadiem', 'dia_chi'], 'ten_diadiem');
-$colPosition = findRealCol($existingCols, ['vi_tri', 'vi_tri_cu_the', 'dia_chi_chi_tiet'], 'vi_tri');
-$colTarget   = findRealCol($existingCols, ['doi_tuong_tham_gia', 'doi_tuong_ap_dung', 'doi_tuong'], 'doi_tuong_tham_gia');
-$colCapacity = findRealCol($existingCols, ['suc_chua', 'so_luong', 'so_nguoi_toi_da'], 'suc_chua');
-$colDesc     = findRealCol($existingCols, ['mo_ta', 'mota', 'chi_tiet', 'description'], 'mo_ta');
-$colImage    = findRealCol($existingCols, ['file_name', 'anh_bia', 'hinh_anh', 'anh', 'image'], '');
-
-$id = $_GET['ma_sukien'] ?? $_GET['id'] ?? $_GET['ma_sk'] ?? null;
 
 $event = null;
-if ($id) {
-    try {
-        $hasDiaDiemTable = false;
-        try {
-            $testTbl = $db->query("SELECT 1 FROM dia_diem LIMIT 1");
-            if ($testTbl) $hasDiaDiemTable = true;
-        } catch (Exception $ex) { $hasDiaDiemTable = false; }
-
-        if ($hasDiaDiemTable && in_array('ma_diadiem', $existingColsLower)) {
-            $stmt = $db->prepare("SELECT sk.*, dd.ten_diadiem, dd.vi_tri as vi_tri_diadiem, dd.suc_chua as suc_chua_diadiem 
-                                  FROM su_kien sk 
-                                  LEFT JOIN dia_diem dd ON sk.ma_diadiem = dd.ma_diadiem 
-                                  WHERE sk.{$colPk} = ? LIMIT 1");
-            $stmt->execute([$id]);
-            $event = $stmt->fetch(PDO::FETCH_ASSOC);
-        } else {
-            $stmt = $db->prepare("SELECT * FROM su_kien WHERE {$colPk} = ? LIMIT 1");
-            $stmt->execute([$id]);
-            $event = $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-    } catch (Exception $e) {
-        $event = null;
-    }
-}
-
-$error_msg = "";
-$save_success = false;
-
-// Xử lý cập nhật dữ liệu khi submit form
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update') {
-    $post_id      = $_POST['ma_sukien'] ?? null;
-    $ten_su_kien  = trim($_POST['ten_su_kien'] ?? '');
-    $bat_dau      = $_POST['thoi_gian_bat_dau'] ?? null;
-    $ket_thuc     = $_POST['thoi_gian_ket_thuc'] ?? null;
-    $dia_diem_txt = trim($_POST['dia_diem'] ?? '');
-    $vi_tri       = trim($_POST['vi_tri'] ?? '');
-    $doi_tuong    = trim($_POST['doi_tuong'] ?? '');
-    $suc_chua     = trim($_POST['suc_chua'] ?? '');
-    $mo_ta        = trim($_POST['mo_ta'] ?? '');
-
-    if ($post_id) {
-        $uploadedImagePath = null;
-        try {
-            $uploadedImageName = null;
-            if (isset($_FILES['anh_su_kien']) && $_FILES['anh_su_kien']['error'] !== UPLOAD_ERR_NO_FILE) {
-                $imageFile = $_FILES['anh_su_kien'];
-                if ($imageFile['error'] !== UPLOAD_ERR_OK) {
-                    throw new RuntimeException("Lỗi tải ảnh (mã lỗi: {$imageFile['error']}).");
-                }
-                if ($colImage === '') {
-                    throw new RuntimeException("Không tìm thấy cột lưu ảnh trong bảng sự kiện.");
-                }
-                if ($imageFile['size'] > 5 * 1024 * 1024) {
-                    throw new RuntimeException("Dung lượng ảnh vượt quá 5MB.");
-                }
-
-                $extension = strtolower(pathinfo($imageFile['name'], PATHINFO_EXTENSION));
-                $allowedTypes = [
-                    'jpg' => 'image/jpeg',
-                    'jpeg' => 'image/jpeg',
-                    'png' => 'image/png',
-                    'gif' => 'image/gif',
-                    'webp' => 'image/webp',
-                ];
-                $imageInfo = @getimagesize($imageFile['tmp_name']);
-                if (
-                    !isset($allowedTypes[$extension])
-                    || $imageInfo === false
-                    || !in_array($imageInfo['mime'], $allowedTypes, true)
-                    || $allowedTypes[$extension] !== $imageInfo['mime']
-                ) {
-                    throw new RuntimeException("Ảnh không hợp lệ. Chỉ chấp nhận JPG, PNG, GIF hoặc WEBP.");
-                }
-
-                $uploadDir = __DIR__ . '/../images/';
-                if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
-                    throw new RuntimeException("Không thể tạo thư mục lưu ảnh.");
-                }
-
-                $uploadedImageName = time() . '_' . bin2hex(random_bytes(8)) . '.' . $extension;
-                $uploadedImagePath = $uploadDir . $uploadedImageName;
-                if (!move_uploaded_file($imageFile['tmp_name'], $uploadedImagePath)) {
-                    $uploadedImagePath = null;
-                    throw new RuntimeException("Không thể lưu ảnh vào thư mục images.");
-                }
-            }
-
-            $updateFields = [];
-            $params = [':id' => $post_id];
-
-            $updateFields[] = "{$colTitle} = :ten";
-            $params[':ten'] = $ten_su_kien;
-
-            if (in_array(strtolower($colStart), $existingColsLower)) {
-                $updateFields[] = "{$colStart} = :bat_dau";
-                $params[':bat_dau'] = !empty($bat_dau) ? date('Y-m-d H:i:s', strtotime($bat_dau)) : null;
-            }
-            if (in_array(strtolower($colEnd), $existingColsLower)) {
-                $updateFields[] = "{$colEnd} = :ket_thuc";
-                $params[':ket_thuc'] = !empty($ket_thuc) ? date('Y-m-d H:i:s', strtotime($ket_thuc)) : null;
-            }
-
-            if (in_array('ma_diadiem', $existingColsLower)) {
-                $ma_diadiem_val = 1;
-                if (!empty($dia_diem_txt)) {
-                    $stmtCheckDD = $db->prepare("SELECT ma_diadiem FROM dia_diem WHERE ten_diadiem = ? LIMIT 1");
-                    $stmtCheckDD->execute([$dia_diem_txt]);
-                    $foundDD = $stmtCheckDD->fetch(PDO::FETCH_ASSOC);
-
-                    if ($foundDD) {
-                        $ma_diadiem_val = $foundDD['ma_diadiem'];
-                    } else {
-                        $stmtInsDD = $db->prepare("INSERT INTO dia_diem (ten_diadiem, vi_tri, suc_chua) VALUES (?, ?, ?)");
-                        $stmtInsDD->execute([$dia_diem_txt, $vi_tri, !empty($suc_chua) ? $suc_chua : 0]);
-                        $ma_diadiem_val = $db->lastInsertId();
-                    }
-                }
-                $updateFields[] = "ma_diadiem = :ma_diadiem";
-                $params[':ma_diadiem'] = $ma_diadiem_val;
-            } elseif (in_array(strtolower($colLocation), $existingColsLower)) {
-                $updateFields[] = "{$colLocation} = :dia_diem";
-                $params[':dia_diem'] = $dia_diem_txt;
-            }
-
-            if (in_array(strtolower($colPosition), $existingColsLower)) {
-                $updateFields[] = "{$colPosition} = :vi_tri";
-                $params[':vi_tri'] = $vi_tri;
-            }
-            if (in_array(strtolower($colTarget), $existingColsLower)) {
-                $updateFields[] = "{$colTarget} = :doi_tuong";
-                $params[':doi_tuong'] = $doi_tuong;
-            }
-            if (in_array(strtolower($colCapacity), $existingColsLower)) {
-                $updateFields[] = "{$colCapacity} = :suc_chua";
-                $params[':suc_chua'] = !empty($suc_chua) ? $suc_chua : 0;
-            }
-            if (in_array(strtolower($colDesc), $existingColsLower)) {
-                $updateFields[] = "{$colDesc} = :mo_ta";
-                $params[':mo_ta'] = $mo_ta;
-            }
-            if ($uploadedImageName !== null) {
-                $updateFields[] = "{$colImage} = :file_name";
-                $params[':file_name'] = $uploadedImageName;
-            }
-
-            $sql = "UPDATE su_kien SET " . implode(", ", $updateFields) . " WHERE {$colPk} = :id";
-            $updateStmt = $db->prepare($sql);
-            $updateStmt->execute($params);
-
-            $save_success = true;
-        } catch (Exception $e) {
-            if ($uploadedImagePath !== null && is_file($uploadedImagePath)) {
-                unlink($uploadedImagePath);
-            }
-            $error_msg = "Lỗi khi lưu dữ liệu: " . $e->getMessage();
-        }
-    }
+if ($eventId !== null) {
+    $stmt = $db->prepare('SELECT sk.*, dd.ten_diadiem, dd.vi_tri AS vi_tri_diadiem, dd.suc_chua AS suc_chua_diadiem
+                          FROM su_kien sk LEFT JOIN dia_diem dd ON sk.ma_diadiem = dd.ma_diadiem
+                          WHERE sk.ma_sukien = ? LIMIT 1');
+    $stmt->execute([$eventId]);
+    $event = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 ?>
 <!DOCTYPE html>
@@ -290,12 +238,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $val_location = !empty($event['ten_diadiem']) ? $event['ten_diadiem'] : getColValue($event, $colLocation, 'dia_diem', 'diadiem');
             $val_position = !empty($event['vi_tri_diadiem']) ? $event['vi_tri_diadiem'] : getColValue($event, $colPosition, 'vi_tri');
             $val_target   = getColValue($event, $colTarget, 'doi_tuong_tham_gia', 'doi_tuong');
-            $val_capacity = getColValue($event, $colCapacity, 'suc_chua');
+            $val_capacity = getColValue($event, 'suc_chua', 'suc_chua_diadiem');
             $val_desc     = getColValue($event, $colDesc, 'mo_ta', 'mota');
             ?>
            <form id="editEventForm" method="POST" class="p-4 shadow" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="ma_sukien" value="<?php echo htmlspecialchars($val_id); ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
 
                 <div class="mb-3">
                     <label class="form-label">Tên sự kiện (*):</label>
@@ -307,9 +256,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <?php 
         // Hiển thị ảnh cũ nhỏ nhắn bên cạnh nút upload
                 $anh_cu = $event['file_name'] ?? $event['anh_hien_thi'] ?? '';
-                $src_anh = (!empty($anh_cu)) ? '../images/' . $anh_cu : '../images/sukien01.jpg';
+                $src_anh = !empty($event['file_path_key'])
+                    ? '../poster_su_kien.php?ma_sukien=' . rawurlencode((string)$val_id)
+                    : ((!empty($anh_cu)) ? '../images/' . rawurlencode(basename((string)$anh_cu)) : '../images/sukien01.jpg');
                 ?>
-                <img src="<?php echo $src_anh; ?>" alt="Ảnh hiện tại" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #00f2c2;">
+                <img src="<?php echo htmlspecialchars($src_anh, ENT_QUOTES, 'UTF-8'); ?>" alt="Ảnh hiện tại" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #00f2c2;">
         
             <input type="file" name="anh_su_kien" id="anh_su_kien" class="form-control bg-dark text-white border-0 shadow-none" accept="image/jpeg, image/png, image/gif, image/webp">
                 </div>
@@ -322,7 +273,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Thời gian kết thúc:</label>
-                        <input type="datetime-local" name="thoi_gian_ket_thuc" class="form-control" value="<?php echo !empty($val_end) ? date('Y-m-d\TH:i', strtotime($val_end)) : ''; ?>">
+                        <input type="datetime-local" name="thoi_gian_ket_thuc" class="form-control" required value="<?php echo !empty($val_end) ? date('Y-m-d\TH:i', strtotime($val_end)) : ''; ?>">
                     </div>
                 </div>
 

@@ -1,4 +1,4 @@
-      document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
 
     let allEvents = [];
     let searchTimeout = null;
@@ -142,20 +142,30 @@
             const eventId = getEventId(event);
             const description = getProp(event, 'mo_ta', 'mota', 'chitiet', 'description') || 'Không có mô tả.';
             const startDate = getProp(event, 'thoi_gian_bat_dau', 'batdau', 'ngay_to_chuc', 'ngay', 'date');
+            const rawEnd = getProp(event, 'thoi_gian_ket_thuc', 'ngay_ket_thuc');
             const location = getProp(event, 'ten_diadiem', 'diadiem', 'dia_diem', 'vi_tri', 'diachi') || 'Chưa cập nhật';
             const cardIndex = allEvents.indexOf(event);
+
+            // Kiểm tra xem sự kiện đã kết thúc hay chưa dựa trên thời gian thực
+            const endDate = rawEnd ? new Date(String(rawEnd).trim().replace(' ', 'T')) : new Date(String(startDate).trim().replace(' ', 'T'));
+            const isEnded = now > endDate;
 
             // Nút Xem Chi Tiết
             const detailButton = isValidEventId(eventId)
                 ? `<button type="button" class="btn btn-outline-success btn-sm btn-open-detail fw-bold flex-fill me-1" data-index="${cardIndex}" style="border-color: #00f2c2; color: #00f2c2;"><i class="bi bi-eye me-1"></i> Chi tiết</button>`
                 : `<button type="button" class="btn btn-outline-secondary btn-sm flex-fill me-1" disabled><i class="bi bi-eye me-1"></i> Chi tiết</button>`;
 
-            // Nút Đăng Ký Tham Gia
-            const registerButton = isValidEventId(eventId)
-                ? `<button type="button" class="btn btn-danger btn-sm btn-open-register fw-bold flex-fill me-1" data-index="${cardIndex}" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); border: none;"><i class="bi bi-pencil-square me-1"></i> Đăng ký</button>`
-                : `<button type="button" class="btn btn-secondary btn-sm flex-fill me-1" disabled><i class="bi bi-pencil-square me-1"></i> Đăng ký</button>`;
+            // Nút Đăng Ký Tham Gia (Tự động chuyển sang trạng thái xám/vô hiệu hóa nếu đã qua thời gian)
+            let registerButton = '';
+            if (!isValidEventId(eventId)) {
+                registerButton = `<button type="button" class="btn btn-secondary btn-sm flex-fill me-1" disabled><i class="bi bi-pencil-square me-1"></i> Đăng ký</button>`;
+            } else if (isEnded) {
+                registerButton = `<button type="button" class="btn btn-secondary btn-sm flex-fill me-1 disabled opacity-50" style="cursor: not-allowed; background: #334155; border-color: #475569;" disabled><i class="bi bi-slash-circle me-1"></i> Đã kết thúc</button>`;
+            } else {
+                registerButton = `<button type="button" class="btn btn-danger btn-sm btn-open-register fw-bold flex-fill me-1" data-index="${cardIndex}" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); border: none;"><i class="bi bi-pencil-square me-1"></i> Đăng ký</button>`;
+            }
 
-            // Nút Cài đặt dạng Dropdown - CHỈ CÓ ICON BÁNH RĂNG (Đã xóa chữ Cài đặt)
+            // Nút Cài đặt dạng Dropdown (Icon bánh răng quản trị)
             const adminActionButtons = (typeof canManageEvents !== 'undefined' && canManageEvents && isValidEventId(eventId))
                 ? `<div class="dropdown" style="flex: 0 0 auto;">
                        <button class="btn btn-secondary btn-sm dropdown-toggle px-3 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Cài đặt sự kiện" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; border-radius: 10px;">
@@ -205,22 +215,39 @@
             card.querySelector('.event-date span').textContent = 'Bắt đầu: ' + formatDate(startDate);
             card.querySelector('.event-location span').textContent = 'Địa điểm: ' + location;
           
-            const imageValue = getProp(event, 'anh_hien_thi', 'file_name', 'anh_bia', 'hinh_anh', 'anh', 'image');
-            let imagePath = imageValue ? String(imageValue).trim() : '';
+            // Ưu tiên ảnh được lưu trong MySQL/MinIO qua API.
+            // Không gán ảnh cố định theo mã sự kiện.
+            const apiImageUrl = String(getProp(event, 'anh_url') || '').trim();
+            const legacyImage = String(getProp(event, 'anh_hien_thi', 'file_name', 'anh_bia', 'hinh_anh', 'anh', 'image') || '').trim();
+            let imagePath = apiImageUrl || legacyImage;
 
-            if (imagePath && !imagePath.startsWith('http') && !imagePath.startsWith('images/')) {
+            // API có thể trả về tên file cũ thay vì URL đầy đủ.
+            if (!apiImageUrl && imagePath &&
+                !/^(?:https?:\/\/|\/|images\/|uploads\/|data:)/i.test(imagePath)) {
                 imagePath = 'images/' + imagePath;
+            }
+
+            // Dùng đường dẫn proxy MinIO khi API có metadata nhưng thiếu anh_url.
+            if (!imagePath && isValidEventId(eventId) && getProp(event, 'file_path_key')) {
+                imagePath = `poster_su_kien.php?ma_sukien=${encodeURIComponent(eventId)}`;
             }
 
             if (!imagePath) imagePath = 'images/sukien01.jpg';
 
+            // Chống cache ảnh cũ sau khi thay ảnh trong trang quản trị.
+            const uploadVersion = getProp(event, 'upload_time', 'updated_at', 'ngay_cap_nhat');
+            if (uploadVersion && imagePath !== 'images/sukien01.jpg') {
+                imagePath += (imagePath.includes('?') ? '&' : '?') +
+                    'v=' + encodeURIComponent(String(uploadVersion));
+            }
+
             const img = card.querySelector('.event-image');
             img.alt = title;
-            img.src = imagePath;
             img.onerror = function () {
                 this.onerror = null;
                 this.src = 'images/sukien01.jpg';
             };
+            img.src = imagePath;
 
             if (isValidEventId(eventId)) {
                 // Sự kiện bấm nút Chi tiết
@@ -228,79 +255,76 @@
                     showEventDetails(allEvents[this.getAttribute('data-index')], 'view');
                 });
                 
-                // Sự kiện bấm nút Đăng ký
-                card.querySelector('.btn-open-register').addEventListener('click', function() {
-                    showEventDetails(allEvents[this.getAttribute('data-index')], 'register');
-                });
+                // Sự kiện bấm nút Đăng ký (Chỉ gán sự kiện nếu sự kiện chưa kết thúc)
+                const regBtn = card.querySelector('.btn-open-register');
+                if (regBtn) {
+                    regBtn.addEventListener('click', function() {
+                        showEventDetails(allEvents[this.getAttribute('data-index')], 'register');
+                    });
+                }
 
                 // Xử lý sự kiện xóa từ menu dropdown cài đặt bằng Popup Robot Sci-Fi 3D
-const deleteDropdownEl = card.querySelector('.btn-delete-dropdown');
-if (deleteDropdownEl) {
-    deleteDropdownEl.addEventListener('click', function (e) {
-        e.preventDefault();
-        const id = this.getAttribute('data-id');
-        const eventTitle = this.getAttribute('data-title');
+                const deleteDropdownEl = card.querySelector('.btn-delete-dropdown');
+                if (deleteDropdownEl) {
+                    deleteDropdownEl.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const id = this.getAttribute('data-id');
+                        const eventTitle = this.getAttribute('data-title');
 
-        // Xóa popup cũ nếu đang tồn tại
-        const existingOverlay = document.querySelector('.sci-fi-confirm-overlay');
-        if (existingOverlay) existingOverlay.remove();
+                        const existingOverlay = document.querySelector('.sci-fi-confirm-overlay');
+                        if (existingOverlay) existingOverlay.remove();
 
-        // Tạo khung nền mờ không gian
-        const confirmOverlay = document.createElement('div');
-        confirmOverlay.className = 'sci-fi-confirm-overlay';
-        
-        // Tạo cấu trúc Popup tích hợp Robot AI chỉa bảng cảnh báo
-        confirmOverlay.innerHTML = `
-            <div class="sci-fi-confirm-box">
-                <!-- Khu vực Robot AI & Sóng Radar Hologram -->
-                <div class="sci-robot-container">
-                    <div class="sci-radar-pulse"></div>
-                    <div class="sci-robot-avatar">
-                        <i class="bi bi-robot"></i>
-                        <div class="sci-robot-eye-glow"></div>
-                    </div>
-                    <div class="sci-warning-badge">
-                        <i class="bi bi-exclamation-triangle-fill"></i> SYSTEM WARNING
-                    </div>
-                </div>
+                        const confirmOverlay = document.createElement('div');
+                        confirmOverlay.className = 'sci-fi-confirm-overlay';
+                        
+                        confirmOverlay.innerHTML = `
+                            <div class="sci-fi-confirm-box">
+                                <div class="sci-robot-container">
+                                    <div class="sci-radar-pulse"></div>
+                                    <div class="sci-robot-avatar">
+                                        <i class="bi bi-robot"></i>
+                                        <div class="sci-robot-eye-glow"></div>
+                                    </div>
+                                    <div class="sci-warning-badge">
+                                        <i class="bi bi-exclamation-triangle-fill"></i> SYSTEM WARNING
+                                    </div>
+                                </div>
 
-                <div class="sci-fi-confirm-title">XÁC NHẬN HỦY DIỆT SỰ KIỆN</div>
-                <div class="sci-fi-confirm-text">
-                    Cảnh báo! Bạn có chắc chắn muốn xóa vĩnh viễn dữ liệu sự kiện <br>
-                    <strong>"${eventTitle}"</strong> khỏi hệ thống chủ không?
-                </div>
+                                <div class="sci-fi-confirm-title">XÁC NHẬN HỦY DIỆT SỰ KIỆN</div>
+                                <div class="sci-fi-confirm-text">
+                                    Cảnh báo! Bạn có chắc chắn muốn xóa vĩnh viễn dữ liệu sự kiện <br>
+                                    <strong>"${eventTitle}"</strong> khỏi hệ thống chủ không?
+                                </div>
 
-                <div class="sci-fi-confirm-actions">
-                    <button type="button" class="sci-fi-btn-cancel">
-                        <i class="bi bi-shield-lock-fill"></i> Hủy bỏ
-                    </button>
-                    <button type="button" class="sci-fi-btn-ok">
-                        <i class="bi bi-trash3-fill"></i> Tiến hành xóa
-                    </button>
-                </div>
-            </div>
-        `;
+                                <div class="sci-fi-confirm-actions">
+                                    <button type="button" class="sci-fi-btn-cancel">
+                                        <i class="bi bi-shield-lock-fill"></i> Hủy bỏ
+                                    </button>
+                                    <button type="button" class="sci-fi-btn-ok">
+                                        <i class="bi bi-trash3-fill"></i> Tiến hành xóa
+                                    </button>
+                                </div>
+                            </div>
+                        `;
 
-        document.body.appendChild(confirmOverlay);
+                        document.body.appendChild(confirmOverlay);
 
-        // Nút Hủy
-        confirmOverlay.querySelector('.sci-fi-btn-cancel').addEventListener('click', function() {
-            confirmOverlay.remove();
-        });
+                        confirmOverlay.querySelector('.sci-fi-btn-cancel').addEventListener('click', function() {
+                            confirmOverlay.remove();
+                        });
 
-        // Nút Xác nhận xóa
-        confirmOverlay.querySelector('.sci-fi-btn-ok').addEventListener('click', function() {
-            window.location.href = `user/delete.php?ma_sukien=${id}`;
-        });
-    });
-}
+                        confirmOverlay.querySelector('.sci-fi-btn-ok').addEventListener('click', function() {
+                            window.location.href = `user/delete.php?ma_sukien=${id}`;
+                        });
+                    });
+                }
             }
 
             eventList.appendChild(card);
         });
     }
 
-    // 4. Quản lý nội dung Modal Chi Tiết / Đăng Ký
+    // 4. Quản lý nội dung Modal Chi Tiết / Đăng Ký (Có kiểm tra hạn thời gian)
     function showEventDetails(event, mode) {
         const eventId = getEventId(event);
         const title = getEventTitle(event);
@@ -333,6 +357,9 @@ if (deleteDropdownEl) {
         const registerSection = document.getElementById("modalRegisterSection");
         const registerDivider = document.getElementById("modalRegisterDivider");
 
+        // Lấy nút đăng ký và thông báo trong Modal
+        const btnRegisterModal = document.getElementById('btnRegisterModal');
+
         if (mode === 'view') {
             if (infoSection) infoSection.style.display = "block";
             if (registerSection) registerSection.style.display = "none";
@@ -340,6 +367,39 @@ if (deleteDropdownEl) {
             if (infoSection) infoSection.style.display = "none";
             if (registerSection) registerSection.style.display = "block";
             if (registerDivider) registerDivider.style.display = "none";
+
+            // Kiểm tra thời hạn kết thúc sự kiện trong Modal
+            const now = new Date();
+            const endDateTime = endDate ? new Date(String(endDate).trim().replace(' ', 'T')) : (startDate ? new Date(String(startDate).trim().replace(' ', 'T')) : now);
+
+            if (now > endDateTime) {
+                // Khóa nút đăng ký trong Modal nếu đã hết hạn
+                if (btnRegisterModal) {
+                    btnRegisterModal.classList.add('disabled', 'opacity-50');
+                    btnRegisterModal.style.pointerEvents = 'none';
+                    btnRegisterModal.style.background = '#334155';
+                    btnRegisterModal.style.borderColor = '#475569';
+                    btnRegisterModal.innerHTML = '<i class="bi bi-slash-circle me-2"></i>Sự kiện đã kết thúc - Không thể đăng ký';
+                }
+                if (alertBox) {
+                    alertBox.className = 'alert alert-danger mb-3';
+                    alertBox.classList.remove('d-none');
+                    alertBox.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Sự kiện này đã qua thời gian diễn ra. Cổng đăng ký đã đóng!';
+                }
+            } else {
+                // Mở khóa bình thường nếu còn hạn
+                if (btnRegisterModal) {
+                    btnRegisterModal.classList.remove('disabled', 'opacity-50');
+                    btnRegisterModal.style.pointerEvents = 'auto';
+                    btnRegisterModal.style.background = '';
+                    btnRegisterModal.style.borderColor = '';
+                    btnRegisterModal.innerHTML = '<i class="bi bi-pencil-square me-2"></i>Đăng ký tham gia';
+                    btnRegisterModal.href = `dang-ky.php?ma_sukien=${eventId}`;
+                }
+                if (alertBox) {
+                    alertBox.className = 'alert d-none mb-3';
+                }
+            }
         }
 
         const modalElement = document.getElementById('eventDetailModal');
